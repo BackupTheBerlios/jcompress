@@ -17,7 +17,6 @@ import structure.*;
 import structure.types.*;
 import structure.types.predicat.*;
 import java.util.ArrayList;
-import java.sql.Date;
 	public class Analyzer{ 
 		public Commande c;
 	}
@@ -30,7 +29,7 @@ SKIP:
 
 TOKEN:
 {
-	<CREATE		: "create">
+		<CREATE		: "create">
    |	<DROP		: "drop">
    |	<ADD		: "add">
    |	<ALTER		: "alter">
@@ -49,20 +48,12 @@ TOKEN:
    
    |	<CONNECT	: "connect">
    |	<DISCONNECT	: "disconnect">
-   |	<TO		: "to">
+   |	<TO			: "to">
    |	<WHERE		: "where">
    |	<FROM		: "from">
    |	<AND		: "and">
-   |	<OR		: "or">
-// types
-   |	<DATE		: "date">
-   |	<VARCHAR	: "varchar">
-   |	<NUMBER		: "number">
- 	//type indetermine
- //  |	<VALEUR		: (["A"-"Z"]|["0"-"9"]|"_"|"/"|"-")*>
-   //doit commencer par une lettre
-   |	<NOM		: (["A"-"Z"])+(["A"-"Z"]|["0"-"9"]|"_"|".")*>
-   |    <CHIFFRE	: (["0"-"9"])+>
+   |	<OR			: "or">
+
 //   |    <ENTREQUOT	: >
 //symboles
     |	<OUVRANTE	: "(">
@@ -80,27 +71,39 @@ TOKEN:
 	|	<INF		: "<">
 	|	<INFEGAL	: "<=">*/
 	|	<OPERATOR	: ("="|"<>"|">"|">="|"<"|"<=")>
-	|	<FONCT		: "AVG"|"COUNT"|"SUM"|"MAX"|"MIN">
+	|	<FONCT		: ("avg"|"count"|"sum"|"max"|"min")>
+// types
+   |	<DATE		: "date">
+   |	<VARCHAR	: "varchar">
+   |	<NUMBER		: "number">
+   //doit commencer par une lettre
+   |    <ENTIER		: (["0"-"9"])+>
+   |    <CHIFFRE	: (["0"-"9"])+ 	((",")(["0"-"9"])+)?>				//(["0"-"9"]|",")*>
+   |	<NOM		: (["A"-"Z"])+(["A"-"Z"]|["0"-"9"]|"_"|".")*>
 }
 
 /*----------------------------------
 -	MAIN
 -----------------------------------*/
-Commande execute():{}{
-	{Commande c=null;}
+ArrayList execute():{}{
+	{Commande c=null; ArrayList l = new ArrayList();}
 	
-	(	c=create()
-	|	c= drop()
-	|	c= alter()
-	|	c=insert()
-	|	c=delete()
-	//|	select()*/)
-	)
-	{ return c;}
+	(	c=create() 		{l.add(c);}
+	|	c= drop()		{l.add(c);}
+	|	c= alter()		{l.add(c);}
+	|	c=insert()		{l.add(c);}
+	|	c=delete()		{l.add(c);}
+	|	c=select()		{l.add(c);}
+	) *
+	{ return l;}
 }
 
 Predicat executePredicat():{}{
 	{return def_pred();}
+}
+
+ArrayList executeAggr():{}{
+	{return def_aggr();}
 }
 
 /*----------------------------------
@@ -228,7 +231,7 @@ Alter alter_dim():{}
 }	
 
 	/*-------------
-	-	INSERT
+	-	INSERT	-OK
 	---------------*/
 Insert insert():{}{
 	{Insert ci;}
@@ -237,16 +240,19 @@ Insert insert():{}{
 }
 InsertFact insert_fact():{}
 {
-	<FACT> <NOM>
+	{Token t;String s;InsertFact cif=null;Predicat p;}
+	<FACT> t=<NOM>
 	<VALUES> <OUVRANTE>
-			def_une_valeur() (<VIRG>def_une_valeur())* 
+			s=def_une_valeur() {cif = new InsertFact(t.toString(), Commande.FACT, s);}
+			(<VIRG>s=def_une_valeur() {cif.ajoutValeur(s);})* 
 		<FERMANTE>
 	<CONNECT><TO>
-		 <NOM> <WHERE> def_pred()
-		(<VIRG><NOM><WHERE> def_pred())*
+		 t=<NOM> <WHERE> p=def_pred() {cif.ajoutConnect(t.toString(),p);}
+		(<VIRG>t=<NOM> <WHERE> p=def_pred() {cif.ajoutConnect(t.toString(),p);})*
 	<PTVIRG>
-	{return null;}
+	{return cif;}
 }
+//ok
 Insert insert_dim():{}
 {
 	{Token t;String s;}
@@ -260,7 +266,7 @@ Insert insert_dim():{}
 }
 
 	/*-------------
-	-	DELETE -ajouter pred
+	-	DELETE -OK
 	---------------*/
 Delete delete():{}{
 	{Delete d;}
@@ -269,42 +275,51 @@ Delete delete():{}{
 }
 Delete del_fact():{}
 {
-	{Token t;}
+	{Token t; Predicat p=null;}
 	<FACT>t=<NOM>
-	(<WHERE> def_pred())?
+	(<WHERE> p =def_pred())?
 	<PTVIRG>
-	{return new Delete(t.toString(), Commande.FACT);}
+	{return new Delete(t.toString(), Commande.FACT,p);}
 }
 Delete del_dim():{}
 {
-	{Token t;}
+	{Token t; Predicat p=null;}
 	<DIMENSION>t=<NOM>
-	(<WHERE> def_pred())?
+	(<WHERE> p=def_pred())?
 	<PTVIRG>
-	{return new Delete(t.toString(), Commande.DIMENSION);}
+	{return new Delete(t.toString(), Commande.DIMENSION,p);}
 }
 
 	/*-------------
-	-	SELECT
+	-	SELECT	-OK
 	---------------*/
-void select():{}
+Select select():{}
 {
-	<SELECT> def_aggr()
-	<ROW> <NOM>
-		(<WITH> <NOM>
+	{Token t;ArrayList l;String s; Predicat p=null;}
+	
+	<SELECT> l=def_aggr(){Select cs = new Select (l);}
+	<ROW> t=<NOM>	{cs.setNomRow(t.toString());}
+		(<WITH> t= <NOM> {cs.setWithRow(t.toString());}
 				(<OUVRANTE>
-			<NOM>(<PT><NOM>)? (<VIRG><NOM>(<PT><NOM>)? )* 
-				<FERMANTE>)*	
+			t=<NOM>{s= t.toString();}(<PT>t=<NOM>{s= s+t.toString();})?
+					{cs.ajoutRow(s);}
+			(<VIRG>t=<NOM>{s= t.toString();}(<PT>t=<NOM>{s= s+t.toString();})?
+					{cs.ajoutRow(s);})* 
+				<FERMANTE>)?	
 		)?
-	<COLUMN> <NOM>
-		(<WITH> <NOM>
+	<COLUMN> t=<NOM>	{cs.setNomColumn(t.toString());}
+		(<WITH> t= <NOM> {cs.setWithColumn(t.toString());}
 				(<OUVRANTE>
-			<NOM>(<PT><NOM>)? (<VIRG><NOM>(<PT><NOM>)? )* 
-				<FERMANTE>)*	
+			t=<NOM>{s= t.toString();}(<PT>t=<NOM>{s= s+t.toString();})?
+					{cs.ajoutColumn(s);}
+			(<VIRG>t=<NOM>{s= t.toString();}(<PT>t=<NOM>{s= s+t.toString();})?
+					{cs.ajoutColumn(s);})* 
+				<FERMANTE>)?	
 		)?		
-	<FROM><NOM>
-		(<WHERE> def_pred())?
+	<FROM>t=<NOM> {cs.setNomFrom(t.toString());}
+		(<WHERE> p=def_pred())?{cs.setWhere(p);}
 	<PTVIRG>
+	{return cs;}
 }
 
 /*----------------------------------
@@ -315,18 +330,21 @@ String def_une_valeur():{}
 {
 		{Token t=null;String s="";}
 		
-		<QUOT> (	s=tdate() 
+		(<QUOT> (	s=tdate() 
 				| 	(		(t=<NOM> {s = s+t.toString();})
 						(t=<NOM> {s = s+" "+t.toString();})*
 					)
 				)								
-		<QUOT>	{return s;}
+		<QUOT>	{return s;})
 		
-	|	t=<CHIFFRE>{return t.toString();}		
+	|	(t=<CHIFFRE>{return t.toString();}		)
 }
 
-
-//pour l'instant pas de parentheses ni or gérés
+	/*-------------
+	-	PREDICAT
+	---------------*/
+//pas de premiere parenthese gérée
+//pas de or et and dans m parenthese
 Predicat def_pred():{}
 {
 	{Predicat p=new Predicat ();; ElementAbstrait elmt;}
@@ -340,27 +358,42 @@ Predicat def_pred():{}
 
 //pas encore ok
 ElementAbstrait def_elmt(Liaison pere):{}{	
-	{ElementAbstrait expr; Jointure j=null;
-		Liaison l;}
+	{ElementAbstrait expr=null; Jointure j=null;
+		Liaison l=null;}
 
 	((<OUVRANTE>expr = def_elmt(pere)<FERMANTE>)
 
 |	(
 	 expr = def_jointure(pere)	
-	((	<AND> {l = new Liaison (pere, Liaison.AND,expr);}
+	(	(	<AND> {l = new Liaison (pere, Liaison.AND,expr);}
 			(	(<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
 															expr.setPere(l);})
-			|	(j = def_jointure(l)	{l.ajoutElmt(j);
-										j.setPere(l);}))
-			(<AND>	
-				(	(<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
+				|	(j = def_jointure(l)	{l.ajoutElmt(j);
+										j.setPere(l);})
+			)
+			( <AND>	
+				((<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
 															expr.setPere(l);})
 			|	(j = def_jointure(l)	{l.ajoutElmt(j);
 										j.setPere(l);}))
 			)*
-		)
-	 ){expr=l;}
-	))
+		
+	 	{expr=l;})|
+	 	(<OR> {l = new Liaison (pere, Liaison.OR,expr);}
+		(	(<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
+															expr.setPere(l);})
+			|	(j = def_jointure(l)	{l.ajoutElmt(j);
+										j.setPere(l);}))
+			( <OR>	
+				((<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
+															expr.setPere(l);})
+			|	(j = def_jointure(l)	{l.ajoutElmt(j);
+										j.setPere(l);}))
+			)*
+		{expr=l;})
+		 )?
+	)
+	)
 	 {return expr;}
 }
 
@@ -375,16 +408,27 @@ Jointure def_jointure(Liaison pere):{}{
 	{return new Jointure(pere,s1,s2,t3.toString());}
 
 }
+	/*-------------
+	-	END PREDICAT
+	---------------*/
 
 //AVG, SUM, MAX, COUNT, SOM
-void def_aggr():{}
+//renvoit une ArrayList de String 
+//ok
+ArrayList def_aggr():{}
 {
-	<FONCT> <OUVRANTE>
-			<NOM>(<PT><NOM>)?
+	{Token tA, t; String s; ArrayList l = new ArrayList();}
+	tA=<FONCT> <OUVRANTE>
+			t=<NOM> {s = t.toString();}(<PT>t=<NOM>{s= s+t.toString();})?
+			{	s = tA.toString()+"("+s+")";
+				l.add(s);}
 			<FERMANTE>
-	(<VIRG><FONCT> <OUVRANTE>
-			<NOM>(<PT><NOM>)?
+	(<VIRG>tA=<FONCT> <OUVRANTE>
+			t=<NOM> {s = t.toString();}(<PT>t=<NOM>{s= s+t.toString();})?
+			{	s = tA.toString()+"("+s+")";
+				l.add(s);}
 			<FERMANTE>)*
+	{return l;}
 }
 
 /*renvoit une ArrayList d'attributs*/
@@ -411,11 +455,21 @@ Attribut def_dom():{}
 	{Attribut att=null;Token t;}
 	(<DATE>{att = new Attribut(Attribut.DATE);}
 	|	<NUMBER> <OUVRANTE>
-				t=<CHIFFRE>{att = new Attribut(Attribut.NUMBER,Integer.parseInt(t.toString()));}
-							(<VIRG> t=<CHIFFRE>{att.setPrecision(Integer.parseInt(t.toString()));})?
+				(t = <CHIFFRE> {String s = t.toString();int pos;
+								if ((pos=s.indexOf(",")) !=0)
+								{
+									att = new Attribut (Attribut.NUMBER, Integer.parseInt(s.substring(0,pos)));
+									att.setPrecision(Integer.parseInt(s.substring(pos+1)));
+								}else{
+									att = new Attribut (Attribut.NUMBER,Integer.parseInt(s));
+								}
+							}
+				
+				|t= <ENTIER> {att = new Attribut (Attribut.NUMBER, Integer.parseInt(t.toString()));}
+				)
 				<FERMANTE>
 	|	<VARCHAR><OUVRANTE>
-					t=<CHIFFRE>{att = new Attribut(Attribut.VARCHAR, Integer.parseInt(t.toString()));}
+					t=<ENTIER>{att = new Attribut(Attribut.VARCHAR, Integer.parseInt(t.toString()));}
 				<FERMANTE>)
 	{return att;}
 }
@@ -443,9 +497,9 @@ ArrayList def_lev():{}
 String tdate ():{}
 {
 	{String dat=""; Token t;}
-	t=<CHIFFRE>{dat= t.toString();}
-	<SLASH>t=<CHIFFRE>{dat=dat+"-"+ t.toString();}
-	<SLASH>t=<CHIFFRE>{dat=dat+"-"+ t.toString();}
+	t=<ENTIER>{dat= t.toString();}
+	<SLASH>t=<ENTIER>{dat=dat+"-"+ t.toString();}
+	<SLASH>t=<ENTIER>{dat=dat+"-"+ t.toString();}
 	{return dat;}
 }
 

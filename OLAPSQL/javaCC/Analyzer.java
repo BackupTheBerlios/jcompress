@@ -3,45 +3,72 @@ package javaCC;
 import structure.*;
 import structure.types.*;
 import structure.types.predicat.*;
-import structure.types.predicat.Predicat;
-
 import java.util.ArrayList;
-import java.sql.Date;
         public class Analyzer implements AnalyzerConstants {
                 public Commande c;
 
 /*----------------------------------
 -	MAIN
 -----------------------------------*/
-  static final public Commande execute() throws ParseException {
-         Commande c=null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CREATE:
-      c = create();
-      break;
-    case DROP:
-      c = drop();
-      break;
-    case ALTER:
-      c = alter();
-      break;
-    case INSERT:
-      c = insert();
-      break;
-    case DELETE:
-      c = delete();
-      break;
-    default:
-      jj_la1[0] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+  static final public ArrayList execute() throws ParseException {
+         Commande c=null; ArrayList l = new ArrayList();
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CREATE:
+      case DROP:
+      case ALTER:
+      case INSERT:
+      case DELETE:
+      case SELECT:
+        ;
+        break;
+      default:
+        jj_la1[0] = jj_gen;
+        break label_1;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CREATE:
+        c = create();
+                                         l.add(c);
+        break;
+      case DROP:
+        c = drop();
+                                         l.add(c);
+        break;
+      case ALTER:
+        c = alter();
+                                         l.add(c);
+        break;
+      case INSERT:
+        c = insert();
+                                         l.add(c);
+        break;
+      case DELETE:
+        c = delete();
+                                         l.add(c);
+        break;
+      case SELECT:
+        c = select();
+                                         l.add(c);
+        break;
+      default:
+        jj_la1[1] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
-          {if (true) return c;}
+          {if (true) return l;}
     throw new Error("Missing return statement in function");
   }
 
   static final public Predicat executePredicat() throws ParseException {
          {if (true) return def_pred();}
+    throw new Error("Missing return statement in function");
+  }
+
+  static final public ArrayList executeAggr() throws ParseException {
+         {if (true) return def_aggr();}
     throw new Error("Missing return statement in function");
   }
 
@@ -62,7 +89,7 @@ import java.sql.Date;
       c = create_dim();
       break;
     default:
-      jj_la1[1] = jj_gen;
+      jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -82,15 +109,15 @@ import java.sql.Date;
     jj_consume_token(TO);
     t = jj_consume_token(NOM);
                               ll.add(t.toString());
-    label_1:
+    label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case VIRG:
         ;
         break;
       default:
-        jj_la1[2] = jj_gen;
-        break label_1;
+        jj_la1[3] = jj_gen;
+        break label_2;
       }
       jj_consume_token(VIRG);
       t = jj_consume_token(NOM);
@@ -109,15 +136,15 @@ import java.sql.Date;
     l = def_attr();
                  CreateDimension cd = new CreateDimension(t.toString(), Commande.DIMENSION,l);
     jj_consume_token(FERMANTE);
-    label_2:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case WITH:
         ;
         break;
       default:
-        jj_la1[3] = jj_gen;
-        break label_2;
+        jj_la1[4] = jj_gen;
+        break label_3;
       }
       jj_consume_token(WITH);
       jj_consume_token(HIERARCHY);
@@ -147,7 +174,7 @@ import java.sql.Date;
       d = drop_dim();
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -187,7 +214,7 @@ import java.sql.Date;
       ca = alter_dim();
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -217,27 +244,6 @@ import java.sql.Date;
         t = jj_consume_token(NOM);
                                 ca.setAlteration(Alter.DROP);
                                                 ca.ajoutString(t.toString());
-        label_3:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case VIRG:
-            ;
-            break;
-          default:
-            jj_la1[6] = jj_gen;
-            break label_3;
-          }
-          jj_consume_token(VIRG);
-          t = jj_consume_token(NOM);
-                                               ca.ajoutString(t.toString());
-        }
-        break;
-      case CONNECT:
-        jj_consume_token(CONNECT);
-        jj_consume_token(TO);
-        t = jj_consume_token(NOM);
-                                       ca.setAlteration(Alter.CONNECT);
-                                                                ca.ajoutString(t.toString());
         label_4:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -253,12 +259,12 @@ import java.sql.Date;
                                                ca.ajoutString(t.toString());
         }
         break;
-      case DISCONNECT:
-        jj_consume_token(DISCONNECT);
+      case CONNECT:
+        jj_consume_token(CONNECT);
         jj_consume_token(TO);
         t = jj_consume_token(NOM);
-                                          ca.setAlteration(Alter.DISCONNECT);
-                                                                        ca.ajoutString(t.toString());
+                                       ca.setAlteration(Alter.CONNECT);
+                                                                ca.ajoutString(t.toString());
         label_5:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -274,14 +280,35 @@ import java.sql.Date;
                                                ca.ajoutString(t.toString());
         }
         break;
+      case DISCONNECT:
+        jj_consume_token(DISCONNECT);
+        jj_consume_token(TO);
+        t = jj_consume_token(NOM);
+                                          ca.setAlteration(Alter.DISCONNECT);
+                                                                        ca.ajoutString(t.toString());
+        label_6:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case VIRG:
+            ;
+            break;
+          default:
+            jj_la1[9] = jj_gen;
+            break label_6;
+          }
+          jj_consume_token(VIRG);
+          t = jj_consume_token(NOM);
+                                               ca.ajoutString(t.toString());
+        }
+        break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
     jj_consume_token(PTVIRG);
@@ -315,7 +342,7 @@ import java.sql.Date;
                                  ((AlterHierarchy)ca).ajoutHierarchy(h);
           break;
         default:
-          jj_la1[11] = jj_gen;
+          jj_la1[12] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -327,15 +354,15 @@ import java.sql.Date;
                          ca = new Alter(t.toString(), Commande.DIMENSION,Alter.DROP);
           t = jj_consume_token(NOM);
                                          ca.ajoutString(t.toString());
-          label_6:
+          label_7:
           while (true) {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case VIRG:
               ;
               break;
             default:
-              jj_la1[12] = jj_gen;
-              break label_6;
+              jj_la1[13] = jj_gen;
+              break label_7;
             }
             jj_consume_token(VIRG);
             t = jj_consume_token(NOM);
@@ -349,19 +376,19 @@ import java.sql.Date;
                                          ((AlterHierarchy)ca).ajoutHierarchy(new Hierarchy(t.toString(),null));
           break;
         default:
-          jj_la1[13] = jj_gen;
+          jj_la1[14] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
     jj_consume_token(PTVIRG);
@@ -370,7 +397,7 @@ import java.sql.Date;
   }
 
         /*-------------
-	-	INSERT
+	-	INSERT	-OK
 	---------------*/
   static final public Insert insert() throws ParseException {
          Insert ci;
@@ -383,7 +410,7 @@ import java.sql.Date;
       ci = insert_dim();
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -392,30 +419,13 @@ import java.sql.Date;
   }
 
   static final public InsertFact insert_fact() throws ParseException {
+         Token t;String s;InsertFact cif=null;Predicat p;
     jj_consume_token(FACT);
-    jj_consume_token(NOM);
+    t = jj_consume_token(NOM);
     jj_consume_token(VALUES);
     jj_consume_token(OUVRANTE);
-    def_une_valeur();
-    label_7:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case VIRG:
-        ;
-        break;
-      default:
-        jj_la1[17] = jj_gen;
-        break label_7;
-      }
-      jj_consume_token(VIRG);
-      def_une_valeur();
-    }
-    jj_consume_token(FERMANTE);
-    jj_consume_token(CONNECT);
-    jj_consume_token(TO);
-    jj_consume_token(NOM);
-    jj_consume_token(WHERE);
-    def_pred();
+    s = def_une_valeur();
+                                            cif = new InsertFact(t.toString(), Commande.FACT, s);
     label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -427,24 +437,16 @@ import java.sql.Date;
         break label_8;
       }
       jj_consume_token(VIRG);
-      jj_consume_token(NOM);
-      jj_consume_token(WHERE);
-      def_pred();
+      s = def_une_valeur();
+                                                   cif.ajoutValeur(s);
     }
-    jj_consume_token(PTVIRG);
-         {if (true) return null;}
-    throw new Error("Missing return statement in function");
-  }
-
-  static final public Insert insert_dim() throws ParseException {
-         Token t;String s;
-    jj_consume_token(DIMENSION);
+    jj_consume_token(FERMANTE);
+    jj_consume_token(CONNECT);
+    jj_consume_token(TO);
     t = jj_consume_token(NOM);
-                            Insert ci = new Insert (t.toString(), Commande.DIMENSION);
-    jj_consume_token(VALUES);
-    jj_consume_token(OUVRANTE);
-    s = def_une_valeur();
-                                            ci.ajoutValeur(s);
+    jj_consume_token(WHERE);
+    p = def_pred();
+                                               cif.ajoutConnect(t.toString(),p);
     label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -454,6 +456,37 @@ import java.sql.Date;
       default:
         jj_la1[19] = jj_gen;
         break label_9;
+      }
+      jj_consume_token(VIRG);
+      t = jj_consume_token(NOM);
+      jj_consume_token(WHERE);
+      p = def_pred();
+                                                     cif.ajoutConnect(t.toString(),p);
+    }
+    jj_consume_token(PTVIRG);
+         {if (true) return cif;}
+    throw new Error("Missing return statement in function");
+  }
+
+//ok
+  static final public Insert insert_dim() throws ParseException {
+         Token t;String s;
+    jj_consume_token(DIMENSION);
+    t = jj_consume_token(NOM);
+                            Insert ci = new Insert (t.toString(), Commande.DIMENSION);
+    jj_consume_token(VALUES);
+    jj_consume_token(OUVRANTE);
+    s = def_une_valeur();
+                                            ci.ajoutValeur(s);
+    label_10:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case VIRG:
+        ;
+        break;
+      default:
+        jj_la1[20] = jj_gen;
+        break label_10;
       }
       jj_consume_token(VIRG);
       s = def_une_valeur();
@@ -466,7 +499,7 @@ import java.sql.Date;
   }
 
         /*-------------
-	-	DELETE -ajouter pred
+	-	DELETE -OK
 	---------------*/
   static final public Delete delete() throws ParseException {
          Delete d;
@@ -479,7 +512,7 @@ import java.sql.Date;
       d = del_dim();
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[21] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -488,74 +521,73 @@ import java.sql.Date;
   }
 
   static final public Delete del_fact() throws ParseException {
-         Token t;
+         Token t; Predicat p=null;
     jj_consume_token(FACT);
     t = jj_consume_token(NOM);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case WHERE:
       jj_consume_token(WHERE);
-      def_pred();
-      break;
-    default:
-      jj_la1[21] = jj_gen;
-      ;
-    }
-    jj_consume_token(PTVIRG);
-         {if (true) return new Delete(t.toString(), Commande.FACT);}
-    throw new Error("Missing return statement in function");
-  }
-
-  static final public Delete del_dim() throws ParseException {
-         Token t;
-    jj_consume_token(DIMENSION);
-    t = jj_consume_token(NOM);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case WHERE:
-      jj_consume_token(WHERE);
-      def_pred();
+      p = def_pred();
       break;
     default:
       jj_la1[22] = jj_gen;
       ;
     }
     jj_consume_token(PTVIRG);
-         {if (true) return new Delete(t.toString(), Commande.DIMENSION);}
+         {if (true) return new Delete(t.toString(), Commande.FACT,p);}
+    throw new Error("Missing return statement in function");
+  }
+
+  static final public Delete del_dim() throws ParseException {
+         Token t; Predicat p=null;
+    jj_consume_token(DIMENSION);
+    t = jj_consume_token(NOM);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case WHERE:
+      jj_consume_token(WHERE);
+      p = def_pred();
+      break;
+    default:
+      jj_la1[23] = jj_gen;
+      ;
+    }
+    jj_consume_token(PTVIRG);
+         {if (true) return new Delete(t.toString(), Commande.DIMENSION,p);}
     throw new Error("Missing return statement in function");
   }
 
         /*-------------
-	-	SELECT
+	-	SELECT	-OK
 	---------------*/
-  static final public void select() throws ParseException {
+  static final public Select select() throws ParseException {
+         Token t;ArrayList l;String s; Predicat p=null;
     jj_consume_token(SELECT);
-    def_aggr();
+    l = def_aggr();
+                              Select cs = new Select (l);
     jj_consume_token(ROW);
-    jj_consume_token(NOM);
+    t = jj_consume_token(NOM);
+                         cs.setNomRow(t.toString());
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case WITH:
       jj_consume_token(WITH);
-      jj_consume_token(NOM);
-      label_10:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OUVRANTE:
-          ;
-          break;
-        default:
-          jj_la1[23] = jj_gen;
-          break label_10;
-        }
+      t = jj_consume_token(NOM);
+                                  cs.setWithRow(t.toString());
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OUVRANTE:
         jj_consume_token(OUVRANTE);
-        jj_consume_token(NOM);
+        t = jj_consume_token(NOM);
+                                s= t.toString();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PT:
           jj_consume_token(PT);
-          jj_consume_token(NOM);
+          t = jj_consume_token(NOM);
+                                                              s= s+t.toString();
           break;
         default:
           jj_la1[24] = jj_gen;
           ;
         }
+                                         cs.ajoutRow(s);
         label_11:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -567,52 +599,56 @@ import java.sql.Date;
             break label_11;
           }
           jj_consume_token(VIRG);
-          jj_consume_token(NOM);
+          t = jj_consume_token(NOM);
+                                       s= t.toString();
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case PT:
             jj_consume_token(PT);
-            jj_consume_token(NOM);
+            t = jj_consume_token(NOM);
+                                                                     s= s+t.toString();
             break;
           default:
             jj_la1[26] = jj_gen;
             ;
           }
+                                         cs.ajoutRow(s);
         }
         jj_consume_token(FERMANTE);
+        break;
+      default:
+        jj_la1[27] = jj_gen;
+        ;
       }
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[28] = jj_gen;
       ;
     }
     jj_consume_token(COLUMN);
-    jj_consume_token(NOM);
+    t = jj_consume_token(NOM);
+                                 cs.setNomColumn(t.toString());
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case WITH:
       jj_consume_token(WITH);
-      jj_consume_token(NOM);
-      label_12:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OUVRANTE:
-          ;
-          break;
-        default:
-          jj_la1[28] = jj_gen;
-          break label_12;
-        }
+      t = jj_consume_token(NOM);
+                                  cs.setWithColumn(t.toString());
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OUVRANTE:
         jj_consume_token(OUVRANTE);
-        jj_consume_token(NOM);
+        t = jj_consume_token(NOM);
+                                s= t.toString();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PT:
           jj_consume_token(PT);
-          jj_consume_token(NOM);
+          t = jj_consume_token(NOM);
+                                                              s= s+t.toString();
           break;
         default:
           jj_la1[29] = jj_gen;
           ;
         }
-        label_13:
+                                         cs.ajoutColumn(s);
+        label_12:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case VIRG:
@@ -620,39 +656,50 @@ import java.sql.Date;
             break;
           default:
             jj_la1[30] = jj_gen;
-            break label_13;
+            break label_12;
           }
           jj_consume_token(VIRG);
-          jj_consume_token(NOM);
+          t = jj_consume_token(NOM);
+                                       s= t.toString();
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case PT:
             jj_consume_token(PT);
-            jj_consume_token(NOM);
+            t = jj_consume_token(NOM);
+                                                                     s= s+t.toString();
             break;
           default:
             jj_la1[31] = jj_gen;
             ;
           }
+                                         cs.ajoutColumn(s);
         }
         jj_consume_token(FERMANTE);
+        break;
+      default:
+        jj_la1[32] = jj_gen;
+        ;
       }
-      break;
-    default:
-      jj_la1[32] = jj_gen;
-      ;
-    }
-    jj_consume_token(FROM);
-    jj_consume_token(NOM);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case WHERE:
-      jj_consume_token(WHERE);
-      def_pred();
       break;
     default:
       jj_la1[33] = jj_gen;
       ;
     }
+    jj_consume_token(FROM);
+    t = jj_consume_token(NOM);
+                       cs.setNomFrom(t.toString());
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case WHERE:
+      jj_consume_token(WHERE);
+      p = def_pred();
+      break;
+    default:
+      jj_la1[34] = jj_gen;
+      ;
+    }
+                                        cs.setWhere(p);
     jj_consume_token(PTVIRG);
+         {if (true) return cs;}
+    throw new Error("Missing return statement in function");
   }
 
 /*----------------------------------
@@ -665,28 +712,28 @@ import java.sql.Date;
                  Token t=null;String s="";
       jj_consume_token(QUOT);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case CHIFFRE:
+      case ENTIER:
         s = tdate();
         break;
       case NOM:
         t = jj_consume_token(NOM);
                                                                   s = s+t.toString();
-        label_14:
+        label_13:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case NOM:
             ;
             break;
           default:
-            jj_la1[34] = jj_gen;
-            break label_14;
+            jj_la1[35] = jj_gen;
+            break label_13;
           }
           t = jj_consume_token(NOM);
                                                           s = s+" "+t.toString();
         }
         break;
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[36] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -695,17 +742,21 @@ import java.sql.Date;
       break;
     case CHIFFRE:
       t = jj_consume_token(CHIFFRE);
-                            {if (true) return t.toString();}
+                             {if (true) return t.toString();}
       break;
     default:
-      jj_la1[36] = jj_gen;
+      jj_la1[37] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
-//pour l'instant pas de parentheses ni or gérés
+        /*-------------
+	-	PREDICAT
+	---------------*/
+//pas de premiere parenthese gérée
+//pas de or et and dans m parenthese
   static final public Predicat def_pred() throws ParseException {
          Predicat p=new Predicat ();; ElementAbstrait elmt;
     elmt = def_elmt(null);
@@ -716,8 +767,8 @@ import java.sql.Date;
 
 //pas encore ok
   static final public ElementAbstrait def_elmt(Liaison pere) throws ParseException {
-         ElementAbstrait expr; Jointure j=null;
-                Liaison l;
+         ElementAbstrait expr=null; Jointure j=null;
+                Liaison l=null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OUVRANTE:
       jj_consume_token(OUVRANTE);
@@ -726,60 +777,129 @@ import java.sql.Date;
       break;
     case NOM:
       expr = def_jointure(pere);
-      jj_consume_token(AND);
-                       l = new Liaison (pere, Liaison.AND,expr);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case OUVRANTE:
-        jj_consume_token(OUVRANTE);
-        expr = def_elmt(pere);
-        jj_consume_token(FERMANTE);
-                                                                            l.ajoutElmt(expr);
-                                                                                                                        expr.setPere(l);
-        break;
-      case NOM:
-        j = def_jointure(l);
-                                                         l.ajoutElmt(j);
-                                                                                j.setPere(l);
-        break;
-      default:
-        jj_la1[37] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      label_15:
-      while (true) {
+      case AND:
+      case OR:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case AND:
-          ;
-          break;
-        default:
-          jj_la1[38] = jj_gen;
-          break label_15;
-        }
-        jj_consume_token(AND);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OUVRANTE:
-          jj_consume_token(OUVRANTE);
-          expr = def_elmt(pere);
-          jj_consume_token(FERMANTE);
-                                                                                    l.ajoutElmt(expr);
+          jj_consume_token(AND);
+                               l = new Liaison (pere, Liaison.AND,expr);
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case OUVRANTE:
+            jj_consume_token(OUVRANTE);
+            expr = def_elmt(pere);
+            jj_consume_token(FERMANTE);
+                                                                            l.ajoutElmt(expr);
                                                                                                                         expr.setPere(l);
-          break;
-        case NOM:
-          j = def_jointure(l);
+            break;
+          case NOM:
+            j = def_jointure(l);
+                                                                 l.ajoutElmt(j);
+                                                                                j.setPere(l);
+            break;
+          default:
+            jj_la1[38] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+          label_14:
+          while (true) {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case AND:
+              ;
+              break;
+            default:
+              jj_la1[39] = jj_gen;
+              break label_14;
+            }
+            jj_consume_token(AND);
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case OUVRANTE:
+              jj_consume_token(OUVRANTE);
+              expr = def_elmt(pere);
+              jj_consume_token(FERMANTE);
+                                                                             l.ajoutElmt(expr);
+                                                                                                                        expr.setPere(l);
+              break;
+            case NOM:
+              j = def_jointure(l);
                                                          l.ajoutElmt(j);
                                                                                 j.setPere(l);
+              break;
+            default:
+              jj_la1[40] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
+                 expr=l;
+          break;
+        case OR:
+          jj_consume_token(OR);
+                       l = new Liaison (pere, Liaison.OR,expr);
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case OUVRANTE:
+            jj_consume_token(OUVRANTE);
+            expr = def_elmt(pere);
+            jj_consume_token(FERMANTE);
+                                                                    l.ajoutElmt(expr);
+                                                                                                                        expr.setPere(l);
+            break;
+          case NOM:
+            j = def_jointure(l);
+                                                         l.ajoutElmt(j);
+                                                                                j.setPere(l);
+            break;
+          default:
+            jj_la1[41] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+          label_15:
+          while (true) {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case OR:
+              ;
+              break;
+            default:
+              jj_la1[42] = jj_gen;
+              break label_15;
+            }
+            jj_consume_token(OR);
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case OUVRANTE:
+              jj_consume_token(OUVRANTE);
+              expr = def_elmt(pere);
+              jj_consume_token(FERMANTE);
+                                                                             l.ajoutElmt(expr);
+                                                                                                                        expr.setPere(l);
+              break;
+            case NOM:
+              j = def_jointure(l);
+                                                         l.ajoutElmt(j);
+                                                                                j.setPere(l);
+              break;
+            default:
+              jj_la1[43] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
+                 expr=l;
           break;
         default:
-          jj_la1[39] = jj_gen;
+          jj_la1[44] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
+        break;
+      default:
+        jj_la1[45] = jj_gen;
+        ;
       }
-           expr=l;
       break;
     default:
-      jj_la1[40] = jj_gen;
+      jj_la1[46] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -799,7 +919,7 @@ import java.sql.Date;
                                                   s1=s1+"."+t1.toString();
       break;
     default:
-      jj_la1[41] = jj_gen;
+      jj_la1[47] = jj_gen;
       ;
     }
     t3 = jj_consume_token(OPERATOR);
@@ -814,16 +934,16 @@ import java.sql.Date;
                                                                     s2=s2+"."+t2.toString();
         break;
       default:
-        jj_la1[42] = jj_gen;
+        jj_la1[48] = jj_gen;
         ;
       }
       break;
-    case CHIFFRE:
     case QUOT:
+    case CHIFFRE:
       s2 = def_une_valeur();
       break;
     default:
-      jj_la1[43] = jj_gen;
+      jj_la1[49] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -831,20 +951,31 @@ import java.sql.Date;
     throw new Error("Missing return statement in function");
   }
 
+        /*-------------
+	-	END PREDICAT
+	---------------*/
+
 //AVG, SUM, MAX, COUNT, SOM
-  static final public void def_aggr() throws ParseException {
-    jj_consume_token(FONCT);
+//renvoit une ArrayList de String 
+//ok
+  static final public ArrayList def_aggr() throws ParseException {
+         Token tA, t; String s; ArrayList l = new ArrayList();
+    tA = jj_consume_token(FONCT);
     jj_consume_token(OUVRANTE);
-    jj_consume_token(NOM);
+    t = jj_consume_token(NOM);
+                                 s = t.toString();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PT:
       jj_consume_token(PT);
-      jj_consume_token(NOM);
+      t = jj_consume_token(NOM);
+                                                                s= s+t.toString();
       break;
     default:
-      jj_la1[44] = jj_gen;
+      jj_la1[50] = jj_gen;
       ;
     }
+                                s = tA.toString()+"("+s+")";
+                                l.add(s);
     jj_consume_token(FERMANTE);
     label_16:
     while (true) {
@@ -853,24 +984,30 @@ import java.sql.Date;
         ;
         break;
       default:
-        jj_la1[45] = jj_gen;
+        jj_la1[51] = jj_gen;
         break label_16;
       }
       jj_consume_token(VIRG);
-      jj_consume_token(FONCT);
+      tA = jj_consume_token(FONCT);
       jj_consume_token(OUVRANTE);
-      jj_consume_token(NOM);
+      t = jj_consume_token(NOM);
+                                 s = t.toString();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PT:
         jj_consume_token(PT);
-        jj_consume_token(NOM);
+        t = jj_consume_token(NOM);
+                                                                s= s+t.toString();
         break;
       default:
-        jj_la1[46] = jj_gen;
+        jj_la1[52] = jj_gen;
         ;
       }
+                                s = tA.toString()+"("+s+")";
+                                l.add(s);
       jj_consume_token(FERMANTE);
     }
+         {if (true) return l;}
+    throw new Error("Missing return statement in function");
   }
 
 /*renvoit une ArrayList d'attributs*/
@@ -889,7 +1026,7 @@ import java.sql.Date;
         ;
         break;
       default:
-        jj_la1[47] = jj_gen;
+        jj_la1[53] = jj_gen;
         break label_17;
       }
       jj_consume_token(VIRG);
@@ -914,29 +1051,38 @@ import java.sql.Date;
     case NUMBER:
       jj_consume_token(NUMBER);
       jj_consume_token(OUVRANTE);
-      t = jj_consume_token(CHIFFRE);
-                                            att = new Attribut(Attribut.NUMBER,Integer.parseInt(t.toString()));
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case VIRG:
-        jj_consume_token(VIRG);
+      case CHIFFRE:
         t = jj_consume_token(CHIFFRE);
-                                                                            att.setPrecision(Integer.parseInt(t.toString()));
+                                                String s = t.toString();int pos;
+                                                                if ((pos=s.indexOf(",")) !=0)
+                                                                {
+                                                                        att = new Attribut (Attribut.NUMBER, Integer.parseInt(s.substring(0,pos)));
+                                                                        att.setPrecision(Integer.parseInt(s.substring(pos+1)));
+                                                                }else{
+                                                                        att = new Attribut (Attribut.NUMBER,Integer.parseInt(s));
+                                                                }
+        break;
+      case ENTIER:
+        t = jj_consume_token(ENTIER);
+                                              att = new Attribut (Attribut.NUMBER, Integer.parseInt(t.toString()));
         break;
       default:
-        jj_la1[48] = jj_gen;
-        ;
+        jj_la1[54] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
       jj_consume_token(FERMANTE);
       break;
     case VARCHAR:
       jj_consume_token(VARCHAR);
       jj_consume_token(OUVRANTE);
-      t = jj_consume_token(CHIFFRE);
-                                                    att = new Attribut(Attribut.VARCHAR, Integer.parseInt(t.toString()));
+      t = jj_consume_token(ENTIER);
+                                                   att = new Attribut(Attribut.VARCHAR, Integer.parseInt(t.toString()));
       jj_consume_token(FERMANTE);
       break;
     default:
-      jj_la1[49] = jj_gen;
+      jj_la1[55] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -965,7 +1111,7 @@ import java.sql.Date;
             ;
             break;
           default:
-            jj_la1[50] = jj_gen;
+            jj_la1[56] = jj_gen;
             break label_19;
           }
           jj_consume_token(VIRG);
@@ -975,7 +1121,7 @@ import java.sql.Date;
         jj_consume_token(FERMANTE);
         break;
       default:
-        jj_la1[51] = jj_gen;
+        jj_la1[57] = jj_gen;
         ;
       }
                  l.add(level);
@@ -984,7 +1130,7 @@ import java.sql.Date;
         ;
         break;
       default:
-        jj_la1[52] = jj_gen;
+        jj_la1[58] = jj_gen;
         break label_18;
       }
     }
@@ -998,14 +1144,14 @@ import java.sql.Date;
 //pour l'instant, retourne une string
   static final public String tdate() throws ParseException {
          String dat=""; Token t;
-    t = jj_consume_token(CHIFFRE);
-                    dat= t.toString();
+    t = jj_consume_token(ENTIER);
+                   dat= t.toString();
     jj_consume_token(SLASH);
-    t = jj_consume_token(CHIFFRE);
-                           dat=dat+"-"+ t.toString();
+    t = jj_consume_token(ENTIER);
+                          dat=dat+"-"+ t.toString();
     jj_consume_token(SLASH);
-    t = jj_consume_token(CHIFFRE);
-                           dat=dat+"-"+ t.toString();
+    t = jj_consume_token(ENTIER);
+                          dat=dat+"-"+ t.toString();
          {if (true) return dat;}
     throw new Error("Missing return statement in function");
   }
@@ -1016,7 +1162,7 @@ import java.sql.Date;
   static public Token token, jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[53];
+  static final private int[] jj_la1 = new int[59];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -1024,10 +1170,10 @@ import java.sql.Date;
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x760,0x22000,0x0,0x8000,0x22000,0x22000,0x0,0x0,0x0,0x3000c0,0x3000c0,0x40010000,0x0,0x40010000,0xc0,0xc0,0x22000,0x0,0x0,0x0,0x22000,0x800000,0x800000,0x0,0x0,0x0,0x0,0x8000,0x0,0x0,0x0,0x0,0x8000,0x800000,0x40000000,0xc0000000,0x80000000,0x40000000,0x2000000,0x40000000,0x40000000,0x0,0x0,0xc0000000,0x0,0x0,0x0,0x0,0x0,0x38000000,0x0,0x0,0x4000,};
+      jj_la1_0 = new int[] {0x1760,0x1760,0x22000,0x80000000,0x8000,0x22000,0x22000,0x80000000,0x80000000,0x80000000,0x3000c0,0x3000c0,0x10000,0x80000000,0x10000,0xc0,0xc0,0x22000,0x80000000,0x80000000,0x80000000,0x22000,0x800000,0x800000,0x40000000,0x80000000,0x40000000,0x8000000,0x8000,0x40000000,0x80000000,0x40000000,0x8000000,0x8000,0x800000,0x0,0x0,0x0,0x8000000,0x2000000,0x8000000,0x8000000,0x4000000,0x8000000,0x6000000,0x6000000,0x8000000,0x40000000,0x40000000,0x0,0x40000000,0x80000000,0x40000000,0x80000000,0x0,0x0,0x80000000,0x8000000,0x4000,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x10,0x0,0x0,0x0,0x10,0x10,0x10,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x10,0x10,0x10,0x0,0x0,0x0,0x1,0x8,0x10,0x8,0x0,0x1,0x8,0x10,0x8,0x0,0x0,0x0,0x0,0x20,0x1,0x0,0x1,0x1,0x8,0x8,0x20,0x8,0x10,0x8,0x10,0x10,0x0,0x10,0x1,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x0,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x280,0x101,0x200,0x0,0x200,0x200,0x0,0x200,0x0,0x0,0x200,0x0,0x0,0x301,0x0,0x0,0x0,0x0,0x180,0x70,0x0,0x0,0x0,};
    }
 
   public Analyzer(java.io.InputStream stream) {
@@ -1043,7 +1189,7 @@ import java.sql.Date;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 53; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 59; i++) jj_la1[i] = -1;
   }
 
   static public void ReInit(java.io.InputStream stream) {
@@ -1052,7 +1198,7 @@ import java.sql.Date;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 53; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 59; i++) jj_la1[i] = -1;
   }
 
   public Analyzer(java.io.Reader stream) {
@@ -1068,7 +1214,7 @@ import java.sql.Date;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 53; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 59; i++) jj_la1[i] = -1;
   }
 
   static public void ReInit(java.io.Reader stream) {
@@ -1077,7 +1223,7 @@ import java.sql.Date;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 53; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 59; i++) jj_la1[i] = -1;
   }
 
   public Analyzer(AnalyzerTokenManager tm) {
@@ -1092,7 +1238,7 @@ import java.sql.Date;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 53; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 59; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(AnalyzerTokenManager tm) {
@@ -1100,7 +1246,7 @@ import java.sql.Date;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 53; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 59; i++) jj_la1[i] = -1;
   }
 
   static final private Token jj_consume_token(int kind) throws ParseException {
@@ -1147,15 +1293,15 @@ import java.sql.Date;
 
   static public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[41];
-    for (int i = 0; i < 41; i++) {
+    boolean[] la1tokens = new boolean[42];
+    for (int i = 0; i < 42; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 53; i++) {
+    for (int i = 0; i < 59; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1167,7 +1313,7 @@ import java.sql.Date;
         }
       }
     }
-    for (int i = 0; i < 41; i++) {
+    for (int i = 0; i < 42; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

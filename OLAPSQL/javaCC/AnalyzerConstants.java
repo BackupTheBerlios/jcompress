@@ -26,20 +26,21 @@ public interface AnalyzerConstants {
   int FROM = 24;
   int AND = 25;
   int OR = 26;
-  int DATE = 27;
-  int VARCHAR = 28;
-  int NUMBER = 29;
-  int NOM = 30;
-  int CHIFFRE = 31;
-  int OUVRANTE = 32;
-  int FERMANTE = 33;
-  int PTVIRG = 34;
-  int PT = 35;
-  int VIRG = 36;
-  int QUOT = 37;
-  int SLASH = 38;
-  int OPERATOR = 39;
-  int FONCT = 40;
+  int OUVRANTE = 27;
+  int FERMANTE = 28;
+  int PTVIRG = 29;
+  int PT = 30;
+  int VIRG = 31;
+  int QUOT = 32;
+  int SLASH = 33;
+  int OPERATOR = 34;
+  int FONCT = 35;
+  int DATE = 36;
+  int VARCHAR = 37;
+  int NUMBER = 38;
+  int ENTIER = 39;
+  int CHIFFRE = 40;
+  int NOM = 41;
 
   int DEFAULT = 0;
 
@@ -71,11 +72,6 @@ public interface AnalyzerConstants {
     "\"from\"",
     "\"and\"",
     "\"or\"",
-    "\"date\"",
-    "\"varchar\"",
-    "\"number\"",
-    "<NOM>",
-    "<CHIFFRE>",
     "\"(\"",
     "\")\"",
     "\";\"",
@@ -85,6 +81,12 @@ public interface AnalyzerConstants {
     "\"/\"",
     "<OPERATOR>",
     "<FONCT>",
+    "\"date\"",
+    "\"varchar\"",
+    "\"number\"",
+    "<ENTIER>",
+    "<CHIFFRE>",
+    "<NOM>",
   };
 
 }
