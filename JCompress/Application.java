@@ -108,5 +108,6 @@ public class Application {
 	            chooser.getSelectedFile().getName());
 	    }
 		
-		return null;}
+		return null;
+	}
 }
