@@ -1,5 +1,3 @@
-package JCompress;
-
 /**
  * Date 		= 21/01/2005
  * Project		= JCompress
@@ -8,6 +6,11 @@ package JCompress;
  *	
  */
 
+package JCompress;
+
+/**
+ * Cette classe représente un noeud de l'arbre binaire.
+ */
 public class Noeud extends Element {
 
 	private Element pere = null;
@@ -31,7 +34,6 @@ public class Noeud extends Element {
 		pere = p;
 	}
 
-	//ok
 	/**
 	 **majFrequence : incremente la frequence de 1 pour this
 	 * et ses ancetres
@@ -72,11 +74,7 @@ public class Noeud extends Element {
 			(e != ancetre) && (!(ancetre instanceof ArbreBinaire));
 			ancetre = ((Noeud) ancetre).getPere()) {
 		}
-		if (e == ancetre)
-			return true;
-		else
-			return false;
-
+		return ( e == ancetre);
 	}
 
 	public boolean estAGauche() {
@@ -90,33 +88,20 @@ public class Noeud extends Element {
 	 **getCodeDansArbreBinaire : retourne le code du noeud dans l'arbre
 	 * binaire
 	 * @return String
-	 * TODO recursif
 	 */
 	public String getCodeDansArbreBinaire() {
 		String code = "";
-		Element pere = getPere();
-		Noeud fils = this;
 		
-		if (estAGauche())
-			code = "0" + code;
-		else
-			code = "1" + code;
-		while (!(pere instanceof ArbreBinaire)) {
-			fils = (Noeud) pere;
-			pere = ((Noeud) pere).getPere();
-			if (fils.estAGauche()) {
-				code = "0" + code;
-			} else
-				code = "1" + code;
+		if(!(pere instanceof ArbreBinaire)){
+		    code = ((Noeud) getPere()).getCodeDansArbreBinaire();
 		}
-		//c un truc dans le genre...
-//		if (estAGauche())
-//			code = "0";
-//		else
-//			code = "1";
-//		if (!(pere instanceof ArbreBinaire)) {
-//				code = code+((Noeud)pere).getCodeDansArbreBinaire();
-//		}
+	    
+		if(estAGauche())
+	        code = code+"0" ;
+	    
+		if(estADroite())
+	        code = code+"1";
+	    
 		return code;
 	}
 

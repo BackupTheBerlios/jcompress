@@ -1,3 +1,11 @@
+/**
+ * Date 		= 21/01/2005
+ * Project		= JCompress
+ * File name  	= Application.java
+ * @author Bosse Laure/Fauroux claire
+ *  
+ */
+
 package JCompress;
 
 import java.io.FileInputStream;
@@ -6,151 +14,171 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Gére les fichiers
+ * Cette classe gére les accès (écriture, lecture ...) 
+ * aux différents fichiers.
  */
 public class Ressources {
+    private FileInputStream fichierSource;
 
-	///////////////////////////////////////
-	// attributes
+    private FileOutputStream fichierDestination;
 
-	private FileInputStream fichierSource;
-	private FileOutputStream fichierDestination;
-	private String bufferInput;
-	private String bufferOutput;
+    private String bufferInput;
 
-	///////////////////////////////////////
-	// constructeurs
+    private String bufferOutput;
 
-	public Ressources(String source, String destination)
-		throws FileNotFoundException {
+    /**
+     * Constructeur permettant d'ouvrir les fichiers en entrées et en sortie.
+     * 
+     * @param Fichier source.
+     * @param Fichier destination.
+     * @throws Exception levé si le fichier source est inexistant.
+     */
+    public Ressources(String source, String destination)
+            throws FileNotFoundException {
 
-		// Créer les fichiers source et destination
-		fichierSource = new FileInputStream(source);
-		fichierDestination = new FileOutputStream(destination);
+        // Créer les fichiers source et destination
+        fichierSource = new FileInputStream(source);
+        fichierDestination = new FileOutputStream(destination);
 
-		// Initialise les buffer
-		bufferInput = new String();
-		bufferOutput = new String();
+        // Initialise les buffer
+        bufferInput = new String();
+        bufferOutput = new String();
 
-	}
+    }
 
-	///////////////////////////////////////
-	// operations
+    ///////////////////////////////////////
+    // operations
 
-	/**
-	 * Retourne le bit suivant du fichier source.
-	 * @return Entier représentant un bit du fichier source (0 ou 1).
-	 * @throws IOException
-	 */
-	public String lireBit() throws IOException {
-		if (bufferInput.length() < 1) {
-			int intLu = fichierSource.read();
-			String binaireLu = Integer.toBinaryString(intLu);
+    /**
+     * Retourne le bit suivant du fichier source.
+     * 
+     * @return Entier représentant un bit du fichier source (0 ou 1).
+     * @throws Exception
+     *             levé si un problème est survenue lors de l'accés au fichier.
+     */
+    public String lireBit() throws IOException {
+        if (bufferInput.length() < 1) {
+            int intLu = fichierSource.read();
+            String binaireLu = Integer.toBinaryString(intLu);
 
-			if (binaireLu.length() < 8) {
-				int cond = 8 - binaireLu.length();
-				for (int i = 0; i < cond; i++) {
-					binaireLu = "0" + binaireLu;
-				}
-			}
+            if (binaireLu.length() < 8) {
+                int cond = 8 - binaireLu.length();
+                for (int i = 0; i < cond; i++) {
+                    binaireLu = "0" + binaireLu;
+                }
+            }
 
-			bufferInput = bufferInput + binaireLu;
-		}
+            bufferInput = bufferInput + binaireLu;
+        }
 
-		Integer res = new Integer(bufferInput.substring(0, 1));
-		bufferInput = bufferInput.substring(1, bufferInput.length());
-		return res.toString();
-	}
+        Integer res = new Integer(bufferInput.substring(0, 1));
+        bufferInput = bufferInput.substring(1, bufferInput.length());
+        return res.toString();
+    }
 
-	/**
-	 * Retourne l'octet suivant du fichier source.
-	 * @return String représentant le code ascii en binaire de l'octet suivant du fichier source.
-	 * @throws IOException
-	 */
-	public String lireOctet() throws IOException {
-		int intLu = fichierSource.read();
-		String binaireLu = Integer.toBinaryString(intLu);
+    /**
+     * Retourne l'octet suivant du fichier source.
+     * 
+     * @return String représentant le code ascii en binaire de l'octet suivant
+     *         du fichier source.
+     * @throws Exception
+     *             levé si un problème est survenue lors de l'accés au fichier.
+     */
+    public String lireOctet() throws IOException {
+        int intLu = fichierSource.read();
+        String binaireLu = Integer.toBinaryString(intLu);
 
-		if (binaireLu.length() < 8) {
-			int cond = 8 - binaireLu.length();
-			for (int i = 0; i < cond; i++) {
-				binaireLu = "0" + binaireLu;
-			}
-		}
+        if (binaireLu.length() < 8) {
+            int cond = 8 - binaireLu.length();
+            for (int i = 0; i < cond; i++) {
+                binaireLu = "0" + binaireLu;
+            }
+        }
 
-		bufferInput = bufferInput + binaireLu;
+        bufferInput = bufferInput + binaireLu;
 
-		String res = bufferInput.substring(0, 8);
-		bufferInput = bufferInput.substring(8, bufferInput.length());
-		return res;
-	}
+        String res = bufferInput.substring(0, 8);
+        bufferInput = bufferInput.substring(8, bufferInput.length());
+        return res;
+    }
 
-	/**
-	 * Permet d'ecrire un suite de bit (passé en parametre) dans le fichier destination.
-	 * @param caractere Chaine de caractere représentant une suite de bit du caractere à écrire dans le fichier destination
-	 * @throws IOException
-	 */
-	public void ecrireCaractere(String caractere) throws IOException {
-		bufferOutput = bufferOutput + caractere;
+    /**
+     * Permet d'ecrire un suite de bit (passé en parametre) dans le fichier
+     * destination.
+     * 
+     * @param caractere
+     *            Chaine de caractere représentant une suite de bit du caractere
+     *            à écrire dans le fichier destination
+     * @throws Exception
+     *             levé si un problème est survenue lors de l'accés au fichier.
+     */
+    public void ecrireCaractere(String caractere) throws IOException {
+        bufferOutput = bufferOutput + caractere;
 
-		if (bufferOutput.length() >= 8) {
-			fichierDestination.write(
-				binaireToDecimal(bufferOutput.substring(0, 8)));
-			if (bufferOutput.length() > 8) {
-				bufferOutput = bufferOutput.substring(8, bufferOutput.length());
-			} else {
-				bufferOutput = "";
-			}
-		}
-	}
+        if (bufferOutput.length() >= 8) {
+            fichierDestination.write(binaireToDecimal(bufferOutput.substring(0,
+                    8)));
+            if (bufferOutput.length() > 8) {
+                bufferOutput = bufferOutput.substring(8, bufferOutput.length());
+            } else {
+                bufferOutput = "";
+            }
+        }
+    }
 
-	/**
-	 * Fonction interne utilisé pour convertir une chaine de bit en sa valeur décimal.
-	 * @param num Chaine de bit à convertir.
-	 * @return Valeur de num en décimal.
-	 */
-	private int binaireToDecimal(String num) {
-		int numDec = 0;
-		for (int i = 0; i < num.length(); i++) {
-			int j = Integer.parseInt(bufferOutput.substring(i, i + 1));
-			numDec = numDec * 2 + j;
-		}
-		return numDec;
-	}
+    /**
+     * Fonction interne utilisé pour convertir une chaine de bit en sa valeur
+     * décimal.
+     * 
+     * @param num
+     *            Chaine de bit à convertir.
+     * @return Valeur de num en décimal.
+     */
+    private int binaireToDecimal(String num) {
+        int numDec = 0;
+        for (int i = 0; i < num.length(); i++) {
+            int j = Integer.parseInt(bufferOutput.substring(i, i + 1));
+            numDec = numDec * 2 + j;
+        }
+        return numDec;
+    }
 
-	/**
-	 * Ecrit le caractere de fin dans le fichier destination.
-	 * @param fin Chaine de bit correspondant au code de fin du fichier.
-	 * @throws IOException
-	 */
-	public void finEcrire(String fin) throws IOException {
-		ecrireCaractere(fin);
+    /**
+     * Ecrit le caractere de fin dans le fichier destination.
+     * 
+     * @param fin
+     *            Chaine de bit correspondant au code de fin du fichier.
+     * @throws Exception
+     *             levé si un problème est survenue lors de l'accés au fichier.
+     */
+    public void finEcrire(String fin) throws IOException {
+        ecrireCaractere(fin);
 
-		while (bufferOutput.length() >= 8) {
-			ecrireCaractere("");
-		}
+        while (bufferOutput.length() >= 8) {
+            ecrireCaractere("");
+        }
 
-		if (bufferOutput.length() > 0) {
-			int num0 = 8 - bufferOutput.length();
-			for (int i = 0; i < num0; i++) {
-				bufferOutput = bufferOutput + "0";
-			}
-			ecrireCaractere("");
-		}
+        if (bufferOutput.length() > 0) {
+            int num0 = 8 - bufferOutput.length();
+            for (int i = 0; i < num0; i++) {
+                bufferOutput = bufferOutput + "0";
+            }
+            ecrireCaractere("");
+        }
 
-		fermer();
-	}
+        fermer();
+    }
 
-	/**
-	 * Ferme les fichiers source et destination.
-	 */
-	public void fermer() {
-		try {
-			fichierSource.close();
-			fichierDestination.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Ferme les fichiers source et destination.
+     */
+    public void fermer() {
+        try {
+            fichierSource.close();
+            fichierDestination.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -1,12 +1,23 @@
-package JCompress;
-
 /**
- * Date = 21/01/2005 Project = JCompress File name = Element.java
+ * Date = 21/01/2005 
+ * Project = JCompress File 
+ * name = Element.java
  * 
  * @author Bosse Laure/Fauroux claire
  *  
  */
+
+package JCompress;
+
+/**
+ * Cette classe représente les élèments que contient chaque noeud de l'arbre, 
+ * que se soit un noeud ou la racine.
+ */
 public abstract class Element {
+	protected Element SAG = null;
+	protected Element SAD = null;
+	protected String caractere = ArbreBinaire.ECHAP;
+	protected int frequence = 0;
 
 	protected Element() {
 	}
@@ -14,14 +25,6 @@ public abstract class Element {
 	protected Element(String c) {
 		caractere = c;
 	}
-
-	protected Element SAG = null;
-
-	protected Element SAD = null;
-
-	protected String caractere = ArbreBinaire.ECHAP;
-
-	protected int frequence = 0;
 
 	/**
 	 * @param sad
@@ -57,16 +60,16 @@ public abstract class Element {
 	 * @param caractere
 	 *            The caractere to set.
 	 */
-	public void setCaractere(String caractere) {
-		this.caractere = caractere;
+	public void setCaractere(String pCaractere) {
+		this.caractere = pCaractere;
 	}
 
 	/**
 	 * @param frequence
 	 *            The frequence to set.
 	 */
-	public void setFrequence(int frequence) {
-		this.frequence = frequence;
+	public void setFrequence(int pFrequence) {
+		this.frequence = pFrequence;
 	}
 
 	public String getCaractere() {

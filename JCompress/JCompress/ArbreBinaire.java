@@ -1,14 +1,17 @@
-package JCompress;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
 /**
  * Date 		= 21/01/2005
  * Project		= JCompress
  * File name  	= ArbreBinaire.java
  * @author Bosse Laure/Fauroux claire
  *	
+ */
+package JCompress;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+/**
+ * Cette classe représente l'arbre binaire de l'application.
  */
 public class ArbreBinaire extends Element {
 
@@ -118,7 +121,7 @@ public class ArbreBinaire extends Element {
 	private Noeud dernierSuccMFreq(Element e) {
 
 		int listIndex;
-		int frequence;
+		//int frequence;
 		Noeud dernierSucc = null;
 		Element succ;
 
@@ -128,10 +131,7 @@ public class ArbreBinaire extends Element {
 			for (; listIndex < liste.size(); listIndex++) {
 				succ = (Element) liste.get(listIndex);
 				if (!((Noeud) e).isAncetre(succ))
-					if (e.getFrequence() == succ.getFrequence()
-						/*||
-												e.getFrequence()+1 == succ.getFrequence()*/
-						)
+					if (e.getFrequence() == succ.getFrequence())
 						dernierSucc = (Noeud) succ;
 			}
 		}
