@@ -32,8 +32,6 @@ public final class Couleur extends Noeud {
 	  return couleur;
 	}
 	
-	
-	
   /**
    * @return Retourne la valeur de l'attribut valeur.
    */

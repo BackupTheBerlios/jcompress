@@ -54,7 +54,7 @@ public class FichierSourceBinaire extends FichierSource {
 							e2.printStackTrace();
 						}
 						//compte les retours chariots
-						if (intLu == 10)
+						if (intLu == 13)
 							i++;
 					}
 				}

@@ -20,12 +20,12 @@ public class FichierDestinationBinaire extends FichierDestination {
 	 */
 	public FichierDestinationBinaire(String nom) {
 		super(nom);
-		try {
-			//ouverture en mode append
-			redacteurBinaire = new FileOutputStream(nom,true);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			//ouverture en mode append
+//			redacteurBinaire = new FileOutputStream(nom,true);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 	}
 	/**Ecrit le symbole en binaire dans le fichier
 	 * @param symb, le symbole non null de type NOMBRE a ecrire en binaire
@@ -47,6 +47,16 @@ public class FichierDestinationBinaire extends FichierDestination {
 		}
 	}
 	
+	public void transitionBinaire(){
+		super.fermer();
+		try {
+			redacteurBinaire = new FileOutputStream(filename,true);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
 	/** ferme les ressources utilisées
 	 * @see ressources.Fichier#fermer()
 	 */
@@ -63,6 +73,10 @@ public class FichierDestinationBinaire extends FichierDestination {
 		
 		f.ecrireString("P5");
 		f.ecrireEntree();
+		f.transitionBinaire();
+		f.ecrireSymboleBinaire(new Symbole("32"));
+		f.ecrireSymboleBinaire(new Symbole("32"));
+		f.ecrireSymboleBinaire(new Symbole("32"));
 		f.ecrireSymboleBinaire(new Symbole("32"));
 		
 		

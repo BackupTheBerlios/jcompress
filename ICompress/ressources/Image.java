@@ -37,7 +37,8 @@ public class Image {
 		//remplissage des attributs de l image
 		f.next();										//1ere taille
 		mat = new Matrice(Integer.parseInt(f.next()));	//2e taille, identiques
-		nvGrisMax = Integer.parseInt(f.next());
+		String tmp = f.next();
+		nvGrisMax = Integer.parseInt(tmp);
 		
 		System.out.println("taille mat "+getMat().getTaille());
 		System.out.println("nvG "+nvGrisMax);
@@ -57,6 +58,7 @@ public class Image {
 					getMat().ajoutSymbole(symb);
 				}
 	}
+	
 	public Image(Matrice m){
 		  // TODO
 			setMat(m);
@@ -134,8 +136,12 @@ public class Image {
 				if (val1!=-1 && val2!=-1 && val3!=-1 && val4 !=-1 && val1==val2 && val2==val3 && val3==val4)
 					return new Couleur(p, val1);
 				
-				return new GrisCompose(p,im1.construireNoeudSansPerte(p),im2.construireNoeudSansPerte(p),
-									im3.construireNoeudSansPerte(p),im4.construireNoeudSansPerte(p));
+				GrisCompose g = new GrisCompose(p);
+				g.setNO(im1.construireNoeudSansPerte(g));
+				g.setNE(im2.construireNoeudSansPerte(g));
+				g.setSO(im3.construireNoeudSansPerte(g));
+				g.setSE(im4.construireNoeudSansPerte(g));
+				return g;
 			}
 			else
 				return new Couleur(p,Integer.parseInt(getMat().get(0,0).getValeur()));	
@@ -175,16 +181,21 @@ public class Image {
 				HashMap cpt = getMat().nbSymbDiff();
 				
 				Integer key = (Integer)maxValue(cpt);
-				if (((Integer)cpt.get(key)).intValue() > occTX)
-					return new Couleur(p, ((Integer)cpt.get(key)).intValue());
+				if (((Integer)cpt.get(key)).intValue() >= occTX)
+					return new Couleur(p, key.intValue());
 				//end perte
 				
 				Image im1 = new Image(getMat().sousMatrice(1));
 				Image im2 = new Image(getMat().sousMatrice(2));
 				Image im3 = new Image(getMat().sousMatrice(3));
 				Image im4 = new Image(getMat().sousMatrice(4));
-				return new GrisCompose(p,im1.construireNoeudAvecPerte(p,tx),im2.construireNoeudAvecPerte(p,tx),
-									im3.construireNoeudAvecPerte(p,tx),im4.construireNoeudAvecPerte(p,tx));
+				
+				GrisCompose g = new GrisCompose(p);
+				g.setNO(im1.construireNoeudAvecPerte(g,tx));
+				g.setNE(im2.construireNoeudAvecPerte(g,tx));
+				g.setSO(im3.construireNoeudAvecPerte(g,tx));
+				g.setSE(im4.construireNoeudAvecPerte(g,tx));
+				return g;
 			}
 			else
 				return new Couleur(p,Integer.parseInt(getMat().get(0,0).getValeur()));	
@@ -243,7 +254,7 @@ public class Image {
 			
 		//donner la responsabilité a matrice?
 		if (type==2)
-			for (int i=0; i<getTaille();i++)
+		{	for (int i=0; i<getTaille();i++)
 			{	for (int j=0; j<getTaille();j++)
 				{
 					f.ecrireSymbole(getMat().get(i,j));
@@ -251,14 +262,17 @@ public class Image {
 				}
 				f.ecrireEntree();
 			}
+			System.out.println("end ecriture P2");
+		}
 		else if (type==5)
+			{((FichierDestinationBinaire)f).transitionBinaire();
 			for (int i=0; i<getTaille();i++)
 			{	for (int j=0; j<getTaille();j++)
 				{
 					((FichierDestinationBinaire)f).ecrireSymboleBinaire(getMat().get(i,j));
 				}
 				//f.ecrireEntree();
-			}
+			}}
 		f.fermer();
 		
 	}
@@ -267,7 +281,13 @@ public class Image {
 		
 		//FichierSource f = new FichierSource("T:/IUP Master 1/sem2/BOT/compress2/sources/lena.pgm");
 //		
-		Image im = new Image("T:/IUP Master 1/sem2/BOT/compress2/sources/enonce.pgm");
+		Image im = new Image("T:/IUP Master 1/sem2/BOT/compress2/sources/Boat.pgm");
+		
+		im.sauvImage("T:/IUP Master 1/sem2/BOT/compress2/sources/babtest.pgm",2);
+		
+		
+		
+		
 //		
 //		System.out.println("taille "+ im.getTaille());
 //		
@@ -278,11 +298,11 @@ public class Image {
 //			e.printStackTrace();
 //		}
 		//Arbre a = new Arbre(new Noeud(null));
-		Matrice m = new Matrice(2);
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
+//		Matrice m = new Matrice(2);
+//		m.ajoutSymbole(new Symbole("255"));
+//		m.ajoutSymbole(new Symbole("255"));
+//		m.ajoutSymbole(new Symbole("255"));
+//		m.ajoutSymbole(new Symbole("210"));
 //		m.ajoutSymbole(new Symbole("1"));
 //		m.ajoutSymbole(new Symbole("1"));
 //		m.ajoutSymbole(new Symbole("7"));
@@ -298,14 +318,14 @@ public class Image {
 		
 //		Image im = new Image(m);
 		
-		Arbre a = im.construireArbre();
-		Arbre a1 = im.construireArbreCompresseSansPerte();
-		double t =  0.5;
-		Arbre a2 = im.construireArbreCompresseAvecPerte(t);
-		System.out.println("arbre"+a.construireLigne());
-		System.out.println("arbre CompresseSPerte "+a1.construireLigne());
-		System.out.println("arbre CompresseAPerte  0.5"+a1.construireLigne());
-		//System.out.println("arbre "+a.construireLigne());
+//		Arbre a = im.construireArbre();
+//		Arbre a1 = im.construireArbreCompresseSansPerte();
+//		double t =  0.6;
+//		Arbre a2 = im.construireArbreCompresseAvecPerte(t);
+//		System.out.println("arbre"+a.construireLigne());
+//		System.out.println("arbre CompresseSPerte "+a1.construireLigne());
+//		System.out.println("arbre CompresseAPerte "+t+" "+a2.construireLigne());
+//		//System.out.println("arbre "+a.construireLigne());
 		
 //		Image im2 = new Image(a.construireImage());
 //		Image im1 = new Image (a1.construireImage());

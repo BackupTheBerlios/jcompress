@@ -95,7 +95,7 @@ public class Matrice {
 				iCourant++;
 			}
 			else
-			{	//System.out.println("matrice pleine");
+			{	System.out.println("matrice pleine");
 				iCourant=0;
 				jCourant=0;
 			}

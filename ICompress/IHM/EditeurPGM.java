@@ -66,7 +66,7 @@ public class EditeurPGM {
 		MemoryImageSource source = new MemoryImageSource(width, height, pixels,
 				0, width);
 		Image img = Toolkit.getDefaultToolkit().createImage(source);
-		image.add(new DisplayImage2(img));
+		image.getContentPane().add(new DisplayImage2(img));
 		image.pack();
 		image.setVisible(true);
 	}

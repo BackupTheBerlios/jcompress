@@ -1,4 +1,5 @@
-package src;
+
+
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -22,26 +23,22 @@ import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.MaskFormatter;
 
+import ressources.Fichier;
 import IHM.EditeurPGM;
 import IHM.Verifier;
-
-import ressources.Fichier;
-
-
-
 //lire fichier P2 ok
-//lire fichier P5 ca a lair ok...a verifier graphiquement
+//lire fichier P5 ok
 //ecrire fichier p2 ok
-//ecrire fichier p5 non-->"010101"
+//ecrire fichier p5 ok
+
 
 /**
- * @author claire TODO To change the template for this generated type comment go
- *         to Window - Preferences - Java - Code Style - Code Templates
+ * @author claire TODO To change the template for this generated type comment go to Window -
+ *         Preferences - Java - Code Style - Code Templates
  */
-public class Application {
-
-	// Attribut pour l'IHM
-	private static final String NEW_LINE = "\n";
+public class Application
+{
+	private static String NEW_LINE = "\n" ;
 
 	private static JTextArea textArea;
 	private static JCheckBox boutonNormal;
@@ -62,7 +59,7 @@ public class Application {
 	 */
 	protected static void decompresser(String pTypeFichier) {
 		//String ficDest = ouvrirFichier(".txt");
-		String fic = ouvrirFichier(".pgm");
+		String fic = ouvrirFichier(".txt");
 		//textArea.append("Decompression terminée." + NEW_LINE);
 		//Arbre ab = new Arbre("D:\\fac\\bot\\Projet2\\exemple\\enonce.txt");
 		//System.out.println(ab.construireLigne());
@@ -259,4 +256,5 @@ public class Application {
 	public static void afficherImage(String mFichierImage) {
 		new EditeurPGM(mFichierImage);
 	}
+
 }

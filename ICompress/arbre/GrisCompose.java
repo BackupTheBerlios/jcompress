@@ -177,6 +177,7 @@ public final class GrisCompose extends Noeud {
    * @param mat Matrice a agrandir.
    * @param taille Taille de la matrice du resultat.
    * @return Matrice agrandi
+   * TODO a mettre dans matrice...oblige
    */
   public Matrice agrandiMatrice(Matrice pMat, int pTaille){
     Matrice mat = pMat;
