@@ -106,18 +106,18 @@ public class Noeud extends Element {
 		Element pere = getPere();
 		Noeud fils = this;
 		if (fils.estAGauche())
-			code = code+"0";
+			code = "0"+code;
 		else
-			code = code+"1";
+			code = "1"+code;
 		while (!(pere instanceof ArbreBinaire))
 		{
 			fils = (Noeud)pere;
 			pere = ((Noeud)pere).getPere();
 			if (fils.estAGauche())
 			{	
-				code = code+"0";}
+				code = "0"+code;}
 			else
-				code = code+"1";
+				code = "1"+code;
 		}
 		return code;
 	}

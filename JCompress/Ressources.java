@@ -53,7 +53,7 @@ public class Ressources {
 	 * @return Entier représentant un bit du fichier source (0 ou 1).
 	 * @throws IOException
 	 */
-	public int lireBit() throws IOException {
+	public String lireBit() throws IOException {
 		try {
 			if (bufferInput.length() < 1) {
 				int intLu = fichierSource.read();
@@ -71,7 +71,7 @@ public class Ressources {
 
 			Integer res = new Integer(bufferInput.substring(0, 1));
 			bufferInput = bufferInput.substring(1, bufferInput.length());
-			return res.intValue();
+			return res.toString();
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,7 +79,7 @@ public class Ressources {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return -1;
+		return "-1";
 	}
 
 	/**
@@ -179,6 +179,8 @@ public class Ressources {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		fermer();
 	}
 
 	/**

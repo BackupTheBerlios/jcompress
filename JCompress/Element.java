@@ -108,4 +108,28 @@ public abstract class Element {
 		else
 			SAD.afficher();
 	}
+	
+	public Element getNoeudToCode(String code)
+	{
+		int i = Integer.parseInt(code.substring(0,1));
+		code = code.substring(1,code.length());
+		
+		if(i == 0)
+		{
+			if(code.length() == 0)
+				return getSAG();
+			else
+				return getSAG().getNoeudToCode(code);
+		}
+		
+		if(i == 1)
+		{
+			if(code.length() == 0)
+				return getSAD();
+			else
+				return getSAD().getNoeudToCode(code);
+		}
+		
+		return null;
+	}
 }
