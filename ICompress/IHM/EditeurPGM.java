@@ -68,17 +68,17 @@ public class EditeurPGM {
 		MemoryImageSource source = new MemoryImageSource(width, height, pixels,
 				0, width);
 		Image img = Toolkit.getDefaultToolkit().createImage(source);
-		image.add(new DisplayImage(img));
+		image.add(new DisplayImage2(img));
 		image.pack();
 		image.setVisible(true);
 	}
 }
 
-class DisplayImage extends Canvas {
+class DisplayImage2 extends Canvas {
 
 	Image img;
 
-	public DisplayImage(Image pImg){
+	public DisplayImage2(Image pImg){
 		this.img = pImg;
 		setSize(img.getWidth(this), img.getHeight(this));
 	}
