@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +9,8 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -19,22 +22,18 @@ import javax.swing.filechooser.FileFilter;
  */
 public class Application {
 
+	private static JTextArea textArea;
+	private static String NEW_LINE = "\n";
+	
 	public Application() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String[] args) {
-		/*
-		 * String test = "a"; byte[] tab = test.getBytes(); for (int i=0; i <
-		 * tab.length;i++) System.out.println(tab[i]);
-		 */
-
 		init();
-
 	}
 
-	public static void compresser() throws FileNotFoundException {
+	public static void compresser() {
 
 		System.out.println("clic compress");
 
@@ -79,13 +78,20 @@ public class Application {
 						.getCodeDansArbreBinaire());
 				arbre.ajoutCaractere(ArbreBinaire.EOF);
 
-				System.out.println("compression terminée");
+				System.out.println("Compression terminée.");
+				textArea.append("Compression terminée."+NEW_LINE);
 				arbre.afficherListe();
+			} catch (FileNotFoundException e) {
+				textArea.append("Fichier "+fic+" inexistant."+NEW_LINE);
+				e.printStackTrace();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+				textArea.append("Erreur d'écriture d'un fichier."+NEW_LINE);
 				e1.printStackTrace();
+			} catch (Exception e2) {
+				textArea.append("Une erreur est survenue."+NEW_LINE);
 			}
 		} else {
+			textArea.append("Fichier non identifié."+NEW_LINE);
 			System.out.println("fichiers de ressources non identifies");
 		}
 
@@ -116,7 +122,6 @@ public class Application {
 				while (n.getCaractere() != ArbreBinaire.EOF) {
 					// Si correspond à un car
 					if (n.isFeuille()) {
-						// Alors
 						// Si car echap
 						if (n.getCaractere() == ArbreBinaire.ECHAP) {
 							// Alors lecture de l'octet
@@ -126,24 +131,28 @@ public class Application {
 							// Ecriture de l'octet dans le fichier destination
 							res.ecrireCaractere(octet);
 						} else {
-							// Sinon
 							// Ecriture du car qui correspond dans l'arbre
 							res.ecrireCaractere(n.getCaractere());
 							// Modification de l'arbre
 							arbre.ajoutCaractere(n.getCaractere());
-							// Fin si
 						}
-						// Fin si
 						bit = "";
 					}
 					// Lecture du bit suivant
 					bit = bit + res.lireBit();
 					n = (Noeud) arbre.getNoeudToCode(bit);
-					// Fin tant que
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				textArea.append("Décompression terminée."+NEW_LINE);
+			} catch (FileNotFoundException e) {
+				textArea.append("Fichier "+fic+" inexistant."+NEW_LINE);
+			} catch (IOException e1) {
+				textArea.append("Erreur d'écriture d'un fichier."+NEW_LINE);
+			} catch (Exception e2) {
+				textArea.append("Une erreur est survenue."+NEW_LINE);
 			}
+		} else {
+			textArea.append("Fichier non identifié."+NEW_LINE);
+			System.out.println("fichiers de ressources non identifies");
 		}
 	}
 
@@ -153,19 +162,14 @@ public class Application {
 	 */
 	private static void init() {
 		JFrame fenetre = new JFrame("JCompress");
-		fenetre.setSize(300, 100);
+		fenetre.setSize(300, 200);
 		fenetre.setLocation(300, 300);
 		//fenetre.setAlwaysOnTop(true);
 
 		JButton BComp = new JButton("Compresser");
 		BComp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					compresser();
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				compresser();
 			}
 		});
 		JButton BDeComp = new JButton("Décompresser");
@@ -174,10 +178,17 @@ public class Application {
 				decompresser();
 			}
 		});
+		
+		textArea = new JTextArea(5,20);
+		textArea.setEditable(false);
+		JScrollPane jFiel = new JScrollPane(textArea);
+		jFiel.setPreferredSize(new Dimension(250,100));
+
 		FlowLayout flayout = new FlowLayout(FlowLayout.CENTER);
 		fenetre.getContentPane().setLayout(flayout);
 		fenetre.getContentPane().add(BComp, 0);
 		fenetre.getContentPane().add(BDeComp, 1);
+		fenetre.getContentPane().add(jFiel, 2);
 
 		fenetre.setVisible(true);
 	}
@@ -214,22 +225,18 @@ public class Application {
 			/*if (chooser.getSelectedFile().getName().contains(
 					new CharSequence() {
 						public int length() {
-							// TODO Auto-generated method stub
 							return extension.length();
 						}
 
 						public char charAt(int index) {
-							// TODO Auto-generated method stub
 							return extension.charAt(index);
 						}
 
 						public CharSequence subSequence(int start, int end) {
-							// TODO Auto-generated method stub
 							return null;
 						}
 
 						public String toString() {
-							// TODO Auto-generated method stub
 							return extension;
 						}
 					}))

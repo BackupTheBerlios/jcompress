@@ -1,3 +1,5 @@
+package JCompress;
+
 import javax.naming.BinaryRefAddr;
 
 /**

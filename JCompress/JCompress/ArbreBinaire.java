@@ -1,3 +1,5 @@
+package JCompress;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -47,7 +49,7 @@ public class ArbreBinaire extends Element {
 	public void ajoutCaractere(String c){
 		
 		Noeud nouveau;
-		System.out.println("ajout caractere "+c);
+		//System.out.println("ajout caractere "+c);
 		if (getNoeud(c)==null)
 		{
 			//si nouveau noeud

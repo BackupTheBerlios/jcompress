@@ -1,3 +1,5 @@
+package JCompress;
+
 
 /**
  * Date 		= 21/01/2005
