@@ -69,7 +69,7 @@ public class Image {
 	//ok
 	public Image(Arbre a){
 	  // TODO
-		setMat(a.construireImage());
+		setMat(a.construireMatrice());
 	}
 	/**
 	 * construit un arbre a partir de l image this
@@ -96,11 +96,18 @@ public class Image {
 				Image im2 = new Image(getMat().sousMatrice(2));
 				Image im3 = new Image(getMat().sousMatrice(3));
 				Image im4 = new Image(getMat().sousMatrice(4));
-				return new GrisCompose(p,im1.construireNoeud(p),im2.construireNoeud(p),
-									im3.construireNoeud(p),im4.construireNoeud(p));
+				
+				GrisCompose g = new GrisCompose(p);
+				g.setNO(im1.construireNoeud(g));
+				g.setNE(im2.construireNoeud(g));
+				g.setSO(im3.construireNoeud(g));
+				g.setSE(im4.construireNoeud(g));
+				return g;
+				
+				}
+			else{
+				return new Couleur(p,Integer.parseInt(getMat().get(0,0).getValeur()));
 			}
-			else
-				return new Couleur(p,Integer.parseInt(getMat().get(0,0).getValeur()));	
 		}	
 		
 		return null;

@@ -1,6 +1,7 @@
 
 package arbre;
 
+import ressources.FichierDestination;
 import ressources.FichierSource;
 import ressources.Matrice;
 import ressources.Symbole;
@@ -43,7 +44,9 @@ public class Arbre {
 		float top = grandeurArbre()/a.grandeurArbre();
 		double som=(a.grandeurArbre()/this.grandeurArbre())*100;
 		float somf=(a.grandeurArbre()/this.grandeurArbre())*100;
-		return ((a.grandeurArbre()/this.grandeurArbre())*100);
+		float f1 = a.grandeurArbre();
+		float f2 = this.grandeurArbre();
+		return ((f1/f2)*100);
 	}
 	
 	/**
@@ -69,11 +72,17 @@ public class Arbre {
 	 * @return
 	 * Matrice
 	 */
-	public Matrice construireImage()
+	public Matrice construireMatrice()
 	{
 	  // TODO prendre en compte taille
 	  //Matrice mat = new Matrice(racine.getProfondeur());
 	  return racine.construireMatrice();
+	}
+	
+	public void creerFichier(String nomFichier){
+		FichierDestination ficDest = new FichierDestination(nomFichier);
+		ficDest.ecrireString(construireLigne());
+		ficDest.fermer();
 	}
 	
 	public String construireLigne()
