@@ -33,4 +33,17 @@ public class CreateFact extends Create{
 	}
 	
 	
+	/**
+	 * @return Returns the connects.
+	 */
+	public ArrayList getConnects() {
+		return connects;
+	}
+	
+	/**
+	 * @param connects The connects to set.
+	 */
+	public void setConnects(ArrayList connects) {
+		this.connects = connects;
+	}
 }

@@ -16,6 +16,15 @@ import java.util.ArrayList;
  */
 public class InsertDimension extends Commande{
 
+	/**
+	 * @param pNom
+	 * @param pType
+	 */
+	public InsertDimension(String pNom, int pType){
+		super(pNom, pType);
+		// TODO Auto-generated constructor stub
+	}
+
 	//liste de String
 	protected ArrayList values; 
 }
