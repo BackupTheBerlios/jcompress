@@ -1,0 +1,307 @@
+//set path =( $HOME/javacc2.1/bin $path)
+options {
+
+	IGNORE_CASE = true;
+	/* pour la trace -->/*
+	DEBUG_PARSER=false;
+	DEBUG_LOOKAHEAD=false;
+	DEBUG_TOKEN_MANAGER = false;
+	/**/
+	OPTIMIZE_TOKEN_MANAGER=true;
+	BUILD_TOKEN_MANAGER = true;
+}
+
+PARSER_BEGIN(Exemple)
+package javaCC;
+	public class Exemple{}
+PARSER_END(Exemple)
+
+
+SKIP:
+{" " | "\r" | "\n" | "\t"}
+
+
+TOKEN:
+{
+	<CREATE		: "create">
+   |	<DROP		: "drop">
+   |	<ADD		: "add">
+   |	<ALTER		: "alter">
+   |	<INSERT		: "insert into">
+   |	<DELETE		: "delete from">
+   |	<VALUES		: "values">
+   |	<SELECT		: "select">
+ 
+   |	<FACT		: "fact">
+   |	<LEVEL		: "level">
+   |	<WITH		: "with">
+   |	<HIERARCHY	: "hierarchy">
+   |	<DIMENSION	: "dimension">
+   |	<ROW		: "row">
+   |	<COLUMN		: "column">
+   
+   |	<CONNECT	: "connect">
+   |	<DISCONNECT	: "disconnect">
+   |	<TO		: "to">
+   |	<WHERE		: "where">
+   |	<FROM		: "from">
+   |	<AND		: "and">
+// types
+   |	<DATE		: "date">
+   |	<VARCHAR	: "varchar">
+   |	<NUMBER		: "number">
+ 	//type indetermine
+ //  |	<VALEUR		: (["A"-"Z"]|["0"-"9"]|"_"|"/"|"-")*>
+   //doit commencer par une lettre
+   |	<NOM		: (["A"-"Z"])+(["A"-"Z"]|["0"-"9"]|"_")*>
+   |    <CHIFFRE	: (["0"-"9"])+>
+//   |    <ENTREQUOT	: >
+//symboles
+    |	<OUVRANTE	: "(">
+    |	<FERMANTE	: ")">
+    |	<PTVIRG		: ";">
+    |	<PT			: ".">
+    |	<VIRG		: ",">
+    |	<QUOT		: "'">
+    |	<SLASH		: "/">       
+//predicats	
+/*	|	<EGAL		: "=">
+	|	<NEGAL		: "<>">
+	|	<SUP		: ">">
+	|	<SUPEGAL	: ">=">
+	|	<INF		: "<">
+	|	<INFEGAL	: "<=">*/
+	|	<OPERATOR	: ("="|"<>"|">"|">="|"<"|"<=")>
+	|	<FONCT		: "AVG"|"COUNT"|"SUM"|"MAX"|"MIN">
+}
+
+/*----------------------------------
+-	MAIN
+-----------------------------------*/
+void execute():{}{
+	create()
+|	drop()
+|	alter()
+|	insert()
+|	delete()
+|	select()
+
+}
+
+/*----------------------------------
+-	COMMANDES
+-----------------------------------*/
+	/*-------------
+	-	CREATE
+	---------------*/
+void create():{}{
+	<CREATE>(create_fact() | create_dim())
+}
+void create_fact():
+{}
+{
+	<FACT><NOM>
+	<OUVRANTE>
+		def_attr()
+	<FERMANTE>
+	<CONNECT><TO><NOM> (<VIRG><NOM>)*
+	<PTVIRG>
+}
+
+void create_dim():
+{}
+{
+	<DIMENSION><NOM>
+	<OUVRANTE>
+		def_attr()
+	<FERMANTE>
+	(<WITH><HIERARCHY>
+		<OUVRANTE>
+			def_lev()
+		<FERMANTE>
+	)*
+	<PTVIRG>
+}
+
+	/*-------------
+	-	DROP
+	---------------*/
+void drop():{}{
+	<DROP>(drop_fact()|drop_dim())
+}
+void drop_fact():
+{}
+{
+	<FACT><NOM><PTVIRG>
+}
+void drop_dim():
+{}
+{
+	<DIMENSION><NOM><PTVIRG>
+}
+
+	/*-------------
+	-	ALTER
+	---------------*/
+void alter():{}{
+	<ALTER>(alter_fact()|alter_dim())
+}
+void alter_fact():{}
+{
+	<FACT><NOM>
+	(
+		<ADD> def_attr()
+	|	<DROP> <NOM> (<VIRG><NOM>)*
+	|	<CONNECT><TO> <NOM> (<VIRG><NOM>)*
+	|	<DISCONNECT><TO> <NOM> (<VIRG><NOM>)*
+	)?
+	<PTVIRG>
+}
+
+void alter_dim():{}
+{
+	<DIMENSION><NOM>
+	(
+		<ADD> (  def_attr()
+			|	<HIERARCHY> <NOM>
+				<OUVRANTE>
+					def_lev()
+				<FERMANTE>
+				)
+	|	<DROP> ( <NOM> (<VIRG><NOM>)*
+			|	<HIERARCHY> <NOM>
+				)
+	)?
+	<PTVIRG>
+}	
+
+	/*-------------
+	-	insert
+	---------------*/
+void insert():{}{
+	<INSERT>(insert_fact()|insert_dim())
+}
+void insert_fact():{}
+{
+	<FACT> <NOM>
+	<VALUES> <OUVRANTE>
+			def_une_valeur() (<VIRG>def_une_valeur())* 
+		<FERMANTE>
+	<CONNECT><TO>
+		 <NOM> <WHERE> def_pred()
+		(<VIRG><NOM><WHERE> def_pred())*
+	<PTVIRG>
+}
+void insert_dim():{}
+{
+	<DIMENSION><NOM>
+	<VALUES> <OUVRANTE>
+			def_une_valeur() (<VIRG>def_une_valeur())* 
+			<FERMANTE>
+	<PTVIRG>
+}
+
+	/*-------------
+	-	DELETE
+	---------------*/
+void delete():{}{
+	<DELETE>(del_fact()|del_dim())
+}
+void del_fact():{}
+{
+	<FACT><NOM>
+	(<WHERE> def_pred())?
+	<PTVIRG>
+}
+void del_dim():{}
+{
+	<DIMENSION><NOM>
+	(<WHERE> def_pred())?
+	<PTVIRG>
+}
+
+	/*-------------
+	-	SELECT
+	---------------*/
+//TODO retour pte qql chose
+void select():{}
+{
+	<SELECT> def_aggr()
+	<ROW> <NOM>
+		(<WITH> <NOM>
+				(<OUVRANTE>
+			<NOM>(<PT><NOM>)? (<VIRG><NOM>(<PT><NOM>)? )* 
+				<FERMANTE>)*	
+		)?
+	<COLUMN> <NOM>
+		(<WITH> <NOM>
+				(<OUVRANTE>
+			<NOM>(<PT><NOM>)? (<VIRG><NOM>(<PT><NOM>)? )* 
+				<FERMANTE>)*	
+		)?		
+	<FROM><NOM>
+		(<WHERE> def_pred())?
+	<PTVIRG>
+}
+
+/*----------------------------------
+-	DEFINITIONS
+-----------------------------------*/
+void def_une_valeur():{}
+{
+		<QUOT>(	tdate() | (<NOM>)+) <QUOT>
+	|	<CHIFFRE>
+}
+
+
+void def_pred():{}
+{
+	<NOM>(<PT><NOM>)? <OPERATOR>
+			[<NOM>(<PT><NOM>)? | def_une_valeur()]
+	(<AND> <NOM>(<PT><NOM>)? <OPERATOR>
+			[<NOM>(<PT><NOM>)? | def_une_valeur()])*
+}
+
+//AVG, SUM, MAX, COUNT, SOM
+void def_aggr():{}
+{
+	<FONCT> <OUVRANTE>
+			<NOM>(<PT><NOM>)?
+			<FERMANTE>
+	(<VIRG><FONCT> <OUVRANTE>
+			<NOM>(<PT><NOM>)?
+			<FERMANTE>)*
+}
+
+void def_attr():{}
+{
+	<NOM> def_dom() (<VIRG> <NOM> def_dom())*
+}
+
+void def_dom():{}
+{		<DATE>
+	|	<NUMBER> <OUVRANTE>
+				<CHIFFRE>(<VIRG> <CHIFFRE>)?
+			<FERMANTE>
+	|	<VARCHAR><OUVRANTE><CHIFFRE><FERMANTE>
+}
+
+void def_lev():{}
+{	
+	(
+	<LEVEL> <NOM>
+		(<OUVRANTE>
+			<NOM>(<VIRG> <NOM>)*
+		<FERMANTE>)?
+	)+
+}
+
+/*----------------------------------
+-	TYPES 
+-----------------------------------*/
+void tdate ():{}
+{
+	<CHIFFRE><SLASH><CHIFFRE><SLASH><CHIFFRE>
+}
+
+
