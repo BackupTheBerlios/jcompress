@@ -86,8 +86,9 @@ public abstract class Pixmap {
 
   Pixmap(String fileName, String magic) throws IOException {
     reader = new PixmapReader(fileName);
-    if ( !reader.matchKey(magic) )
-      throw new IOException(fileName + " : wrong magic number");
+//    if ( !reader.matchKey(magic) )
+    //      throw new IOException(fileName + " : wrong magic number");
+    reader.matchKey(magic);
     reader.skipComment('#');
     width = reader.getInt();
     height = reader.getInt();

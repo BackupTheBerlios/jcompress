@@ -1,6 +1,7 @@
 
 package arbre;
 
+import ressources.FichierSource;
 import ressources.Matrice;
 
 /**
@@ -46,4 +47,5 @@ public abstract class Noeud {
 	 * Matrice
 	 */
 	public abstract Matrice construireMatrice();
+	
 }

@@ -9,10 +9,10 @@ package ressources;
  */
 public class Symbole {
 
-	static String P_OUVRANTE="P_OUVRANTE";
-	static String P_FERMANTE="P_FERMANTE";
-	static String NOMBRE="NOMBRE";
-	static String OTHER="OTHER";
+	public static String P_OUVRANTE="P_OUVRANTE";
+	public static String P_FERMANTE="P_FERMANTE";
+	public static String NOMBRE="NOMBRE";
+	public static String OTHER="OTHER";
 	
 	private String type="";
 	private String valeur="";
@@ -23,9 +23,9 @@ public class Symbole {
 	{
 		valeur = symb;
 		
-		if (valeur =="(")
+		if (valeur.equals("("))
 			type = P_OUVRANTE;
-		else if (valeur ==")")
+		else if (valeur.equals(")"))
 			type = P_FERMANTE;
 			else type=NOMBRE;
 	}	

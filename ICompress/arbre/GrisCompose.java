@@ -1,7 +1,9 @@
 
 package arbre;
 
+import ressources.FichierSource;
 import ressources.Matrice;
+import ressources.Symbole;
 import arbre.Noeud;
 
 /**
@@ -30,6 +32,48 @@ public final class GrisCompose extends Noeud {
 	  NE = ne;
 	  SO = so;
 	  SE = se;
+	}
+	
+	public GrisCompose(Noeud p, FichierSource f){
+	  super(p);
+	  Symbole car;
+	  String orientation = Matrice.NORD_OUEST;
+	  while(!orientation.equals("")){
+	    car = f.nextSymbole();
+	    if(car == null){
+	      orientation = "";
+	    }
+	    else{
+		    if(car.getType().equals(Symbole.P_OUVRANTE)){
+		      Noeud tmp = new GrisCompose(this,f);
+		      orientation = ajouteNoeud(tmp, orientation);
+		    }
+		    if(car.getType().equals(Symbole.NOMBRE)){
+		      Noeud tmp = new Couleur(this,Integer.parseInt(car.getValeur()));
+		      orientation = ajouteNoeud(tmp, orientation);
+		    }
+	    }
+	  }
+	}
+	
+	private String ajouteNoeud(Noeud tmp, String s){
+      if(s.equals(Matrice.SUD_EST)){
+        s = "";
+        SE = tmp;
+      }
+      if(s.equals(Matrice.SUD_OUEST)){
+        s = Matrice.SUD_EST;
+        SO = tmp;
+      }
+      if(s.equals(Matrice.NORD_EST)){
+        s = Matrice.SUD_OUEST;
+        NE = tmp;
+      }
+      if(s.equals(Matrice.NORD_OUEST)){
+        s = Matrice.NORD_EST;
+        NO = tmp;
+      }
+	  return s;
 	}
 	
 	public Noeud getNO(){
@@ -69,7 +113,7 @@ public final class GrisCompose extends Noeud {
    */
   public String construireLigne ()
   {
-    String ligne = "(";
+    String ligne = "( ";
     ligne += NO.construireLigne();
     ligne += " ";
     ligne += NE.construireLigne();
@@ -77,7 +121,7 @@ public final class GrisCompose extends Noeud {
     ligne += SO.construireLigne();
     ligne += " ";
     ligne += SE.construireLigne();
-    ligne += ")";
+    ligne += " )";
     return ligne;
   }
 

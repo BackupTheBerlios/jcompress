@@ -1,6 +1,8 @@
 package editeurPGMP5;
 import java.io.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.*;
 
 // affiche une image PGM en gris
@@ -25,7 +27,16 @@ public class DisplayPixmapAWT extends Frame {
   // constructeur pour un argument Pixmap
   public DisplayPixmapAWT(String name, BytePixmap p) {
     super(name);
+    addWindowListener (new WindowAdapter ()
+                              {
+                                public void windowClosing (WindowEvent e)
+                                {
+                                  System.exit (0) ;
+                                }
+                              }) ;
+
     setLocation(50, 50);
+    
     // fabrication des pixels gris au format usuel AWT : ColorModel.RGBdefault
     int[] pixels = new int[p.size];
     for (int i = 0; i < pixels.length; i++)
@@ -45,7 +56,7 @@ public class DisplayPixmapAWT extends Frame {
 
   public static void main(String[] args) {
     try {
-      new DisplayPixmapAWT("F:\\compress2\\sources\\Boat.pgm");
+      new DisplayPixmapAWT("D:\\fac\\bot\\Projet2\\exemple\\boat.pgm");
     }
     catch (IOException e) {System.err.println(e);}
   }

@@ -27,6 +27,7 @@ import javax.swing.JFrame ;
 import javax.swing.JLabel ;
 import javax.swing.JScrollPane ;
 import javax.swing.JTextArea ;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter ;
 
 import arbre.Arbre;
@@ -53,7 +54,8 @@ public class Application
   protected static JCheckBox boutonNormal ;
   protected static JCheckBox boutonSansPerte ;
   protected static JCheckBox boutonAvecPerte ;
-
+  protected static JTextField fTaux;
+  protected static JLabel lTaux;
 
   public static void main (String [] args)
   {
@@ -65,12 +67,14 @@ public class Application
    */
   protected static void decompresser ()
   {
-	//String ficDest = ouvrirFichier(".icomp");
+	//String ficDest = ouvrirFichier(".txt");
 	//String fic = ouvrirFichier(".pgm");
     textArea.append ("Decompression." + NEW_LINE) ;
+    Arbre ab = new Arbre("D:\\fac\\bot\\Projet2\\exemple\\rosesanscomp.txt") ;
+    System.out.println(ab.construireLigne());
     
     // test arbre
-    GrisCompose r = new GrisCompose(null);
+/*    GrisCompose r = new GrisCompose(null);
     GrisCompose r1 = new GrisCompose(r);
     r1.setNE(new Couleur(r, 255));
     r1.setNO(new Couleur(r,150));
@@ -82,7 +86,7 @@ public class Application
     r.setSO(new Couleur(r,161));
     Arbre ab = new Arbre(r);
     ab.construireImage().afficher();
-    System.out.println(ab.construireLigne());
+    System.out.println(ab.construireLigne());*/
   }
 
   /**
@@ -119,7 +123,7 @@ public class Application
   {
     // Initialisation de la fenetre
     JFrame jFrame = new JFrame ("ICompress") ;
-    jFrame.setSize (300, 230) ;
+    jFrame.setSize (300, 260) ;
 
     // Affichage de la fenetre au centre de l'ecran
     Dimension dim = Toolkit.getDefaultToolkit ().getScreenSize () ;
@@ -136,12 +140,33 @@ public class Application
     }) ;
 
     // Label
-    JLabel label = new JLabel ("Choisissez la méthode de compression :") ;
+    JLabel lChoix = new JLabel ("Choisissez la méthode de compression :") ;
+    lTaux = new JLabel ("Taux de compression :");
+    lTaux.setVisible(false);
+    
+    // Champs texte
+    fTaux = new JTextField ();
+    fTaux.setText("TauxDésiré");
+    fTaux.setEditable(true);
+    fTaux.setVisible(false);
 
     // Case a cocher pour determiner la methode de compression
     boutonNormal = new JCheckBox ("Normal") ;
     boutonSansPerte = new JCheckBox ("Sans perte") ;
     boutonAvecPerte = new JCheckBox ("Avec perte") ;
+    boutonAvecPerte.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e){
+        System.out.println("test");
+        if(boutonAvecPerte.isSelected()){
+        fTaux.setVisible(true);
+        lTaux.setVisible(true);
+        }
+        else{
+          fTaux.setVisible(false);
+          lTaux.setVisible(false);
+        }
+      }
+    });
 
     // Bouton compresser
     JButton BComp = new JButton ("Compresser") ;
@@ -177,13 +202,15 @@ public class Application
     // Ajout des elements a la fenetre
     FlowLayout fLayout = new FlowLayout (FlowLayout.CENTER) ;
     jFrame.getContentPane ().setLayout (fLayout) ;
-    jFrame.getContentPane ().add (label, 0) ;
+    jFrame.getContentPane ().add (lChoix, 0) ;
     jFrame.getContentPane ().add (boutonNormal, 1) ;
     jFrame.getContentPane ().add (boutonSansPerte, 2) ;
     jFrame.getContentPane ().add (boutonAvecPerte, 3) ;
-    jFrame.getContentPane ().add (BComp, 4) ;
-    jFrame.getContentPane ().add (BDeComp, 5) ;
-    jFrame.getContentPane ().add (jFiel, 6) ;
+    jFrame.getContentPane().add(lTaux,4);
+    jFrame.getContentPane().add(fTaux,5);
+    jFrame.getContentPane ().add (BComp, 6) ;
+    jFrame.getContentPane ().add (BDeComp, 7) ;
+    jFrame.getContentPane ().add (jFiel, 8) ;
 
     // Rend visible la fenetre
     jFrame.setVisible (true) ;
