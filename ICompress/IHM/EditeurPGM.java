@@ -1,3 +1,13 @@
+/**
+ * Date = 15/01/2005 
+ * Project = ICompress 
+ * File name = EditeurPGM.java
+ * @author Bosse Laure/Fauroux claire 
+ * 
+ * Ce projet permet la compression et la
+ *         decompression de fichier PGM de type P5 et P2.
+ */
+
 package IHM;
 
 import java.awt.Canvas;
@@ -12,7 +22,6 @@ import ressources.Fichier;
 import ressources.FichierSource;
 import ressources.FichierSourceBinaire;
 import ressources.Symbole;
-
 
 /**
  * Cette classe nous permet d'afficher une image PGM dans une nouvelle fenetre.
@@ -65,7 +74,8 @@ public class EditeurPGM {
 			}
 		}
 
-		// Transformation du tableau en image et affichage dans la nouvelle fenetre.
+		// Transformation du tableau en image et affichage dans la nouvelle
+		// fenetre.
 		MemoryImageSource source = new MemoryImageSource(width, height, pixels,
 				0, width);
 		Image img = Toolkit.getDefaultToolkit().createImage(source);
@@ -78,6 +88,7 @@ public class EditeurPGM {
 /**
  * Intégre une image dans un composant AWT pour l'affichage.
  */
+
 class ComposantImage extends Canvas {
 
 	Image img;

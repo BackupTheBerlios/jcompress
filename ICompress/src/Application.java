@@ -1,15 +1,13 @@
-/*
- * SOAP Supervising, Observing, Analysing Projects Copyright (C) 2003-2004
- * SOAPteam This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details. You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+/**
+ * Date = 15/01/2005 
+ * Project = ICompress 
+ * File name = Application.java
+ * @author Bosse Laure/Fauroux claire 
+ * 
+ * Ce projet permet la compression et la
+ *         decompression de fichier PGM de type P5 et P2.
  */
+
 package src;
 
 import java.awt.Dimension;
@@ -42,13 +40,12 @@ import IHM.EditeurPGM;
 import IHM.Verifier;
 
 /**
- * @author claire TODO To change the template for this generated type comment go
- *         to Window - Preferences - Java - Code Style - Code Templates
+ * Gestion de l'application.
  */
 public class Application {
-	private static String NEW_LINE = "\n";
+	public static String NEW_LINE = "\n";
 
-	private static JTextArea textArea;
+	public static JTextArea textArea;
 	private static JCheckBox boutonNormal;
 	private static JCheckBox boutonSansPerte;
 	private static JCheckBox boutonAvecPerte;
@@ -62,21 +59,23 @@ public class Application {
 
 	/**
 	 * Permet la decompression.
-	 * @param pTypeFichier Type de fichier PGM qu'on souhaite en sortie.
+	 * @param Type de fichier PGM qu'on souhaite en sortie (P2 ou P5).
 	 */
 	protected static void decompresser(String pTypeFichier){
-		String ficSource = ouvrirFichier(".txt");
+		String ficSource = ouvrirFichier(".txt", "Fichier txt a decompresser");
 
 		if(ficSource != null){
-			String ficDestination = ouvrirFichier(".pgm");
+			String ficDestination = ouvrirFichier(".pgm", "Fichier PGM destination");
 			if(ficDestination != null){
 				Image im = new Image(new Arbre(ficSource));
+				
 				int typeFic = 2;
 				if(pTypeFichier.equals(Fichier.P2))
 					typeFic = 2;
 				if(pTypeFichier.equals(Fichier.P5))
 					typeFic = 5;
 				im.sauvImage(ficDestination, typeFic);
+				
 				textArea.append("Decompression du fichier " + ficSource
 						+ " terminée." + NEW_LINE);
 				textArea.append("Affichage de l'image " + ficDestination + "."
@@ -84,44 +83,52 @@ public class Application {
 				afficherImage(ficDestination);
 			}
 			else{
-				textArea.append("Fichier inconnu." + NEW_LINE);
+				textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 			}
 		}
 		else{
-			textArea.append("Fichier inconnu." + NEW_LINE);
+			textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 		}
 
 	}
 
 	/**
-	 * Permet la compression normale.
-	 * @param pFichierSource Chemin du fichier source à compresser.
+	 * Permet une compression normale (transformation d'une matrice en arbre).
+	 * @param Chemin du fichier source à compresser.
 	 */
 	protected static void compressionNormal(String pFichierSource){
-		String ficDest = ouvrirFichier(".txt");
+		String ficDest = ouvrirFichier(".txt", "Fichier txt contenant l'affichage de l'arbre");
 
 		if(ficDest != null){
-			String ficDest2 = ouvrirFichier(".pgm");
+			String ficDest2 = ouvrirFichier(".pgm", "Fichier PGM contenant la matrice associé à l'arbre");
 			if(ficDest2 != null){
 				Image im = new Image(pFichierSource);
 				Arbre ab = im.construireArbre();
 				ab.creerFichier(ficDest);
 				Image imageDest = new Image(ab.construireMatrice());
+				
 				int type = 2;
 				if(cTypeFichier.getSelectedItem().equals(Fichier.P2))
 					type = 2;
 				if(cTypeFichier.getSelectedItem().equals(Fichier.P5))
 					type = 5;
 				imageDest.sauvImage(ficDest2, type);
+				
 				afficherImage(ficDest2);
 				textArea.append("Compression normale terminé." + NEW_LINE);
+				textArea.append("Matrice correspondant à l'arbre affiché." + NEW_LINE);
+				
+				// Gain de compression
+				Arbre abOrigine = im.construireArbre();
+				Float gain = Float.valueOf(abOrigine.tauxDeCompression(ab));
+				textArea.append("Gain de compression : "+gain.intValue()+"%."+NEW_LINE);
 			}
 			else{
-				textArea.append("Fichier inconnu." + NEW_LINE);
+				textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 			}
 		}
 		else{
-			textArea.append("Fichier inconnu." + NEW_LINE);
+			textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 		}
 	}
 
@@ -130,30 +137,33 @@ public class Application {
 	 * @param pFichierSource Chemin du fichier source à compresser.
 	 */
 	protected static void compressionSansPerte(String pFichierSource){
-		String ficDest = ouvrirFichier(".txt");
+		String ficDest = ouvrirFichier(".txt", "Fichier txt contenant l'affichage de l'arbre");
 
 		if(ficDest != null){
-			String ficDest2 = ouvrirFichier(".pgm");
+			String ficDest2 = ouvrirFichier(".pgm", "Fichier PGM contenant la matrice associé à l'arbre");
 			if(ficDest2 != null){
 				Image im = new Image(pFichierSource);
 				Arbre ab = im.construireArbreCompresseSansPerte();
 				ab.creerFichier(ficDest);
 				Image imageDest = new Image(ab.construireMatrice());
+				
 				int type = 2;
 				if(cTypeFichier.getSelectedItem().equals(Fichier.P2))
 					type = 2;
 				if(cTypeFichier.getSelectedItem().equals(Fichier.P5))
 					type = 5;
 				imageDest.sauvImage(ficDest2, type);
+				
 				afficherImage(ficDest2);
 				textArea.append("Compression sans perte terminé." + NEW_LINE);
+				textArea.append("Matrice correspondant à l'arbre affiché." + NEW_LINE);
 			}
 			else{
-				textArea.append("Fichier inconnu." + NEW_LINE);
+				textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 			}
 		}
 		else{
-			textArea.append("Fichier inconnu." + NEW_LINE);
+			textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 		}
 	}
 
@@ -162,31 +172,39 @@ public class Application {
 	 * @param pFichierSource Chemin du fichier source à compresser.
 	 * @param pTx
 	 */
-	protected static void compressionAvecPerte(String pFichierSource, double pTx){
-		String ficDest = ouvrirFichier(".txt");
+	protected static void compressionAvecPerte(String pFichierSource, float pTx){
+		String ficDest = ouvrirFichier(".txt", "Fichier txt contenant l'affichage de l'arbre");
 
 		if(ficDest != null){
-			String ficDest2 = ouvrirFichier(".pgm");
+			String ficDest2 = ouvrirFichier(".pgm", "Fichier PGM contenant la matrice associé à l'arbre");
 			if(ficDest2 != null){
 				Image im = new Image(pFichierSource);
 				Arbre ab = im.construireArbreCompresseAvecPerte(pTx);
 				ab.creerFichier(ficDest);
 				Image imageDest = new Image(ab.construireMatrice());
+				
 				int type = 2;
 				if(cTypeFichier.getSelectedItem().equals(Fichier.P2))
 					type = 2;
 				if(cTypeFichier.getSelectedItem().equals(Fichier.P5))
 					type = 5;
 				imageDest.sauvImage(ficDest2, type);
+				
 				afficherImage(ficDest2);
 				textArea.append("Compression avec perte terminé." + NEW_LINE);
+				textArea.append("Matrice correspondant à l'arbre affiché." + NEW_LINE);
+				
+				// Gain de compression
+				Arbre abOrigine = im.construireArbre();
+				Float gain = Float.valueOf(abOrigine.tauxDeCompression(ab));
+				textArea.append("Gain de compression : "+gain.intValue()+"%."+NEW_LINE);
 			}
 			else{
-				textArea.append("Fichier inconnu." + NEW_LINE);
+				textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 			}
 		}
 		else{
-			textArea.append("Fichier inconnu." + NEW_LINE);
+			textArea.append("Vous avez annulé l'operation." + NEW_LINE);
 		}
 	}
 
@@ -196,7 +214,7 @@ public class Application {
 	private static void init(){
 		// Initialisation de la fenetre
 		JFrame jFrame = new JFrame("ICompress");
-		jFrame.setSize(300, 310);
+		jFrame.setSize(350, 330);
 
 		// Affichage de la fenetre au centre de l'ecran
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -211,8 +229,10 @@ public class Application {
 		});
 
 		// Label
-		JLabel lChoixComp = new JLabel("Choisissez la méthode de compression :");
-		JLabel lChoixDecomp = new JLabel("Choisissez le type du fichier PGM :");
+		JLabel lChoixComp = new JLabel(
+				"Choisissez la méthode de compression (entre 0.51 et 1) :");
+		JLabel lChoixDecomp = new JLabel(
+				"Choisissez le type du fichier PGM (en sortie) :");
 		lTaux = new JLabel("Taux de compression :");
 		lTaux.setVisible(false);
 
@@ -261,27 +281,40 @@ public class Application {
 		JButton BComp = new JButton("Compresser");
 		BComp.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				String fichierSource = ouvrirFichier(".pgm");
-				if(fichierSource != null){
-					if(boutonNormal.isSelected())
-						compressionNormal(fichierSource);
-					if(boutonSansPerte.isSelected())
-						compressionSansPerte(fichierSource);
-					if(boutonAvecPerte.isSelected()){
-						// Verification du taux de compression
-						double tx = Double.parseDouble(fTaux.getText());
-						if(tx > 0.50 && tx <= 1){
-							compressionAvecPerte(fichierSource, tx);
+				float tx = 0;
+				// Verification du taux de compression
+				if(boutonAvecPerte.isSelected()){
+					if(!fTaux.getText().equals(" .  "))
+						tx = Float.parseFloat(fTaux.getText());
+				}
+
+				if(boutonNormal.isSelected() || boutonSansPerte.isSelected()
+						|| boutonAvecPerte.isSelected()){
+					if((boutonAvecPerte.isSelected() && tx > 0.50 && tx <= 1)
+							|| boutonNormal.isSelected() || boutonSansPerte.isSelected()){
+						String fichierSource = ouvrirFichier(".pgm", "Fichier PGM a compresser");
+						if(fichierSource != null){
+							if(boutonNormal.isSelected())
+								compressionNormal(fichierSource);
+							if(boutonSansPerte.isSelected())
+								compressionSansPerte(fichierSource);
+							if(boutonAvecPerte.isSelected()){
+								compressionAvecPerte(fichierSource, tx);
+							}
 						}
 						else{
-							textArea
-									.append("Le taux de compression est invalide."
-											+ NEW_LINE);
+							textArea.append("Vous avez annulé l'operation."
+									+ NEW_LINE);
 						}
+					}
+					else{
+						textArea.append("Le taux de compression est invalide."
+								+ NEW_LINE);
 					}
 				}
 				else{
-					textArea.append("Fichier inconnu." + NEW_LINE);
+					textArea.append("Selectionnez un type de compression."
+							+ NEW_LINE);
 				}
 			}
 		});
@@ -293,12 +326,20 @@ public class Application {
 				decompresser((String) cTypeFichier.getSelectedItem());
 			}
 		});
+		
+		// Bouton reset
+		JButton bReset = new JButton("Reset");
+		bReset.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				textArea.setText("");
+			}
+		});
 
 		// Champ texte pour prevenir l'utilisateur
 		textArea = new JTextArea(5, 20);
 		textArea.setEditable(false);
 		JScrollPane jFiel = new JScrollPane(textArea);
-		jFiel.setPreferredSize(new Dimension(250, 100));
+		jFiel.setPreferredSize(new Dimension(300, 100));
 
 		// Ajout des elements a la fenetre
 		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER);
@@ -309,11 +350,12 @@ public class Application {
 		jFrame.getContentPane().add(boutonAvecPerte, 3);
 		jFrame.getContentPane().add(lTaux, 4);
 		jFrame.getContentPane().add(fTaux, 5);
-		jFrame.getContentPane().add(BComp, 6);
-		jFrame.getContentPane().add(lChoixDecomp, 7);
-		jFrame.getContentPane().add(cTypeFichier, 8);
+		jFrame.getContentPane().add(lChoixDecomp, 6);
+		jFrame.getContentPane().add(cTypeFichier, 7);
+		jFrame.getContentPane().add(BComp, 8);
 		jFrame.getContentPane().add(BDeComp, 9);
 		jFrame.getContentPane().add(jFiel, 10);
+		jFrame.getContentPane().add(bReset, 11);
 
 		// Rend visible la fenetre
 		jFrame.setVisible(true);
@@ -323,13 +365,14 @@ public class Application {
 	 * Ouvre une fenetre permettant de choisir un fichier ayant pour extension
 	 * le parametre.
 	 * @param extension Type d'extension (exemple : ".txt").
+	 * @param titre Titre de la fenetre.
 	 * @return Chemin du ficheir choisi par l'utilisateur
 	 */
-	private static String ouvrirFichier(final String extension){
+	private static String ouvrirFichier(final String extension, String titre){
 
 		JFileChooser chooser = new JFileChooser();
 		// titre
-		chooser.setDialogTitle("test");
+		chooser.setDialogTitle(titre);
 		FileFilter filter = new FileFilter(){
 			public boolean accept(File f){
 				//recupere l'extension
@@ -350,8 +393,6 @@ public class Application {
 		chooser.setFileFilter(filter);
 		int returnVal = chooser.showOpenDialog(new JFrame("open"));
 		if(returnVal == JFileChooser.APPROVE_OPTION){
-
-			System.out.println("file: " + chooser.getSelectedFile().getName());
 			return chooser.getSelectedFile().getAbsolutePath();
 		}
 		return null;
