@@ -24,6 +24,29 @@ public class Arbre {
 	}
 	
 	/**
+	 * retourne le nombre de feuille de l'arbre
+	 * @return int, nb de feuilles(couleurs)
+	 */
+	//ok
+	public int grandeurArbre(){
+		return racine.grandeurNoeud();
+	};
+	
+	/**
+	 * compare la taille entre this et a et retourne un taux en pourcentage
+	 * @param a, Arbre a comparer
+	 * @return double, taux < 100 si a est "plus petit" que this
+	 */
+	public double tauxDeCompression(Arbre a){
+		int fd = a.grandeurArbre();
+		int fdd = grandeurArbre();
+		float top = grandeurArbre()/a.grandeurArbre();
+		double som=(a.grandeurArbre()/this.grandeurArbre())*100;
+		float somf=(a.grandeurArbre()/this.grandeurArbre())*100;
+		return ((a.grandeurArbre()/this.grandeurArbre())*100);
+	}
+	
+	/**
 	 * Construire arbre a partir expression du fichier txt
 	 * @param nomFichier
 	 * @throws Exception

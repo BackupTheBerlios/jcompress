@@ -191,4 +191,21 @@ public final class GrisCompose extends Noeud {
     }
     return mat;
   }
+
+/**retourne le nombre de feuille du noeud
+ * @return int, nb de feuille
+ */
+public int grandeurNoeud() {
+	int som=0;
+	if (NO!=null)
+		som+=NO.grandeurNoeud();
+	if (NE!=null)
+		som+=NE.grandeurNoeud();
+	if (SO!=null)
+		som+=SO.grandeurNoeud();
+	if (SE!=null)
+		som+=SE.grandeurNoeud();
+	
+	return som;
+}
 }

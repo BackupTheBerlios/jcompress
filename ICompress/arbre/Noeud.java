@@ -46,5 +46,11 @@ public abstract class Noeud {
 	 * Matrice
 	 */
 	public abstract Matrice construireMatrice();
+
+	/**compte le nb de feuille contenu dans le noeud
+	 * @return int, nb de feuille
+	 */
+	//ok
+	public abstract int grandeurNoeud() ;
 	
 }

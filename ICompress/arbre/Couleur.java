@@ -78,5 +78,12 @@ public final class Couleur extends Noeud {
     m.ajoutSymbole(new Symbole(String.valueOf(valeur)));
     return m ;
   }
+
+/**retourne le nb de feuille...c une feuille donc 1
+ * @return int=1
+ */
+public int grandeurNoeud() {
+	return 1;
+}
 	
 }
