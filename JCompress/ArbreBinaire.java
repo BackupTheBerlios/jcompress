@@ -66,25 +66,13 @@ public class ArbreBinaire extends Element {
 			liste.add(nouveauPereEchap);
 			liste.add(nouveau);
 			trierListe();
-			//System.out.println("apres insertion");
-			afficherListe();
 		}
 		else
 		{
 			nouveau  = (Noeud)getNoeud(c);
-			//System.out.println("apres incrFreq");
-			afficherListe();
 		}
 		//modifierArbre
-		modifierArbre(nouveau);
-		afficherListe();
-		
-		
-		//System.out.println("code de "+nouveau.getCaractere()+
-		//		" = "+nouveau.getCodeDansArbreBinaire());
-		//System.out.println("code de "+((Noeud)getNoeud(ECHAP)).getCaractere()+
-		//		" = "+((Noeud)getNoeud(ECHAP)).getCodeDansArbreBinaire());;
-				
+		modifierArbre(nouveau);		
 	}
 	
 	/**
@@ -97,12 +85,7 @@ public class ArbreBinaire extends Element {
 		Noeud dernier = dernierSuccMFreq(nouveau);
 		if (dernier !=null)
 		{
-			//System.out.println("dernier succ de "+nouveau.getCaractere()+" = "+dernier.getCaractere());
 			intervertir(dernier, nouveau);
-		}
-		else
-		{
-			//System.out.println("pas de succ pour "+nouveau.getCaractere());
 		}
 		//incremente la freq
 		nouveau.majFrequence();
@@ -114,7 +97,7 @@ public class ArbreBinaire extends Element {
 	 * @param e1, e2
 	 */
 	public void intervertir (Noeud e1/*successeur*/, Noeud e2/*noeud courant*/){
-		//System.out.println("intervertir "+e1.getCaractere()+" et "+e2.getCaractere());
+		
 		Element p1 = e1.getPere();
 		Element p2 = e2.getPere();
 		
@@ -130,7 +113,6 @@ public class ArbreBinaire extends Element {
 		e2.setPere(p1);
 		//maj liste
 		trierListe();
-		//afficherListe();
 	}
 	
 	//retourne le dernier successeur non ancetre 
@@ -162,10 +144,6 @@ public class ArbreBinaire extends Element {
 				dernierSucc = (Noeud)succ;
 			}
 		}
-//		if (dernierSucc!=null)
-//			System.out.println("derniersucc de "+e.getCaractere()+" : "+dernierSucc.getCaractere());
-//		else
-//			System.out.println(" pas de derniersucc de "+e.getCaractere());
 		return dernierSucc;
 	}
 	
@@ -176,11 +154,10 @@ public class ArbreBinaire extends Element {
 	public void trierListe(){
 		
 		//System.out.println(" avant trierListe");
-		afficherListe();
+		//afficherListe();
 		ArrayList a1 = new ArrayList();
 		Element e;
 		int nb  = liste.size()-1;
-		//System.out.println("size debut"+liste.size());
 		
 		liste.clear();
 		liste.add(new Noeud("sentinelle"));
@@ -188,7 +165,6 @@ public class ArbreBinaire extends Element {
 		a1.add(this);
 		for(;nb>0 && a1.size()!=0;nb--)
 		{
-			//System.out.println("size debut"+liste.size());
 			e = (Element)a1.get(0);
 			if (e.getSAG()!=null)
 				a1.add(e.getSAD());
@@ -197,9 +173,6 @@ public class ArbreBinaire extends Element {
 			liste.add(1,e);
 			a1.remove(0);
 		}
-		//System.out.println("size fin"+liste.size());
-		//System.out.println(" apres trierListe");
-		afficherListe();
 	}
 
 	//retourne le premier noeud avec caracatere c

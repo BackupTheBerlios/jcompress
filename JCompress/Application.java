@@ -18,14 +18,6 @@ import javax.swing.filechooser.FileFilter;
  * @author Bosse Laure/Fauroux claire
  *	
  */
-
-/**
- * *
- * 
- * @param
- * @return
- *  
- */
 public class Application {
 
 	public Application() {
@@ -34,13 +26,6 @@ public class Application {
 	}
 
 	public static void main(String[] args) {
-
-		//ArbreBinaire ab = new ArbreBinaire();
-		//ab.afficherListe();
-
-		//ab.ajoutCaractere("test");
-		//ab.afficherListe();
-
 		/*String test = "a";
 		byte[] tab = test.getBytes();
 		for (int i=0; i< tab.length;i++)
@@ -80,7 +65,6 @@ public class Application {
 			 	Noeud n = (Noeud)arbre.getNoeud(car);
 			 	if (n==null)
 			 	{
-			 			//byte[] tab = car.getBytes();
 			 			//nouveau caractere
 			 			fichiers.ecrireCaractere(((Noeud)arbre.getNoeud(ArbreBinaire.ECHAP)).getCodeDansArbreBinaire());
 			 			fichiers.ecrireCaractere(car);
@@ -94,7 +78,6 @@ public class Application {
 			 }
 			 
 			 }
-			 //	rajout de EOF dans arbre???
 			 arbre.ajoutCaractere(ArbreBinaire.EOF);
 			 fichiers.finEcrire(((Noeud)arbre.getNoeud(ArbreBinaire.EOF)).getCodeDansArbreBinaire());
 			 System.out.println("compression terminée");
@@ -103,10 +86,9 @@ public class Application {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		}
-		else
+		}else
 		{
-			System.out.println("fichiers de ressources inexistants");
+			System.out.println("fichiers de ressources non identifies");
 		}
 
 	}
