@@ -83,8 +83,13 @@ class JDBC {
 		 Statement stm;
 		try {
 			stm = jd.conn.createStatement();
-			String req = "select * from meta_element";
-		
+			//String req = "select avg(montant), ville,  from meta_element";
+			String req = "SELECT AVG(montant), categorie, ville "
+						+ "FROM ventes, produits, clients, temps "
+					+ "WHERE ventes.fidp = produits.idp AND ventes.fidc=clients.idl "
+					+ "AND ventes.fidt = temps.idt AND temps.annee=2004 "
+					+ "GROUP BY categorie,ville";
+			
 		 JTable JTable1 = new JTable();
 		 JTable1.removeAll();
 		 ResultSet rs;
@@ -93,10 +98,10 @@ class JDBC {
 			ResultSetMetaData mdt = rs.getMetaData();
 	        int num = mdt.getColumnCount();
 	        System.out.println("nb colonne :"+num);
-	        //System.out.println("nb enre");
+	        System.out.println("nb enreg " + rs.getFetchSize());
 	        DefaultTableModel df = new DefaultTableModel() {   // la ossi c juste pour faire un exemple
 	                                   public boolean isCellEditable( int row, int col )
-	                                   { if ( (row>>1)<<1 == row ) return true; return false; } };
+	                                   { return false; } };
 	        for ( int i = 0; i < num; i++ ) { df.addColumn( mdt.getColumnName( i + 1 ) ); }
 	        JTable1.setModel( df );
 	        TableCellRenderer tbcH = jd.createDemoHeaderRenderer();
@@ -119,6 +124,7 @@ class JDBC {
                 df.addRow( v );
                 line++;
             }
+            System.out.println("nb lignes "+line);
 
 			Appli test = new Appli();
 			//test.init();
@@ -133,6 +139,9 @@ class JDBC {
 		jd.ferme();
 	}
 
+	
+	
+	
 	private TableCellRenderer createDemoHeaderRenderer() 
     {
 	    DefaultTableCellRenderer label = new 
