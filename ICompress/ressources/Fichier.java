@@ -9,6 +9,9 @@ package ressources;
  */
 public abstract class Fichier {
 	
+  public static final String P5 = "P5";
+  public static final String P2 = "P2";
+  
 	protected String filename;
 	
 	public Fichier(String name){

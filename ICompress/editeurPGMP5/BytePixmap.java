@@ -1,6 +1,6 @@
 package editeurPGMP5;
-import java.io.*;
-import java.awt.*;
+
+import java.io.IOException;
 
 public class BytePixmap extends Pixmap {
 

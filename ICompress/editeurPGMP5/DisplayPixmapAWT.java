@@ -11,8 +11,8 @@ class DisplayImage extends Canvas {
   
   Image img;
 
-  public DisplayImage(Image img) {
-    this.img = img;
+  public DisplayImage(Image pImg) {
+    this.img = pImg;
     setSize(img.getWidth(this), img.getHeight(this));
   }
 
