@@ -36,13 +36,13 @@ import structure.Commande;
  */
 public class Appli {
 
-    private static String NEW_LINE = "\n";
+    private  String NEW_LINE = "\n";
 
-    private static JFrame jFrame;
-	private static JTextArea textArea;
-	private static JButton boutonOuvrir;
-	private static String chemin ="T:\\IUP Master 1\\sem2\\BOT\\projet3 BOT";
-	private JTable table;
+    private  JFrame jFrame =new JFrame("OLAPSQL");
+	private  JTextArea textArea=null;
+	private  JButton boutonOuvrir=null;
+	private  String chemin ="T:\\IUP Master 1\\sem2\\BOT\\projet3 BOT";
+	private JTable table = null;
 	static Analyzer parser=null;
     
 	
@@ -53,15 +53,16 @@ public class Appli {
     }
     
     public static void main(String[] args) {
-        init();
+        Appli test = new Appli();
+        test.init();
     }
 
     /**
      * 
      */
-    private static void init() {
+    void init() {
 		// Initialisation de la fenetre
-		jFrame = new JFrame("OLAPSQL");
+		//jFrame = new JFrame("OLAPSQL");
 		jFrame.setSize(500, 310);
 
 		// Affichage de la fenetre au centre de l'ecran
@@ -102,6 +103,8 @@ public class Appli {
 		jFrame.getContentPane().add(textArea,BorderLayout.NORTH);
 		jFrame.getContentPane().add(boutonOuvrir,BorderLayout.CENTER);
 		
+		if(table!=null)
+			jFrame.getContentPane().add(table);
 		
 		//Rend visible la fenetre
 		jFrame.setVisible(true);
@@ -109,8 +112,7 @@ public class Appli {
     
     /**
      * @param fichierSource, nom du fichier contenant requetes
-     */
-    protected static void analyser(String fichierSource) {
+     */void analyser(String fichierSource) {
 
         try {
 			FileReader f = new FileReader(fichierSource);
@@ -141,7 +143,7 @@ public class Appli {
 	 * @param extension Type d'extension (exemple : ".txt").
 	 * @return Chemin du ficheir choisi par l'utilisateur
 	 */
-	private static String ouvrirFichier(final String extension){
+	private String ouvrirFichier(final String extension){
 
 		JFileChooser chooser = new JFileChooser();
 		//chemin
@@ -186,6 +188,12 @@ public class Appli {
      * @param table The table to set.
      */
     public void setTable(JTable table) {
-        this.table = table;
+       if (table !=null){
+    	this.table = table;
+        table.setVisible(true);
+        jFrame.getContentPane().add(table);
+       }
     }
+    
+    
 }
