@@ -41,7 +41,7 @@ public class Noeud extends Element {
 		//System.out.println("majFrequence de "+getCaractere());
 		super.majFrequence();
 		getPere().majFrequence();
-		System.out.println("pére de "+getCaractere()+" = "+getPere().getCaractere());
+		//System.out.println("pére de "+getCaractere()+" = "+getPere().getCaractere());
 	}
 
 	public void afficher (){
@@ -99,6 +99,7 @@ public class Noeud extends Element {
 	 **getCodeDansArbreBinaire : retourne le code du noeud dans l'arbre
 	 * binaire
 	 * @return String
+	 * TODO recursif
 	 */
 	public String getCodeDansArbreBinaire(){
 		String code="";

@@ -3,6 +3,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -49,7 +51,7 @@ public class Application {
 
 	}
 
-	public static void compresser() {
+	public static void compresser() throws FileNotFoundException {
 
 		System.out.println("clic compress");
 		
@@ -61,35 +63,51 @@ public class Application {
 		System.out.println("destination :" + ficDest);
 		
 		
+		if (fic!=null && ficDest !=null)
+		{
+		 Ressources fichiers;
+		try {
+			fichiers = new Ressources(fic, ficDest);
 		
-		/*
-		 Ressources fichiers = new Ressources(fic, ficDest);
-		 ArbreBinaire arbre = new Arbre();
+			ArbreBinaire arbre = new ArbreBinaire();
 		 
-		 //tq pas fin de fichier
-		 for (String car = fichiers.lireOctet();car!= ArbreBinaire.EOF;
-		 		car = fichiers.lireOctet()){
-		 {
-		 	Noeud n = getNoeud(c);
-		 	if (n==null)
-		 	{
-		 			byte[] tab = car.getBytes();
-		 			//nouveau caractere
-		 			fichiers.ecrireCaractere(getNoeud(ArbreBinaire.ECHAP).getCodeDansArbreBinaire());
-		 			fichiers.ecrireCaractere(tab[0]);
-		 	}
-		 	else
-		 	{
-		 		//caractere redondant
-		 		fichiers.ecrireCaractere(n.getCodeDansArbreBinaire());	
-		 	}
-		 	arbre.ajoutCaractere(car);
-		 }
-		 //rajout de EOF dans arbre???
-		 ressources.fermer();
-		 System.out.println("compression terminée");
-		 
-		 */
+			//tq pas fin de fichier
+			 for (String car = fichiers.lireOctet();!(car.equals("11111111"));
+			 		car = fichiers.lireOctet()){
+			 {
+			 	
+			 	System.out.println("caractere lu :"+ car);
+			 	Noeud n = (Noeud)arbre.getNoeud(car);
+			 	if (n==null)
+			 	{
+			 			//byte[] tab = car.getBytes();
+			 			//nouveau caractere
+			 			fichiers.ecrireCaractere(((Noeud)arbre.getNoeud(ArbreBinaire.ECHAP)).getCodeDansArbreBinaire());
+			 			fichiers.ecrireCaractere(car);
+			 	}
+			 	else
+			 	{
+			 		//caractere redondant
+			 		fichiers.ecrireCaractere(n.getCodeDansArbreBinaire());	
+			 	}
+			 	arbre.ajoutCaractere(car);
+			 }
+			 
+			 }
+			 //	rajout de EOF dans arbre???
+			 arbre.ajoutCaractere(ArbreBinaire.EOF);
+			 fichiers.finEcrire(((Noeud)arbre.getNoeud(ArbreBinaire.EOF)).getCodeDansArbreBinaire());
+			 System.out.println("compression terminée");
+			 arbre.afficherListe();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		}
+		else
+		{
+			System.out.println("fichiers de ressources inexistants");
+		}
 
 	}
 
@@ -127,7 +145,12 @@ public class Application {
 		JButton BComp = new JButton("Compresser");
 		BComp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				compresser();
+				try {
+					compresser();
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		JButton BDeComp = new JButton("Décompresser");

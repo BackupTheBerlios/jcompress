@@ -66,23 +66,24 @@ public class ArbreBinaire extends Element {
 			liste.add(nouveauPereEchap);
 			liste.add(nouveau);
 			trierListe();
-			System.out.println("apres insertion");
+			//System.out.println("apres insertion");
 			afficherListe();
 		}
 		else
 		{
 			nouveau  = (Noeud)getNoeud(c);
-			System.out.println("apres incrFreq");
+			//System.out.println("apres incrFreq");
 			afficherListe();
 		}
 		//modifierArbre
 		modifierArbre(nouveau);
+		afficherListe();
 		
 		
-		System.out.println("code de "+nouveau.getCaractere()+
-				" = "+nouveau.getCodeDansArbreBinaire());
-		System.out.println("code de "+((Noeud)getNoeud(ECHAP)).getCaractere()+
-				" = "+((Noeud)getNoeud(ECHAP)).getCodeDansArbreBinaire());;
+		//System.out.println("code de "+nouveau.getCaractere()+
+		//		" = "+nouveau.getCodeDansArbreBinaire());
+		//System.out.println("code de "+((Noeud)getNoeud(ECHAP)).getCaractere()+
+		//		" = "+((Noeud)getNoeud(ECHAP)).getCodeDansArbreBinaire());;
 				
 	}
 	
@@ -113,7 +114,7 @@ public class ArbreBinaire extends Element {
 	 * @param e1, e2
 	 */
 	public void intervertir (Noeud e1/*successeur*/, Noeud e2/*noeud courant*/){
-		System.out.println("intervertir "+e1.getCaractere()+" et "+e2.getCaractere());
+		//System.out.println("intervertir "+e1.getCaractere()+" et "+e2.getCaractere());
 		Element p1 = e1.getPere();
 		Element p2 = e2.getPere();
 		
@@ -161,10 +162,10 @@ public class ArbreBinaire extends Element {
 				dernierSucc = (Noeud)succ;
 			}
 		}
-		if (dernierSucc!=null)
-			System.out.println("derniersucc de "+e.getCaractere()+" : "+dernierSucc.getCaractere());
-		else
-			System.out.println(" pas de derniersucc de "+e.getCaractere());
+//		if (dernierSucc!=null)
+//			System.out.println("derniersucc de "+e.getCaractere()+" : "+dernierSucc.getCaractere());
+//		else
+//			System.out.println(" pas de derniersucc de "+e.getCaractere());
 		return dernierSucc;
 	}
 	
@@ -214,7 +215,7 @@ public class ArbreBinaire extends Element {
 		Element e;
 		for (Iterator it = liste.iterator();it.hasNext();)		
 		{
-				if ((e=(Element)it.next()).getCaractere() == c)
+				if ((e=(Element)it.next()).getCaractere().equals(c))
 						return e;
 		}
 		return null;

@@ -22,14 +22,27 @@ public class Ressources {
 
 	public Ressources(String source, String destination)
 			throws FileNotFoundException {
-		// Créer les fichiers source et destination
-		fichierSource = new FileInputStream(source);
-		fichierDestination = new FileOutputStream(destination);
+		
+		try {
+			// Créer les fichiers source et destination
+			fichierSource = new FileInputStream(source);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("fichier source :"+source+" inexsitant");
+		}
+			try {
+				fichierDestination = new FileOutputStream(destination);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
 
-		// Initialise les buffer
-		bufferInput = new String();
-		bufferOutput = new String();
-	}
+			// Initialise les buffer
+			bufferInput = new String();
+			bufferOutput = new String();
+		
+		}
+		
+	
 
 	///////////////////////////////////////
 	// operations
@@ -41,7 +54,41 @@ public class Ressources {
 	 * @throws IOException
 	 */
 	public int lireBit() throws IOException {
-		if (bufferInput.length() < 1) {
+		try {
+			if (bufferInput.length() < 1) {
+				int intLu = fichierSource.read();
+				String binaireLu = Integer.toBinaryString(intLu);
+
+				if (binaireLu.length() < 8) {
+					int cond = 8 - binaireLu.length();
+					for (int i = 0; i < cond; i++) {
+						binaireLu = "0" + binaireLu;
+					}
+				}
+
+				bufferInput = bufferInput + binaireLu;
+			}
+
+			Integer res = new Integer(bufferInput.substring(0, 1));
+			bufferInput = bufferInput.substring(1, bufferInput.length());
+			return res.intValue();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	/**
+	 * Retourne l'octet suivant du fichier source.
+	 * @return String représentant le code ascii en binaire de l'octet suivant du fichier source.
+	 * @throws IOException
+	 */
+	public String lireOctet() throws IOException {
+		try {
 			int intLu = fichierSource.read();
 			String binaireLu = Integer.toBinaryString(intLu);
 
@@ -53,34 +100,15 @@ public class Ressources {
 			}
 
 			bufferInput = bufferInput + binaireLu;
+
+			String res = bufferInput.substring(0, 8);
+			bufferInput = bufferInput.substring(8, bufferInput.length());
+			return res;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		Integer res = new Integer(bufferInput.substring(0, 1));
-		bufferInput = bufferInput.substring(1, bufferInput.length());
-		return res.intValue();
-	}
-
-	/**
-	 * Retourne l'octet suivant du fichier source.
-	 * @return String représentant le code ascii en binaire de l'octet suivant du fichier source.
-	 * @throws IOException
-	 */
-	public String lireOctet() throws IOException {
-		int intLu = fichierSource.read();
-		String binaireLu = Integer.toBinaryString(intLu);
-
-		if (binaireLu.length() < 8) {
-			int cond = 8 - binaireLu.length();
-			for (int i = 0; i < cond; i++) {
-				binaireLu = "0" + binaireLu;
-			}
-		}
-
-		bufferInput = bufferInput + binaireLu;
-
-		String res = bufferInput.substring(0, 8);
-		bufferInput = bufferInput.substring(8, bufferInput.length());
-		return res;
+		return "";
 	}
 
 	/**
@@ -89,12 +117,24 @@ public class Ressources {
 	 * @throws IOException
 	 */
 	public void ecrireCaractere(String caractere) throws IOException {
-		bufferOutput = bufferOutput + caractere;
+		try {
+			bufferOutput = bufferOutput + caractere;
 
-		if (bufferOutput.length() >= 8) {
-			fichierDestination.write(binaireToDecimal(bufferOutput.substring(0,
-					8)));
-			bufferOutput = bufferOutput.substring(8, bufferOutput.length());
+			if (bufferOutput.length() >= 8) {
+				
+				System.out.println("ecriture dans fichier de :"+binaireToDecimal(bufferOutput.substring(0,8)));
+				fichierDestination.write(binaireToDecimal(bufferOutput.substring(0,
+						8)));
+				if (bufferOutput.length()>8)
+				{	System.out.println("bufferoutput avant ecriture"+bufferOutput);
+					bufferOutput = bufferOutput.substring(8, bufferOutput.length());
+				}else
+					bufferOutput="";
+				System.out.println("bufferoutput apres ecriture"+bufferOutput);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -118,21 +158,26 @@ public class Ressources {
 	 * @throws IOException
 	 */
 	public void finEcrire(String fin) throws IOException {
-		ecrireCaractere(fin);
-		
-		while(bufferOutput.length()>=8)
-		{
-			ecrireCaractere("");
-		}
-		
-		if(bufferOutput.length()>0)
-		{
-			int num0 = 8 - bufferOutput.length();
-			for(int i=0 ; i<num0 ; i++)
+		try {
+			ecrireCaractere(fin);
+			
+			while(bufferOutput.length()>=8)
 			{
-				bufferOutput = bufferOutput+"0";
+				ecrireCaractere("");
 			}
-			ecrireCaractere("");
+			
+			if(bufferOutput.length()>0)
+			{
+				int num0 = 8 - bufferOutput.length();
+				for(int i=0 ; i<num0 ; i++)
+				{
+					bufferOutput = bufferOutput+"0";
+				}
+				ecrireCaractere("");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

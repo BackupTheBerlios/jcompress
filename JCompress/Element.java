@@ -1,3 +1,5 @@
+import javax.naming.BinaryRefAddr;
+
 /**
  * Date = 21/01/2005 Project = JCompress File name = Element.java
  * 
@@ -79,7 +81,7 @@ public abstract class Element {
 	 * *afficheSeul : affiche l'element sans ses sous arbre
 	 */
 	public void afficherSeul() {
-		System.out.println(" ( " + caractere + " , " + frequence + " )");
+		System.out.println(" ( " +caractere + " , " + frequence + " )");
 	}
 
 	/**
@@ -87,7 +89,7 @@ public abstract class Element {
 	 */
 	public void majFrequence() {
 		frequence++;
-		System.out.println("majFrequence de " + getCaractere());
+		//System.out.println("majFrequence de " + getCaractere());
 	}
 
 	/**
