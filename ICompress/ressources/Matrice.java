@@ -1,6 +1,10 @@
 
 package ressources;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * @author claire
  *
@@ -91,7 +95,7 @@ public class Matrice {
 				iCourant++;
 			}
 			else
-			{	System.out.println("matrice pleine");
+			{	//System.out.println("matrice pleine");
 				iCourant=0;
 				jCourant=0;
 			}
@@ -103,9 +107,12 @@ public class Matrice {
 	 * @return Matrice, la sous matrice
 	 */
 	//ok
+	//TODO remplacer les int par les NO,...
 	public Matrice sousMatrice(int id){
 			
 			Matrice sMat=null;
+			if (getTaille()==1)
+				return this;
 			if (getTaille()!=0 && id>0 && id<5)
 			{
 				int staille = getTaille()/2;
@@ -138,23 +145,52 @@ public class Matrice {
 	 * @return boolean
 	 **/
 	//ok
-	public boolean isUnie(){
+	public int isUnie(){
 		
 		boolean ok=false;
+		String val="-1";
 		if (getTaille()!=0)
 		{
-			String val  = get(0,0).getValeur();
+			val  = get(0,0).getValeur();
 			ok=true;
 			for (int i = 0; i<getTaille() && ok;i++)
 			{
 				for (int j=0;j<getTaille() && ok ;j++ )
-					if (val != get(i,j).getValeur())
+					if (!(val.equals(get(i,j).getValeur())))
 						ok=false;
 			}
 		}
-		return ok;
+		if (ok)
+			return Integer.parseInt(val);
+		else
+			return -1;
 		
 	}
+	
+	/**
+	 * construit une map contenant les couleurs et leur occurrence dans mat
+	 * @return Hashmap
+	 */
+	public HashMap nbSymbDiff(){
+		HashMap somme=new HashMap();		
+		
+		for (int i = 0; i<getTaille();i++)
+		{
+			for (int j=0;j<getTaille() ;j++ )
+			{	Integer tmpK = Integer.valueOf(get(i,j).getValeur());
+				Integer tmpV=null;
+				if (somme.containsKey(tmpK))
+					tmpV= new Integer((((Integer)somme.get(tmpK)).intValue()+1));
+				else
+					tmpV=new Integer(1);
+				somme.put(tmpK,tmpV);
+			}	
+		}
+		return somme;
+		
+	}
+	
+	
 	
 	public void afficher(){
 		for (int i = 0; i<mat.length;i++)
@@ -171,11 +207,12 @@ public class Matrice {
 	
 	public static void main(String[] args) {
 		Matrice m = new Matrice(4);
+		//Matrice m1 = m.sousMatrice(1);
 		
 		m.ajoutSymbole(new Symbole("1"));
 		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("3"));
-		m.ajoutSymbole(new Symbole("4"));
+		m.ajoutSymbole(new Symbole("1"));
+		m.ajoutSymbole(new Symbole("1"));
 		m.ajoutSymbole(new Symbole("1"));
 		m.ajoutSymbole(new Symbole("1"));
 		m.ajoutSymbole(new Symbole("7"));
@@ -190,36 +227,52 @@ public class Matrice {
 		m.ajoutSymbole(new Symbole("16"));
 		
 		
+		HashMap mp = m.nbSymbDiff();
+		Set st = mp.keySet();
 		
-		Matrice m1 = new Matrice(4);
-		m1.ajoutMatrice(m,NORD_OUEST);
-		m.ajoutSymbole(new Symbole("03"));
-		m.ajoutSymbole(new Symbole("04"));
-		m.ajoutSymbole(new Symbole("07"));
-		m.ajoutSymbole(new Symbole("08"));
-		m1.ajoutMatrice(m,NORD_EST);
-		m.ajoutSymbole(new Symbole("09"));
-		m.ajoutSymbole(new Symbole("10"));
-		m.ajoutSymbole(new Symbole("13"));
-		m.ajoutSymbole(new Symbole("14"));
-		m1.ajoutMatrice(m,SUD_OUEST);
-		m.ajoutSymbole(new Symbole("11"));
-		m.ajoutSymbole(new Symbole("12"));
-		m.ajoutSymbole(new Symbole("15"));
-		m.ajoutSymbole(new Symbole("16"));
-		m1.ajoutMatrice(m,SUD_EST);
-		//System.out.println(m.get(0,0).getValeur());
-		System.out.println(m1.getTaille());
+		for (Iterator it = st.iterator();it.hasNext();)
+		{	
+			Integer key = (Integer)it.next();
+			System.out.println("key "+key+ " value "+mp.get(key));
+		}
+		
+		Matrice m1 = m.sousMatrice(1);
 		m.afficher();
+		System.out.println("unie "+m.isUnie());
 		m1.afficher();
-		
-		//ok avec les 4 identificateurs
-		Matrice m2 = m.sousMatrice(1);
-		System.out.println("taille m2 "+m2.getTaille());
-		m2.afficher();
-		
-		System.out.println("m unie? "+m.isUnie());
-		System.out.println("m2 unie? "+m2.isUnie());
+
+//		
+//		
+//		
+//		Matrice m1 = new Matrice(4);
+//		m1.ajoutMatrice(m,NORD_OUEST);
+//		m.ajoutSymbole(new Symbole("03"));
+//		m.ajoutSymbole(new Symbole("04"));
+//		m.ajoutSymbole(new Symbole("07"));
+//		m.ajoutSymbole(new Symbole("08"));
+//		m1.ajoutMatrice(m,NORD_EST);
+//		m.ajoutSymbole(new Symbole("09"));
+//		m.ajoutSymbole(new Symbole("10"));
+//		m.ajoutSymbole(new Symbole("13"));
+//		m.ajoutSymbole(new Symbole("14"));
+//		m1.ajoutMatrice(m,SUD_OUEST);
+//		m.ajoutSymbole(new Symbole("11"));
+//		m.ajoutSymbole(new Symbole("12"));
+//		m.ajoutSymbole(new Symbole("15"));
+//		m.ajoutSymbole(new Symbole("16"));
+//		m1.ajoutMatrice(m,SUD_EST);
+//		//System.out.println(m.get(0,0).getValeur());
+//		System.out.println(m1.getTaille());
+//		m.afficher();
+//		m1.afficher();
+//		
+//		//ok avec les 4 identificateurs
+//		Matrice m2 = m.sousMatrice(1);
+//		System.out.println("taille m2 "+m2.getTaille());
+//		m2.afficher();
+//		
+//		System.out.println("m unie? "+m.isUnie());
+//		System.out.println("m2 unie? "+m2.isUnie());
 		
 	}
 	

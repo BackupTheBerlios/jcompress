@@ -26,22 +26,22 @@ public class FichierDestination extends Fichier{
 			}	
 	}
 	
-	//la valeur du symbole doit etre un chiffre compris entre 0 et 255
-	public void ecrireSymboleBinaire(Symbole symb)
-	{ 
-		int tmp = Integer.parseInt(symb.getValeur());
-		String octet= Integer.toBinaryString(tmp);
-		
-		if (octet.length() < 8) {
-			int cond = 8 - octet.length();
-			for (int i = 0; i < cond; i++) {
-				octet = "0" + octet;
-			}
-		}else if (octet.length()>8){
-			System.out.println("Erreur, symbole.valeur > 255");
-		}
-		ecrireString(octet);
-	}
+//	//la valeur du symbole doit etre un chiffre compris entre 0 et 255
+//	public void ecrireSymboleBinaire(Symbole symb)
+//	{ 
+//		int tmp = Integer.parseInt(symb.getValeur());
+//		String octet= Integer.toBinaryString(tmp);
+//		
+//		if (octet.length() < 8) {
+//			int cond = 8 - octet.length();
+//			for (int i = 0; i < cond; i++) {
+//				octet = "0" + octet;
+//			}
+//		}else if (octet.length()>8){
+//			System.out.println("Erreur, symbole.valeur > 255");
+//		}
+//		ecrireString(octet);
+//	}
 	
 	public void ecrireSymbole (Symbole symb){
 		if (symb !=null)
@@ -77,6 +77,14 @@ public class FichierDestination extends Fichier{
 		}
 	}
 	
+//	ecrit 1 espaces
+	public void ecrireBlanc(){
+		try {
+			diskFile.write(" ");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	//ecrit 1 espace
 	public void ecrireEspace(){
 		try {
@@ -100,7 +108,7 @@ public class FichierDestination extends Fichier{
 		 f.ecrireSymbole(symb2);
 		 f.ecrireEspace();
 		 f.ecrireSymbole(symb);
-		 f.ecrireSymboleBinaire(symb1);
+		 //f.ecrireSymboleBinaire(symb1);
 		
 		 System.out.println("ok test ecriture");
 		 f.fermer();

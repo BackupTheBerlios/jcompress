@@ -20,6 +20,8 @@ public class FichierSource extends Fichier{
 	private String courant = "";
 
 	private StringTokenizer st;
+	
+	protected int nb_ligne=0;
 
 	/**constructeur
 	 * @param fileName : nom absolu du fichier
@@ -45,6 +47,7 @@ public class FichierSource extends Fichier{
 			System.out.println("Le fichier selectionné est vide");
 			System.exit(9);
 		} else
+			nb_ligne++;
 			st = new StringTokenizer(ligne);
 
 	}
@@ -96,6 +99,7 @@ public class FichierSource extends Fichier{
 				//System.out.println("ligne lue "+ligne);
 				if (ligne != null) {
 					st = new StringTokenizer(ligne);
+					nb_ligne++;
 					//System.out.println("nb de token "+ st.countTokens());
 					if (st.hasMoreTokens()) {
 						tmp = st.nextToken();
