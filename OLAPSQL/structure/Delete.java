@@ -6,7 +6,7 @@
  */
 package structure;
 
-import structure.types.Predicat;
+import structure.types.predicat.Predicat;
 
 /**
  * @author m1isi17
@@ -16,7 +16,18 @@ import structure.types.Predicat;
  */
 public class Delete extends Commande{
 
+
 	// peut etre null
-	private Predicat predicat;
+	private Predicat predicat=null;
+	
+	/**
+	 * @param nom
+	 * @param type
+	 */
+	public Delete(String nom, int type) {
+		super(nom, type);
+		// TODO Auto-generated constructor stub
+	}
+
 
 }

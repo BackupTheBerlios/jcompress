@@ -13,4 +13,15 @@ package structure;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class Drop extends Commande{
+
+	/**
+	 * @param nom
+	 * @param type
+	 */
+	public Drop(String nom, int type) {
+		super(nom, type);
+		}
+	
+	
+	
 }

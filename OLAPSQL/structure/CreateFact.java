@@ -16,6 +16,21 @@ import java.util.ArrayList;
  */
 public class CreateFact extends Create{
 
+	/**
+	 * @param nom
+	 * @param type
+	 */
+	public CreateFact(String nom, int type, ArrayList attrs) {
+		super(nom, type, attrs);
+		// TODO Auto-generated constructor stub
+	}
+
 	//liste de String
 	private ArrayList connects;
+	
+	public void addConnections (ArrayList l){
+		connects = l;
+	}
+	
+	
 }

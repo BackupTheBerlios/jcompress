@@ -11,10 +11,17 @@ options {
 	BUILD_TOKEN_MANAGER = true;
 }
 
-PARSER_BEGIN(Exemple)
+PARSER_BEGIN(Analyzer)
 package javaCC;
-	public class Exemple{}
-PARSER_END(Exemple)
+import structure.*;
+import structure.types.*;
+import structure.types.predicat.*;
+import java.util.ArrayList;
+import java.sql.Date;
+	public class Analyzer{ 
+		public Commande c;
+	}
+PARSER_END(Analyzer)
 
 
 SKIP:
@@ -46,6 +53,7 @@ TOKEN:
    |	<WHERE		: "where">
    |	<FROM		: "from">
    |	<AND		: "and">
+   |	<OR		: "or">
 // types
    |	<DATE		: "date">
    |	<VARCHAR	: "varchar">
@@ -53,7 +61,7 @@ TOKEN:
  	//type indetermine
  //  |	<VALEUR		: (["A"-"Z"]|["0"-"9"]|"_"|"/"|"-")*>
    //doit commencer par une lettre
-   |	<NOM		: (["A"-"Z"])+(["A"-"Z"]|["0"-"9"]|"_")*>
+   |	<NOM		: (["A"-"Z"])+(["A"-"Z"]|["0"-"9"]|"_"|".")*>
    |    <CHIFFRE	: (["0"-"9"])+>
 //   |    <ENTREQUOT	: >
 //symboles
@@ -78,110 +86,156 @@ TOKEN:
 /*----------------------------------
 -	MAIN
 -----------------------------------*/
-void execute():{}{
-	create()
-|	drop()
-|	alter()
-|	insert()
-|	delete()
-|	select()
+Commande execute():{}{
+	{Commande c=null;}
+	
+	(	c=create()
+	|	c= drop()
+	|	c= alter()
+	|	c=insert()
+	|	c=delete()
+	//|	select()*/)
+	)
+	{ return c;}
+}
 
+Predicat executePredicat():{}{
+	{return def_pred();}
 }
 
 /*----------------------------------
 -	COMMANDES
 -----------------------------------*/
 	/*-------------
-	-	CREATE
+	-	CREATE -OK
 	---------------*/
-void create():{}{
-	<CREATE>(create_fact() | create_dim())
+Create create():{}{
+	{Create c;}
+	<CREATE>(c=create_fact() | c=create_dim())
+	{return c;}
 }
-void create_fact():
+CreateFact create_fact():
 {}
 {
-	<FACT><NOM>
+	{ArrayList l, ll = new ArrayList(); Token t;}
+	<FACT>t=<NOM>
 	<OUVRANTE>
-		def_attr()
+		l=def_attr()
+		{CreateFact cf = new CreateFact(t.toString(), Commande.FACT,l);}
 	<FERMANTE>
-	<CONNECT><TO><NOM> (<VIRG><NOM>)*
+	<CONNECT><TO>t=<NOM> {ll.add(t.toString());}
+				(<VIRG>t=<NOM>{ll.add(t.toString());})*
 	<PTVIRG>
+	{cf.addConnections(ll);return cf;}
 }
 
-void create_dim():
+CreateDimension create_dim():
 {}
 {
-	<DIMENSION><NOM>
+	{ArrayList l, lhs; Token t;Hierarchy h;}
+	<DIMENSION>t=<NOM>
 	<OUVRANTE>
-		def_attr()
+		l=def_attr()
+		{CreateDimension cd = new CreateDimension(t.toString(), Commande.DIMENSION,l);}
 	<FERMANTE>
-	(<WITH><HIERARCHY>
+	(<WITH><HIERARCHY>t= <NOM> 
 		<OUVRANTE>
-			def_lev()
+			l = def_lev(){h= new Hierarchy (t.toString(), l);}
 		<FERMANTE>
+		{cd.ajoutHierarchy(h);}
 	)*
 	<PTVIRG>
+	{return cd;}
 }
 
 	/*-------------
-	-	DROP
+	-	DROP	-ok
 	---------------*/
-void drop():{}{
-	<DROP>(drop_fact()|drop_dim())
+Drop drop():{}{
+	{Drop d =null;}
+	<DROP>( d=drop_fact()| d=drop_dim())
+	{return d;}
 }
-void drop_fact():
+Drop drop_fact():
 {}
 {
-	<FACT><NOM><PTVIRG>
+	{Token t;}
+	<FACT>t=<NOM><PTVIRG>
+	{return new Drop(t.toString(), Commande.FACT);}
 }
-void drop_dim():
+Drop drop_dim():
 {}
-{
-	<DIMENSION><NOM><PTVIRG>
+{	{Token t;}
+	<DIMENSION>t=<NOM><PTVIRG>
+	{return new Drop(t.toString(), Commande.DIMENSION);}
 }
 
 	/*-------------
-	-	ALTER
+	-	ALTER	-OK a ameliorer sur alter_fact
 	---------------*/
-void alter():{}{
-	<ALTER>(alter_fact()|alter_dim())
+Alter alter():{}{
+	{Alter ca = null;}
+	<ALTER>(ca=alter_fact()|ca=alter_dim())
+	{return ca;}
 }
-void alter_fact():{}
+Alter alter_fact():{}
 {
-	<FACT><NOM>
+	{Token t; ArrayList l;}
+	<FACT>t= <NOM>{ Alter ca = new Alter (t.toString(), Commande.FACT);}
 	(
-		<ADD> def_attr()
-	|	<DROP> <NOM> (<VIRG><NOM>)*
-	|	<CONNECT><TO> <NOM> (<VIRG><NOM>)*
-	|	<DISCONNECT><TO> <NOM> (<VIRG><NOM>)*
+		<ADD> l=def_attr(){ca.setAlteration(Alter.ADD);
+							ca.setAttributs(l);}
+							
+	|	<DROP> t=<NOM> {ca.setAlteration(Alter.DROP);
+						ca.ajoutString(t.toString());}
+				(<VIRG>t=<NOM>{ca.ajoutString(t.toString());})*
+				
+	|	<CONNECT><TO> t=<NOM> {ca.setAlteration(Alter.CONNECT);
+								ca.ajoutString(t.toString());}
+				(<VIRG>t=<NOM>{ca.ajoutString(t.toString());})*
+				
+	|	<DISCONNECT><TO> t=<NOM> {ca.setAlteration(Alter.DISCONNECT);
+									ca.ajoutString(t.toString());}
+				(<VIRG>t=<NOM>{ca.ajoutString(t.toString());})*
 	)?
 	<PTVIRG>
+	{return ca;}
 }
 
-void alter_dim():{}
+Alter alter_dim():{}
 {
-	<DIMENSION><NOM>
+	{Token t; ArrayList l; Alter ca=null;}
+	<DIMENSION>t=<NOM>
 	(
-		<ADD> (  def_attr()
-			|	<HIERARCHY> <NOM>
-				<OUVRANTE>
-					def_lev()
-				<FERMANTE>
-				)
-	|	<DROP> ( <NOM> (<VIRG><NOM>)*
-			|	<HIERARCHY> <NOM>
-				)
+		<ADD> (  l=def_attr() {ca = new Alter(t.toString(), Commande.DIMENSION,Alter.ADD, l);}
+			|	({ca = new AlterHierarchy (t.toString(), Commande.DIMENSION,AlterHierarchy.ADD_HIERARCHY);}
+				<HIERARCHY> t= <NOM> 
+					<OUVRANTE>
+						l = def_lev(){Hierarchy h= new Hierarchy (t.toString(), l);}
+					<FERMANTE>
+				{((AlterHierarchy)ca).ajoutHierarchy(h);}
+				))
+	|	<DROP> ({ca = new Alter(t.toString(), Commande.DIMENSION,Alter.DROP);} 
+				t=<NOM> {ca.ajoutString(t.toString());}
+					(<VIRG>t=<NOM>{ca.ajoutString(t.toString());})*
+			|	({ca = new AlterHierarchy (t.toString(), Commande.DIMENSION,AlterHierarchy.DROP_HIERARCHY);}
+				<HIERARCHY> t= <NOM>
+					{((AlterHierarchy)ca).ajoutHierarchy(new Hierarchy(t.toString(),null));}
+				))
 	)?
 	<PTVIRG>
+	{return ca;}
 }	
 
 	/*-------------
-	-	insert
+	-	INSERT
 	---------------*/
-void insert():{}{
-	<INSERT>(insert_fact()|insert_dim())
+Insert insert():{}{
+	{Insert ci;}
+	<INSERT>(ci=insert_fact()|ci=insert_dim())
+	{return ci;}
 }
-void insert_fact():{}
+InsertFact insert_fact():{}
 {
 	<FACT> <NOM>
 	<VALUES> <OUVRANTE>
@@ -191,39 +245,48 @@ void insert_fact():{}
 		 <NOM> <WHERE> def_pred()
 		(<VIRG><NOM><WHERE> def_pred())*
 	<PTVIRG>
+	{return null;}
 }
-void insert_dim():{}
+Insert insert_dim():{}
 {
-	<DIMENSION><NOM>
-	<VALUES> <OUVRANTE>
-			def_une_valeur() (<VIRG>def_une_valeur())* 
+	{Token t;String s;}
+	<DIMENSION>t=<NOM> {Insert ci = new Insert (t.toString(), Commande.DIMENSION);}
+	<VALUES><OUVRANTE>
+			s=def_une_valeur() {ci.ajoutValeur(s);}
+				(<VIRG>s=def_une_valeur(){ci.ajoutValeur(s);})*  
 			<FERMANTE>
 	<PTVIRG>
+	{return ci;}
 }
 
 	/*-------------
-	-	DELETE
+	-	DELETE -ajouter pred
 	---------------*/
-void delete():{}{
-	<DELETE>(del_fact()|del_dim())
+Delete delete():{}{
+	{Delete d;}
+	<DELETE>(d=del_fact()|d=del_dim())
+	{return d;}
 }
-void del_fact():{}
+Delete del_fact():{}
 {
-	<FACT><NOM>
+	{Token t;}
+	<FACT>t=<NOM>
 	(<WHERE> def_pred())?
 	<PTVIRG>
+	{return new Delete(t.toString(), Commande.FACT);}
 }
-void del_dim():{}
+Delete del_dim():{}
 {
-	<DIMENSION><NOM>
+	{Token t;}
+	<DIMENSION>t=<NOM>
 	(<WHERE> def_pred())?
 	<PTVIRG>
+	{return new Delete(t.toString(), Commande.DIMENSION);}
 }
 
 	/*-------------
 	-	SELECT
 	---------------*/
-//TODO retour pte qql chose
 void select():{}
 {
 	<SELECT> def_aggr()
@@ -247,19 +310,70 @@ void select():{}
 /*----------------------------------
 -	DEFINITIONS
 -----------------------------------*/
-void def_une_valeur():{}
+//tdate renvoit une string, le prend comme token
+String def_une_valeur():{}
 {
-		<QUOT>(	tdate() | (<NOM>)+) <QUOT>
-	|	<CHIFFRE>
+		{Token t=null;String s="";}
+		
+		<QUOT> (	s=tdate() 
+				| 	(		(t=<NOM> {s = s+t.toString();})
+						(t=<NOM> {s = s+" "+t.toString();})*
+					)
+				)								
+		<QUOT>	{return s;}
+		
+	|	t=<CHIFFRE>{return t.toString();}		
 }
 
 
-void def_pred():{}
+//pour l'instant pas de parentheses ni or gérés
+Predicat def_pred():{}
 {
-	<NOM>(<PT><NOM>)? <OPERATOR>
-			[<NOM>(<PT><NOM>)? | def_une_valeur()]
-	(<AND> <NOM>(<PT><NOM>)? <OPERATOR>
-			[<NOM>(<PT><NOM>)? | def_une_valeur()])*
+	{Predicat p=new Predicat ();; ElementAbstrait elmt;}
+	
+		elmt = def_elmt(null)
+		
+		//commun aux 2
+	 	{	p.setRacine(elmt);
+	 		return p;}
+}
+
+//pas encore ok
+ElementAbstrait def_elmt(Liaison pere):{}{	
+	{ElementAbstrait expr; Jointure j=null;
+		Liaison l;}
+
+	((<OUVRANTE>expr = def_elmt(pere)<FERMANTE>)
+
+|	(
+	 expr = def_jointure(pere)	
+	((	<AND> {l = new Liaison (pere, Liaison.AND,expr);}
+			(	(<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
+															expr.setPere(l);})
+			|	(j = def_jointure(l)	{l.ajoutElmt(j);
+										j.setPere(l);}))
+			(<AND>	
+				(	(<OUVRANTE>expr = def_elmt(pere)<FERMANTE> {l.ajoutElmt(expr);
+															expr.setPere(l);})
+			|	(j = def_jointure(l)	{l.ajoutElmt(j);
+										j.setPere(l);}))
+			)*
+		)
+	 ){expr=l;}
+	))
+	 {return expr;}
+}
+
+//ok
+Jointure def_jointure(Liaison pere):{}{
+	{Token t1, t2, t3; String s1="",s2="";}
+	
+	t1=<NOM> {s1=t1.toString();}(<PT>t1=<NOM>{s1=s1+"."+t1.toString();})? 
+	t3=<OPERATOR>
+			((t2=<NOM> {s2=t2.toString();}(<PT>t2=<NOM>{s2=s2+"."+t2.toString();})? 
+				| (s2=def_une_valeur())))
+	{return new Jointure(pere,s1,s2,t3.toString());}
+
 }
 
 //AVG, SUM, MAX, COUNT, SOM
@@ -273,35 +387,66 @@ void def_aggr():{}
 			<FERMANTE>)*
 }
 
-void def_attr():{}
+/*renvoit une ArrayList d'attributs*/
+//ok
+ArrayList def_attr():{}
 {
-	<NOM> def_dom() (<VIRG> <NOM> def_dom())*
+	{Token t; Attribut att;
+	ArrayList l=new ArrayList();}
+	
+	t=<NOM> att=def_dom()
+		{	att.setNom(t.toString());
+			l.add(att);}
+	 (<VIRG> t=<NOM> att=def_dom()
+	 	{	att.setNom(t.toString());
+			l.add(att);}
+	 )*
+	 {return l;}
 }
 
-void def_dom():{}
-{		<DATE>
+/*renvoit un attribut typé mais sans nom*/
+//ok
+Attribut def_dom():{}
+{
+	{Attribut att=null;Token t;}
+	(<DATE>{att = new Attribut(Attribut.DATE);}
 	|	<NUMBER> <OUVRANTE>
-				<CHIFFRE>(<VIRG> <CHIFFRE>)?
-			<FERMANTE>
-	|	<VARCHAR><OUVRANTE><CHIFFRE><FERMANTE>
+				t=<CHIFFRE>{att = new Attribut(Attribut.NUMBER,Integer.parseInt(t.toString()));}
+							(<VIRG> t=<CHIFFRE>{att.setPrecision(Integer.parseInt(t.toString()));})?
+				<FERMANTE>
+	|	<VARCHAR><OUVRANTE>
+					t=<CHIFFRE>{att = new Attribut(Attribut.VARCHAR, Integer.parseInt(t.toString()));}
+				<FERMANTE>)
+	{return att;}
 }
 
-void def_lev():{}
+//ArrayList de levels
+//ok
+ArrayList def_lev():{}
 {	
+	{ArrayList l = new ArrayList(); Token t;Level level;}
 	(
-	<LEVEL> <NOM>
+	<LEVEL> t=<NOM>{level = new Level(t.toString());}
 		(<OUVRANTE>
-			<NOM>(<VIRG> <NOM>)*
+			t=<NOM> {level.ajoutAttFaible(t.toString());}
+			(<VIRG> t=<NOM>{level.ajoutAttFaible(t.toString());})*
 		<FERMANTE>)?
+		{l.add(level);}
 	)+
+	{return l;}
 }
 
 /*----------------------------------
 -	TYPES 
 -----------------------------------*/
-void tdate ():{}
+//pour l'instant, retourne une string
+String tdate ():{}
 {
-	<CHIFFRE><SLASH><CHIFFRE><SLASH><CHIFFRE>
+	{String dat=""; Token t;}
+	t=<CHIFFRE>{dat= t.toString();}
+	<SLASH>t=<CHIFFRE>{dat=dat+"-"+ t.toString();}
+	<SLASH>t=<CHIFFRE>{dat=dat+"-"+ t.toString();}
+	{return dat;}
 }
 
 

@@ -8,7 +8,7 @@ package structure;
 
 import java.util.ArrayList;
 
-import structure.types.Predicat;
+import structure.types.predicat.Predicat;
 
 /**
  * @author m1isi17
@@ -28,5 +28,15 @@ public class Select extends Commande{
 	
 	private String nomFrom;
 	private Predicat where;
+	
+	/**
+	 * @param nom
+	 * @param type
+	 */
+	public Select(String nom, int type) {
+		super(nom, type);
+		// TODO Auto-generated constructor stub
+	}
+
 
 }
