@@ -22,9 +22,11 @@ public class Ressources {
 
 	public Ressources(String source, String destination)
 			throws FileNotFoundException {
+		// Créer les fichiers source et destination
 		fichierSource = new FileInputStream(source);
 		fichierDestination = new FileOutputStream(destination);
 
+		// Initialise les buffer
 		bufferInput = new String();
 		bufferOutput = new String();
 	}
