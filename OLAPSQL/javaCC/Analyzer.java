@@ -3,6 +3,8 @@ package javaCC;
 import structure.*;
 import structure.types.*;
 import structure.types.predicat.*;
+import structure.types.predicat.Predicat;
+
 import java.util.ArrayList;
 import java.sql.Date;
         public class Analyzer implements AnalyzerConstants {
