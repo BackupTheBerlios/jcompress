@@ -30,20 +30,23 @@ public class Application {
 		super();
 	}
 
+	/**
+	 **main : lance l'application
+	 * 
+	 */
 	public static void main(String[] args) {
 		init();
 	}
 
+	/**
+	 **compresser : fonction principale de compression
+	 * 
+	 */
 	public static void compresser() {
-
-		//System.out.println("clic compress");
 
 		//choix des fichiers
 		String fic = ouvrirFichier(".txt");
 		String ficDest = ouvrirFichier(".jcomp");
-
-		//System.out.println("source :" + fic);
-		//System.out.println("destination :" + ficDest);
 
 		if (fic != null && ficDest != null) {
 			Ressources fichiers;
@@ -53,60 +56,57 @@ public class Application {
 				ArbreBinaire arbre = new ArbreBinaire();
 
 				//tq pas fin de fichier
-				for (String car = fichiers.lireOctet(); !(car
-						.equals("11111111")); car = fichiers.lireOctet()) {
+				for (String car = fichiers.lireOctet();
+					!(car.equals("11111111"));
+					car = fichiers.lireOctet()) {
 					{
 
-						//System.out.println("caractere lu :" + car);
 						Noeud n = (Noeud) arbre.getNoeud(car);
 						if (n == null) {
 							//nouveau caractere
-							fichiers.ecrireCaractere(((Noeud) arbre
-									.getNoeud(ArbreBinaire.ECHAP))
+							fichiers.ecrireCaractere(
+								((Noeud) arbre.getNoeud(ArbreBinaire.ECHAP))
 									.getCodeDansArbreBinaire());
 							fichiers.ecrireCaractere(car);
 						} else {
 							//caractere redondant
-							fichiers.ecrireCaractere(n
-									.getCodeDansArbreBinaire());
+							fichiers.ecrireCaractere(
+								n.getCodeDansArbreBinaire());
 						}
 						arbre.ajoutCaractere(car);
 					}
 
 				}
 				//arbre.ajoutCaractere(ArbreBinaire.EOF);
-				fichiers.finEcrire(((Noeud) arbre.getNoeud(ArbreBinaire.EOF))
+				fichiers.finEcrire(
+					((Noeud) arbre.getNoeud(ArbreBinaire.EOF))
 						.getCodeDansArbreBinaire());
 				arbre.ajoutCaractere(ArbreBinaire.EOF);
 
-				textArea.append("Compression terminée."+NEW_LINE);
-				//System.out.println("compression terminée");
-				//arbre.afficherListe();
+				textArea.append("Compression terminée." + NEW_LINE);
+
 			} catch (FileNotFoundException e) {
-				textArea.append("Fichier "+fic+" inexistant."+NEW_LINE);
-				//e.printStackTrace();
+				textArea.append("Fichier " + fic + " inexistant." + NEW_LINE);
 			} catch (IOException e1) {
-				textArea.append("Erreur d'écriture d'un fichier."+NEW_LINE);
-				//e1.printStackTrace();
+				textArea.append("Erreur d'écriture d'un fichier." + NEW_LINE);
 			} catch (Exception e2) {
-				textArea.append("Une erreur est survenue."+NEW_LINE);
+				textArea.append("Une erreur est survenue." + NEW_LINE);
 			}
 		} else {
-			textArea.append("Fichier non identifié."+NEW_LINE);
-			//System.out.println("fichiers de ressources non identifies");
+			textArea.append("Fichier non identifié." + NEW_LINE);
 		}
 
 	}
 
+	/**
+	 **decompresser : fonction principale de decompression
+	 * 
+	 */
 	public static void decompresser() {
-		//System.out.println("clic decompress");
 
 		//choix des fichiers
 		String fic = ouvrirFichier(".jcomp");
 		String ficDest = ouvrirFichier(".txt");
-
-		//System.out.println("source :" + fic);
-		//System.out.println("destination :" + ficDest);
 
 		if (fic != null && ficDest != null) {
 			Ressources res;
@@ -148,18 +148,16 @@ public class Application {
 					n = (Noeud) arbre.getNoeudToCode(bit);
 					// Fin tant que
 				}
-				//System.out.println("decompression terminée");
-				textArea.append("Décompression terminée."+NEW_LINE);
+				textArea.append("Décompression terminée." + NEW_LINE);
 			} catch (FileNotFoundException e) {
-				textArea.append("Fichier "+fic+" inexistant."+NEW_LINE);
+				textArea.append("Fichier " + fic + " inexistant." + NEW_LINE);
 			} catch (IOException e1) {
-				textArea.append("Erreur d'écriture d'un fichier."+NEW_LINE);
+				textArea.append("Erreur d'écriture d'un fichier." + NEW_LINE);
 			} catch (Exception e2) {
-				textArea.append("Une erreur est survenue."+NEW_LINE);
+				textArea.append("Une erreur est survenue." + NEW_LINE);
 			}
 		} else {
-			textArea.append("Fichier non identifié."+NEW_LINE);
-			//System.out.println("fichiers de ressources non identifies");
+			textArea.append("Fichier non identifié." + NEW_LINE);
 		}
 	}
 
@@ -171,7 +169,6 @@ public class Application {
 		JFrame fenetre = new JFrame("JCompress");
 		fenetre.setSize(300, 200);
 		fenetre.setLocation(300, 300);
-		//fenetre.setAlwaysOnTop(true);
 
 		JButton BComp = new JButton("Compresser");
 		BComp.addActionListener(new ActionListener() {
@@ -186,10 +183,10 @@ public class Application {
 			}
 		});
 
-		textArea = new JTextArea(5,20);
+		textArea = new JTextArea(5, 20);
 		textArea.setEditable(false);
 		JScrollPane jFiel = new JScrollPane(textArea);
-		jFiel.setPreferredSize(new Dimension(250,100));
+		jFiel.setPreferredSize(new Dimension(250, 100));
 
 		FlowLayout flayout = new FlowLayout(FlowLayout.CENTER);
 		fenetre.getContentPane().setLayout(flayout);
@@ -200,13 +197,17 @@ public class Application {
 		fenetre.setVisible(true);
 	}
 
+	/**
+	 **ouvrirFichier : ouvre un browser
+	 * @param String extension du fichier a ouvrir
+	 */
 	private static String ouvrirFichier(final String extension) {
 
 		JFileChooser chooser = new JFileChooser();
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File f) {
-				//recupere l'extension
-				int index = f.getAbsolutePath().lastIndexOf('.');
+					//recupere l'extension
+	int index = f.getAbsolutePath().lastIndexOf('.');
 				String ext = "";
 				if (index != -1)
 					ext = f.getAbsolutePath().substring(index);
@@ -226,8 +227,6 @@ public class Application {
 		chooser.setFileFilter(filter);
 		int returnVal = chooser.showOpenDialog(new JFrame("open"));
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			//System.out.println("file: " + chooser.getSelectedFile().getName());
-			//contains vient de java 5.0
 			return chooser.getSelectedFile().getAbsolutePath();
 		}
 		return null;

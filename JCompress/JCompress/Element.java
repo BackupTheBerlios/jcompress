@@ -1,7 +1,5 @@
 package JCompress;
 
-import javax.naming.BinaryRefAddr;
-
 /**
  * Date = 21/01/2005 Project = JCompress File name = Element.java
  * 
@@ -83,7 +81,7 @@ public abstract class Element {
 	 * *afficheSeul : affiche l'element sans ses sous arbre
 	 */
 	public void afficherSeul() {
-		System.out.println(" ( " +caractere + " , " + frequence + " )");
+		System.out.println(" ( " + caractere + " , " + frequence + " )");
 	}
 
 	/**
@@ -93,44 +91,29 @@ public abstract class Element {
 		frequence++;
 	}
 
-//	/**
-//	 * *afficher : affiche l'element et ses sous-arbres
-//	 */
-//	public void afficher() {
-//		System.out.println(" ( " + caractere + " , " + frequence + " )");
-//		System.out.println("SAG ");
-//		if (SAG == null)
-//			System.out.println("null");
-//		else
-//			SAG.afficher();
-//		System.out.println("SAD ");
-//		if (SAD == null)
-//			System.out.println("null");
-//		else
-//			SAD.afficher();
-//	}
-//	
-	public Element getNoeudToCode(String code)
-	{
-		int i = Integer.parseInt(code.substring(0,1));
-		code = code.substring(1,code.length());
-		
-		if(i == 0)
-		{
-			if(code.length() == 0)
+	/**
+	 * *getNoeudToCode : retourne l'élément de l'arbre ayant pour code compresse code
+	 * @param String code compressse
+	 * @return Element
+	 */
+	public Element getNoeudToCode(String code) {
+		int i = Integer.parseInt(code.substring(0, 1));
+		code = code.substring(1, code.length());
+
+		if (i == 0) {
+			if (code.length() == 0)
 				return getSAG();
 			else
 				return getSAG().getNoeudToCode(code);
 		}
-		
-		if(i == 1)
-		{
-			if(code.length() == 0)
+
+		if (i == 1) {
+			if (code.length() == 0)
 				return getSAD();
 			else
 				return getSAD().getNoeudToCode(code);
 		}
-		
+
 		return null;
 	}
 }

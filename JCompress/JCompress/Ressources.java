@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.String;
 
 /**
  * Gére les fichiers
@@ -23,7 +22,7 @@ public class Ressources {
 	// constructeurs
 
 	public Ressources(String source, String destination)
-			throws FileNotFoundException {
+		throws FileNotFoundException {
 
 		// Créer les fichiers source et destination
 		fichierSource = new FileInputStream(source);
@@ -34,13 +33,10 @@ public class Ressources {
 		bufferOutput = new String();
 
 	}
-		
-	
 
 	///////////////////////////////////////
 	// operations
 
-	
 	/**
 	 * Retourne le bit suivant du fichier source.
 	 * @return Entier représentant un bit du fichier source (0 ou 1).
@@ -98,18 +94,13 @@ public class Ressources {
 		bufferOutput = bufferOutput + caractere;
 
 		if (bufferOutput.length() >= 8) {
-			//System.out.println("ecriture dans fichier de :"
-					//+ binaireToDecimal(bufferOutput.substring(0, 8)));
-			fichierDestination.write(binaireToDecimal(bufferOutput.substring(0,
-					8)));
+			fichierDestination.write(
+				binaireToDecimal(bufferOutput.substring(0, 8)));
 			if (bufferOutput.length() > 8) {
-				//System.out
-						//.println("bufferoutput avant ecriture" + bufferOutput);
 				bufferOutput = bufferOutput.substring(8, bufferOutput.length());
 			} else {
 				bufferOutput = "";
 			}
-			//System.out.println("bufferoutput apres ecriture" + bufferOutput);
 		}
 	}
 
