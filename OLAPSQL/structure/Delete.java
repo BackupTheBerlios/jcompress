@@ -24,10 +24,16 @@ public class Delete extends Commande{
 	 * @param nom
 	 * @param type
 	 */
-	public Delete(String nom, int type) {
+	public Delete(String nom, int type, Predicat p ) {
 		super(nom, type);
-		// TODO Auto-generated constructor stub
+		predicat = p;
 	}
 
-
+	/* (non-Javadoc)
+	 * @see structure.Commande#afficher()
+	 */
+	public void afficher() {
+		super.afficher();
+		predicat.afficher();
+	}
 }
