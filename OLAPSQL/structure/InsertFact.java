@@ -31,4 +31,17 @@ public class InsertFact extends Insert{
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @return Retourne la valeur de l'attribut connects.
+	 */
+	public HashMap getConnects(){
+		return connects;
+	}
+	
+	/**
+	 * @param initialse connects avec pConnects.
+	 */
+	public void setConnects(HashMap pConnects){
+		connects = pConnects;
+	}
 }

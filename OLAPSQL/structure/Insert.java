@@ -51,4 +51,18 @@ public class Insert extends Commande {
 				System.out.println("valeur : "+(String)values.get(i));
 		}
 	}
+	
+	/**
+	 * @return Retourne la valeur de l'attribut values.
+	 */
+	public ArrayList getValues(){
+		return values;
+	}
+	
+	/**
+	 * @param initialse values avec pValues.
+	 */
+	public void setValues(ArrayList pValues){
+		values = pValues;
+	}
 }

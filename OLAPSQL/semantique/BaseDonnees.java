@@ -49,12 +49,6 @@ public class BaseDonnees {
 		return exist(nom, "F");
 	}
 
-	public boolean createFact(String nom, ArrayList listeMesure,
-			ArrayList listeDimension){
-		// TODO
-		return false;
-	}
-
 	public boolean existDimension(String nom){
 		return exist(nom, "D");
 	}
@@ -63,11 +57,58 @@ public class BaseDonnees {
 		return exist(nom, "H");
 	}
 
+	public boolean existAttribut(String nomRelation, String nomAttribut){
+		// TODO
+		return false;
+	}
+	
+	public boolean existHierarchyToDimension(String nomDimension, String nomHierarchy){
+		// TODO
+		return false;
+	}
+	
+	public boolean existAttributToDimension(String nomDimension, String nomAttribut){
+		// TODO
+		return false;
+	}
+	
+	public boolean existAttributToFact(String nomFact, String nomAttribut){
+		// TODO
+		return false;
+	}
+	
+	public int getNumberAttribut(String nomRelation){
+		// TODO
+		return 0;
+	}
+	
+	public int getNumberDimension(String nomFact){
+		// TODO
+		return 0;
+	}
+
+	public boolean createFact(String nom, ArrayList listeMesure,
+			ArrayList listeDimension){
+		// TODO
+		return false;
+	}
+
 	/**
 	 * @param dim
 	 */
-	public void createDimension(CreateDimension dim) {
+	public void createDimension(CreateDimension dim){
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	/**
+	 * La dimension est elle relié au fait ?
+	 * @param nomFact Nom du fait
+	 * @param nomDimension Nom de la dimension.
+	 * @return Réponse à la question.
+	 */
+	public boolean factConnectDimension(String nomFact, String nomDimension){
+		// TODO
+		return false;
 	}
 }
