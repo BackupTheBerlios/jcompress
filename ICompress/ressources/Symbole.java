@@ -8,7 +8,6 @@ package ressources;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class Symbole {
-	
 
 	static String P_OUVRANTE="P_OUVRANTE";
 	static String P_FERMANTE="P_FERMANTE";

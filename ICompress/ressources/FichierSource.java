@@ -36,6 +36,7 @@ public class FichierSource extends Fichier{
 		String ligne = "";
 		try {
 			ligne = buff.readLine();
+			//System.out.println("ligne lue "+ligne);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(9);
@@ -76,6 +77,7 @@ public class FichierSource extends Fichier{
 
 		} else {
 			//fin de fichier
+			System.out.println("Fin de fichier");
 		}
 		return symb;
 
@@ -84,15 +86,17 @@ public class FichierSource extends Fichier{
 	/**
 	 * @return le prochain token, vide si fin de fichier
 	 */
-	private String next() {
+	public String next() {
 		String tmp = "";
 		if (st.hasMoreTokens()) {
 			tmp = st.nextToken();
 		} else {
 			try {
 				String ligne = buff.readLine();
+				//System.out.println("ligne lue "+ligne);
 				if (ligne != null) {
 					st = new StringTokenizer(ligne);
+					//System.out.println("nb de token "+ st.countTokens());
 					if (st.hasMoreTokens()) {
 						tmp = st.nextToken();
 					}
@@ -101,6 +105,7 @@ public class FichierSource extends Fichier{
 				e1.printStackTrace();
 			}
 		}
+		//System.out.println("next "+tmp);
 		return tmp;
 
 	}
@@ -109,17 +114,24 @@ public class FichierSource extends Fichier{
 		//FichierSource f = new FichierSource("T:/IUP Master
 		// 1/sem2/BOT/compress2/sources/enonce2.txt");
 		FichierSource f = new FichierSource(
-				"T:/IUP Master 1/sem2/BOT/compress2/sources/enonce2.pgm");
+				"T:/IUP Master 1/sem2/BOT/compress2/sources/baboon.pgm");
 
-		for (Symbole token = f.nextSymbole(); token != null; token = f
-				.nextSymbole())
-			System.out.println("symbole " + token.getValeur());
-		System.out.println("end");
+		System.out.println(f.next());
+		System.out.println(f.next());
+		System.out.println(f.next());
+		System.out.println(f.next());
+		//System.out.println(f.nextBinaire());
+//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
+//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
+//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
+//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
+		
+//		for (Symbole token = f.nextSymbole(); token != null; token = f
+//				.nextSymbole())
+//			System.out.println("symbole " + token.getValeur());
+//		System.out.println("end");
 	}
-
-	/* (non-Javadoc)
-	 * @see ressources.Fichier#fermer()
-	 */
+	
 	public void fermer() {
 		try {
 			buff.close();

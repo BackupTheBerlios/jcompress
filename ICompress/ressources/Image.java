@@ -1,6 +1,8 @@
 
 package ressources;
 
+import arbre.Arbre;
+
 /**
  * @author claire
  *
@@ -10,69 +12,115 @@ package ressources;
 public class Image {
 	
 	private Matrice mat;
-	private String type;
-	private int taille;
+	//private int taille;
 	private int nvGrisMax = 255;
 	
 	//ok
 	//suppose un fichier non vide
-	//et la taille annoncée est concordante avec le fichier-->NullPointerException
-	public Image (FichierSource f){
+	//et la taille annoncée est concordante avec le fichier sinon-->NullPointerException
+	public Image (String filename){
 		
-		type = f.nextSymbole().getValeur();
+		String type;
+		Symbole symb=null;
+		boolean EOF=false;
 		
-		//taille carree
-		//next tout court??
-		taille = Integer.parseInt(f.nextSymbole().getValeur());
-		taille = Integer.parseInt(f.nextSymbole().getValeur());
-		
-		mat = new Matrice(getTaille());
-		
-		nvGrisMax = Integer.parseInt(f.nextSymbole().getValeur());
-		
-		for (int i=0; i<getTaille();i++)
-			for (int j=0; j<getTaille();j++)
-			{
-				getMat().ajoutSymbole(f.nextSymbole());
-			}
-	}
-	
-	//TODO public Arbre construireArbre(){}
-	
-	public void sauvImage (FichierDestination f) {
-		
-		f.ecrireString(type);
-		f.ecrireEntree();
-		f.ecrireString(Integer.toString(taille));
-		f.ecrireEntree();
-		f.ecrireString(Integer.toString(taille));
-		f.ecrireEntree();
-		
-		//donner la responsabilité a matrice?
-		for (int i=0; i<getTaille();i++)
-		{	for (int j=0; j<getTaille();j++)
-			{
-				f.ecrireSymbole(getMat().get(i,j));
-				f.ecrireBlancs();
-			}
-			f.ecrireEntree();
+		//par defaut, c un type P2 quon construit afin de lire le type
+		FichierSource f = new FichierSource(filename);
+
+		if ((type=f.next()).equals("P5"))
+		{		f=null;
+				f=new FichierSourceBinaire(filename);
+				type = f.next();
 		}
-		//f.fermer();
+		//remplissage des attributs de l image
+		f.next();										//1ere taille
+		mat = new Matrice(Integer.parseInt(f.next()));	//2e taille, identiques
+		nvGrisMax = Integer.parseInt(f.next());
+		
+		System.out.println("taille mat "+mat.getTaille());
+		System.out.println("nvG "+nvGrisMax);
+		
+		
+		//remplissage de la matrice associée
+		int nb_mot=0;
+		for (int i=0; i<getTaille() && !(EOF);i++)
+			for (int j=0; j<getTaille() && !(EOF);j++)
+				if ((symb=f.nextSymbole()) ==null)
+				{	System.out.println("i,j :"+i+" "+j);
+					EOF = true;
+				}
+				else
+				{
+					nb_mot++;
+					getMat().ajoutSymbole(symb);
+				}
+		//System.out.println("nb mot "+nb_mot);
+	}
+	//------------------------------------------
+	//relations avec arbre
+	public Image(Arbre a){}
 	
+	public Arbre construireArbre(){
+		return null;
+	}
+	public Arbre construireArbreCompresseSansPerte(){
+		return null;
+	}
+	public Arbre construireArbreCompresseAvecPerte(){
+		return null;
+	}
+	//------------------------------------------
+	public void sauvImage (String filename, int type) {
+		
+		if (type!=2 && type!=5)
+			System.err.println("type incorrect : 2 ou 5");
+		else
+		{
+			FichierDestination f = new FichierDestination(filename);
+			
+			f.ecrireString("P"+type);
+			f.ecrireEntree();
+			f.ecrireString(Integer.toString(getTaille()));
+			f.ecrireEntree();
+			f.ecrireString(Integer.toString(getTaille()));
+			f.ecrireEntree();
+			f.ecrireString(Integer.toString(nvGrisMax));
+			f.ecrireEntree();
+			
+			//donner la responsabilité a matrice?
+			if (type==2)
+				for (int i=0; i<getTaille();i++)
+				{	for (int j=0; j<getTaille();j++)
+					{
+						f.ecrireSymbole(getMat().get(i,j));
+						f.ecrireBlancs();
+					}
+					f.ecrireEntree();
+				}
+			else if (type==5)
+				for (int i=0; i<getTaille();i++)
+				{	for (int j=0; j<getTaille();j++)
+					{
+						f.ecrireSymboleBinaire(getMat().get(i,j));
+					}
+					f.ecrireEntree();
+				}
+			f.fermer();
+		}
 	}
 	
 	public static void main(String[] args) {
 		
-		FichierSource f = new FichierSource("T:/IUP Master 1/sem2/BOT/compress2/sources/enonce.pgm");
+		//FichierSource f = new FichierSource("T:/IUP Master 1/sem2/BOT/compress2/sources/lena.pgm");
 		
-		Image im = new Image(f);
+		Image im = new Image("T:/IUP Master 1/sem2/BOT/compress2/sources/enonce.pgm");
 		
-		im.getMat().afficher();
+		//im.getMat().afficher();
 		System.out.println("taille "+ im.getTaille());
-		System.out.println("type "+ im.getType());
+		//System.out.println("type "+ im.getType());
 		
-		FichierDestination fd = new FichierDestination("T:/IUP Master 1/sem2/BOT/compress2/sources/sauvImenonce.pgm");
-		im.sauvImage(fd);
+		FichierDestination fd = new FichierDestination("T:/IUP Master 1/sem2/BOT/compress2/sources/lenatest.pgm");
+		//im.sauvImage(fd);
 		fd.fermer();
 	}	
 	
@@ -92,25 +140,7 @@ public class Image {
 	 * @return Returns the taille.
 	 */
 	public int getTaille() {
-		return taille;
+		return getMat().getTaille();
 	}
-	/**
-	 * @param taille The taille to set.
-	 */
-	public void setTaille(int taille) {
-		this.taille = taille;
-	}
-	/**
-	 * @return Returns the type.
-	 */
-	public String getType() {
-		return type;
-	}
-	/**
-	 * @param type The type to set.
-	 */
-	public void setType(String type) {
-		this.type = type;
-	}
-
+	
 }

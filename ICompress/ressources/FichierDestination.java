@@ -26,8 +26,28 @@ public class FichierDestination extends Fichier{
 			}	
 	}
 	
+	//la valeur du symbole doit etre un chiffre compris entre 0 et 255
+	public void ecrireSymboleBinaire(Symbole symb)
+	{ 
+		int tmp = Integer.parseInt(symb.getValeur());
+		String octet= Integer.toBinaryString(tmp);
+		
+		if (octet.length() < 8) {
+			int cond = 8 - octet.length();
+			for (int i = 0; i < cond; i++) {
+				octet = "0" + octet;
+			}
+		}else if (octet.length()>8){
+			System.out.println("Erreur, symbole.valeur > 255");
+		}
+		ecrireString(octet);
+	}
+	
 	public void ecrireSymbole (Symbole symb){
+		if (symb !=null)
 		ecrireString(symb.getValeur());
+		else
+			System.out.println("symbole null:ecriture impossible");
 	}
 	
 	public void ecrireString (String s){
@@ -36,7 +56,6 @@ public class FichierDestination extends Fichier{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
 	}
 	
 	public void ecrireEntree()
@@ -69,7 +88,7 @@ public class FichierDestination extends Fichier{
 	
 	public static void main(String[] args) {
 		 Symbole symb = new Symbole("salut");
-		 Symbole symb1 = new Symbole("2");
+		 Symbole symb1 = new Symbole("255");
 		 Symbole symb2 = new Symbole("1");
 		 
 		 FichierDestination f = new FichierDestination("T:/IUP Master 1/sem2/BOT/compress2/sources/test.pgm");
@@ -81,6 +100,7 @@ public class FichierDestination extends Fichier{
 		 f.ecrireSymbole(symb2);
 		 f.ecrireEspace();
 		 f.ecrireSymbole(symb);
+		 f.ecrireSymboleBinaire(symb1);
 		
 		 System.out.println("ok test ecriture");
 		 f.fermer();

@@ -34,6 +34,12 @@ import arbre.Couleur;
 import arbre.GrisCompose;
 import arbre.Noeud;
 
+import ressources.Image;
+//lire fichier P2 ok
+//lire fichier P5 ca a lair ok...a verifier graphiquement
+//ecrire fichier p2 ok
+//ecrire fichier p5 non-->"010101"
+
 
 /**
  * @author claire TODO To change the template for this generated type comment go to Window -
@@ -60,7 +66,7 @@ public class Application
   protected static void decompresser ()
   {
 	//String ficDest = ouvrirFichier(".icomp");
-	//String fic = ouvrirFichier(".png");
+	//String fic = ouvrirFichier(".pmg");
     textArea.append ("Decompression." + NEW_LINE) ;
     
     // test arbre
@@ -84,7 +90,7 @@ public class Application
    */
   protected static void compressionNormal ()
   {
-	String fic = ouvrirFichier(".png");
+	String fic = ouvrirFichier(".pmg");
 	String ficDest = ouvrirFichier(".icomp");
     textArea.append ("Compression normale." + NEW_LINE) ;
   }
@@ -94,7 +100,7 @@ public class Application
    */
   protected static void compressionSansPerte ()
   {
-	String fic = ouvrirFichier(".png");
+	String fic = ouvrirFichier(".pmg");
 	String ficDest = ouvrirFichier(".icomp");
     textArea.append ("Compression sans perte." + NEW_LINE) ;
   }
@@ -104,7 +110,7 @@ public class Application
    */
   protected static void compressionAvecPerte ()
   {
-	String fic = ouvrirFichier(".png");
+	String fic = ouvrirFichier(".pmg");
 	String ficDest = ouvrirFichier(".icomp");
     textArea.append ("Compression avec perte." + NEW_LINE) ;
   }
