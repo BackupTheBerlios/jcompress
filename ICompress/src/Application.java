@@ -258,12 +258,5 @@ public class Application {
 	 */
 	public static void afficherImage(String mFichierImage) {
 		new EditeurPGM(mFichierImage);
-		
-/*		try {
-			new DisplayPixmapAWT(mFichierImage);
-		} catch (IOException e) {
-			textArea.append("Erreur lors de l'affichage de l'image." + NEW_LINE);
-			e.printStackTrace();
-		}*/
 	}
 }

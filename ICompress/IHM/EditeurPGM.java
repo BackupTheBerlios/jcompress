@@ -37,16 +37,14 @@ public class EditeurPGM {
 
 		if(typeFichier.equals(Fichier.P5)){
 			fichier = new FichierSourceBinaire(mFichier);
-/*			typeFichier = fichier.next(); // type
+			typeFichier = fichier.next(); // type
 			width = Integer.parseInt(fichier.next()); // largeur
 			height = Integer.parseInt(fichier.next()); // longueur
 			niveau = Integer.parseInt(fichier.next()); // niveau de gris
-			size = width * height;*/
+			size = width * height;
 		}
 		else{
 		}
-
-		//System.out.println(fichier.nextSymbole().getValeur());
 
 		int[] pixels = new int[size];
 		for(int i = 0 ; i < size ; i++){
