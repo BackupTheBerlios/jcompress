@@ -62,8 +62,11 @@ public class FichierSourceBinaire extends FichierSource {
 	public Symbole nextSymbole() {
 		String valeur="";
 		
-		if ((valeur=nextBinaire())!="-1")
+		if ((valeur=nextBinaire())!="-1"){
+			if(valeur == null)
+				return null;
 			return new Symbole(valeur);
+		}
 		
 		return null;
 	}

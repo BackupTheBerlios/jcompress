@@ -1,7 +1,6 @@
 
 package arbre;
 
-import ressources.FichierSource;
 import ressources.Matrice;
 
 /**

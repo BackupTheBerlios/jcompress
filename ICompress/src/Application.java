@@ -1,48 +1,33 @@
-/*
- * SOAP Supervising, Observing, Analysing Projects Copyright (C) 2003-2004
- * SOAPteam This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details. You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
 package src;
 
-import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.MemoryImageSource;
 import java.io.File;
-import java.io.IOException;
+import java.text.ParseException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.MaskFormatter;
+
+import IHM.EditeurPGM;
+import IHM.Verifier;
 
 import ressources.Fichier;
 
-import editeurPGMP5.BytePixmap;
-import editeurPGMP5.DisplayPixmapAWT;
 
-import arbre.Arbre;
 
 //lire fichier P2 ok
 //lire fichier P5 ca a lair ok...a verifier graphiquement
@@ -56,14 +41,16 @@ import arbre.Arbre;
 public class Application {
 
 	// Attribut pour l'IHM
-	private static JTextArea textArea;
 	private static final String NEW_LINE = "\n";
-	protected static JCheckBox boutonNormal;
-	protected static JCheckBox boutonSansPerte;
-	protected static JCheckBox boutonAvecPerte;
-	protected static JTextField fTaux;
-	protected static JLabel lTaux;
-	protected static JComboBox cTypeFichier;
+
+	private static JTextArea textArea;
+	private static JCheckBox boutonNormal;
+	private static JCheckBox boutonSansPerte;
+	private static JCheckBox boutonAvecPerte;
+	private static JLabel lTaux;
+	private static JComboBox cTypeFichier;
+	private static JFormattedTextField fTaux = null;
+
 
 	public static void main(String[] args) {
 		init();
@@ -76,9 +63,9 @@ public class Application {
 	protected static void decompresser(String pTypeFichier) {
 		//String ficDest = ouvrirFichier(".txt");
 		String fic = ouvrirFichier(".pgm");
-		textArea.append("Decompression terminée." + NEW_LINE);
-		Arbre ab = new Arbre("D:\\fac\\bot\\Projet2\\exemple\\enonce.txt");
-		System.out.println(ab.construireLigne());
+		//textArea.append("Decompression terminée." + NEW_LINE);
+		//Arbre ab = new Arbre("D:\\fac\\bot\\Projet2\\exemple\\enonce.txt");
+		//System.out.println(ab.construireLigne());
 		afficherImage(fic);
 	}
 
@@ -135,10 +122,19 @@ public class Application {
 		lTaux = new JLabel("Taux de compression :");
 		lTaux.setVisible(false);
 
-		// Champs texte
-		fTaux = new JTextField(8);
-		fTaux.setEditable(true);
-		fTaux.setVisible(false);
+		// Champ texte formatte
+		try{
+			// Formatage d'un champ text
+			MaskFormatter mask = new MaskFormatter("#"+"."+"##");
+			fTaux = new JFormattedTextField(mask);
+			fTaux.setColumns(4);
+			fTaux.setInputVerifier(new Verifier());
+			fTaux.setEditable(true);
+			fTaux.setVisible(false);
+		}
+		catch(ParseException e1){
+			textArea.append("Erreur au cours du formattage du champ texte"+NEW_LINE);
+		}
 
 		// Combo box permettant le type du fichier PGM souhaité en sortie de la
 		// decompression
@@ -174,8 +170,16 @@ public class Application {
 					compressionNormal(fichierSource);
 				if (boutonSansPerte.isSelected())
 					compressionSansPerte(fichierSource);
-				if (boutonAvecPerte.isSelected())
-					compressionAvecPerte(fichierSource);
+				if (boutonAvecPerte.isSelected()){
+					// Verification du taux de compression
+					float tx = Float.parseFloat(fTaux.getText());
+					if(tx > 0.50 && tx <= 1){
+						compressionAvecPerte(fichierSource);
+					}
+					else{
+						textArea.append("Le taux de compression est invalide."+NEW_LINE);
+					}
+				}
 			}
 		});
 
@@ -253,34 +257,13 @@ public class Application {
 	 * @param mFichierImage Chemin de l'image à afficher. void
 	 */
 	public static void afficherImage(String mFichierImage) {
-		JFrame image = new JFrame(mFichierImage);
-		int[] pixels = null;
-		BytePixmap p = null;
-	    MemoryImageSource source = new MemoryImageSource(p.width, p.height, pixels, 0, p.width);
-	    Image img = Toolkit.getDefaultToolkit().createImage(source);
-	    image.add(new DisplayImage(img));
-	    image.pack();
-	    image.setVisible(true);
-		try {
+		new EditeurPGM(mFichierImage);
+		
+/*		try {
 			new DisplayPixmapAWT(mFichierImage);
 		} catch (IOException e) {
-			textArea.append("Erreur lors de l'affichage de l'image" + NEW_LINE);
+			textArea.append("Erreur lors de l'affichage de l'image." + NEW_LINE);
 			e.printStackTrace();
-		}
+		}*/
 	}
 }
-
-class DisplayImage extends Canvas {
-	  
-	  Image img;
-
-	  public DisplayImage(Image pImg) {
-	    this.img = pImg;
-	    setSize(img.getWidth(this), img.getHeight(this));
-	  }
-
-	  public void paint(Graphics gr) {
-	    gr.drawImage(img, 0, 0, this);
-	  }
-
-	}

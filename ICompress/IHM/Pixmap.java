@@ -1,4 +1,4 @@
-package editeurPGMP5;
+package IHM;
 import java.io.*;
 
 class PixmapReader extends FileInputStream {
