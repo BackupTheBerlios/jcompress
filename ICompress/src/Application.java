@@ -41,11 +41,6 @@ import ressources.Image;
 import IHM.EditeurPGM;
 import IHM.Verifier;
 
-//lire fichier P2 ok
-//lire fichier P5 ok
-//ecrire fichier p2 ok
-//ecrire fichier p5 ok
-
 /**
  * @author claire TODO To change the template for this generated type comment go
  *         to Window - Preferences - Java - Code Style - Code Templates

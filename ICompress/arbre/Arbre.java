@@ -15,10 +15,6 @@ public class Arbre {
 	private Noeud racine = null;
 	private int taille;
 
-	public Arbre(Noeud n){
-	  racine = n;
-	}
-	
 	public Arbre(Noeud n, int t){
 	  racine = n;
 	  taille = t;
@@ -28,22 +24,16 @@ public class Arbre {
 	 * retourne le nombre de feuille de l'arbre
 	 * @return int, nb de feuilles(couleurs)
 	 */
-	//ok
 	public int grandeurArbre(){
 		return racine.grandeurNoeud();
 	};
 	
-	/**
+	/**TODO
 	 * compare la taille entre this et a et retourne un taux en pourcentage
 	 * @param a, Arbre a comparer
 	 * @return double, taux < 100 si a est "plus petit" que this
 	 */
-	public double tauxDeCompression(Arbre a){
-		int fd = a.grandeurArbre();
-		int fdd = grandeurArbre();
-		float top = grandeurArbre()/a.grandeurArbre();
-		double som=(a.grandeurArbre()/this.grandeurArbre())*100;
-		float somf=(a.grandeurArbre()/this.grandeurArbre())*100;
+	public float tauxDeCompression(Arbre a){
 		float f1 = a.grandeurArbre();
 		float f2 = this.grandeurArbre();
 		return ((f1/f2)*100);

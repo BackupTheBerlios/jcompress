@@ -13,11 +13,6 @@ import arbre.Noeud;
  */
 public final class Couleur extends Noeud {
 
-	public static String NOIR="NOIR";
-	public static String BLANC="BLANC";
-	public static String GRIS="GRIS";
-	
-	private String couleur;
 	private int valeur;
 	
 	/**
@@ -26,10 +21,6 @@ public final class Couleur extends Noeud {
 	public Couleur(Noeud p, int v) {
 		super(p);
 		valeur = v;
-	}
-	
-	public String getCouleur(){
-	  return couleur;
 	}
 	
   /**
@@ -47,10 +38,6 @@ public final class Couleur extends Noeud {
   {
     valeur = pValeur ;
   }
-  
-	public void setCouleur(String pCouleur){
-	  couleur = pCouleur;
-	}
 
   /* (non-Javadoc)
    * @see arbre.Noeud#construireLigne()

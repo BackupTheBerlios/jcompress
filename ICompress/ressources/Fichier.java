@@ -2,10 +2,7 @@
 package ressources;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * superclasse des fichiers E/S exploités dans ICompress
  */
 public abstract class Fichier {
 	
@@ -14,10 +11,13 @@ public abstract class Fichier {
   
 	protected String filename;
 	
-	public Fichier(String name){
+	protected Fichier(String name){
 		filename = name;
 	}
 	
+	/**
+	 * ferme les accesseurs utilisés
+	 */
 	public abstract void fermer ();
 
 }

@@ -6,13 +6,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Gestion d'une matrice carrée de 2^n de Symbole
  */
-
-//sous matrice carree de taille paire!
 public class Matrice {
   
   	public static final String NORD_OUEST = "NO";
@@ -20,15 +15,19 @@ public class Matrice {
   	public static final String SUD_OUEST = "SO";
   	public static final String SUD_EST = "SE";
 
-	private Symbole[][] mat;
+	private Symbole[][] mat=null;
 	private int taille=0;
 	
 	//coordonnées du prochain symbole à inserer de haut en bas et de gauche a droite
 	private int iCourant=0;
 	private int jCourant=0;
 	
+	/**
+	 * constructeur
+	 * @param t, taille de la matrice
+	 */
 	public Matrice (int t){
-		if (t>0 /*TODO et t est pair*/)
+		if (t>0)
 		{	mat = new Symbole[t][t];
 			taille=t;
 		}
@@ -41,18 +40,17 @@ public class Matrice {
 		return taille;
 	}
 
+	/**
+	 * retourne le symbole a la ligne i colonne j de la matrice
+	 * @param i, ligne
+	 * @param j, colonne
+	 * @return Symbole
+	 */
 	public Symbole get(int i, int j){
 		if (i>=0 && j>=0 && i<mat.length && j<mat.length)
 			return mat[i][j];
 		return null;
 	}
-//	public void set(int i, int j, Symbole s){
-//		if (i>=0 && j>=0 && i<mat.length && j<mat.length)
-//		{
-//			mat[i][j]=s;
-//		}
-//	}
-	
 	
 	/**
 	 * Ajoute la matrice m a la position position.
@@ -80,7 +78,10 @@ public class Matrice {
 	  }
 	}
 	
-	//ajoute un symbole a la suite
+	/**
+	 * ajoute le symbole s a la suite dans la matrice, au debut si pleine
+	 * @param s, le Symbole a ajouter
+	 */
 	public void ajoutSymbole(Symbole s){
 		mat[iCourant][jCourant] = s;
 		
@@ -100,14 +101,13 @@ public class Matrice {
 				jCourant=0;
 			}
 	}
+	
 	/**
 	 * retourne une sous matrice de mat , id 	1	2
 	 * 											3	4
 	 * @param id, l identifiant de la sous matrice voulue 1=NO, 2=NE,3=SO,4=SE
 	 * @return Matrice, la sous matrice
 	 */
-	//ok
-	//TODO remplacer les int par les NO,...
 	public Matrice sousMatrice(int id){
 			
 			Matrice sMat=null;
@@ -191,11 +191,12 @@ public class Matrice {
 	}
 	
 	
-	
+	/**
+	 * affiche la matrice sur la console
+	 */
 	public void afficher(){
 		for (int i = 0; i<mat.length;i++)
 		{	
-			//System.out.println("ligne "+i+": ");
 			for (int j = 0; j<mat[i].length;j++)
 				if ((mat[i][j])!=null)
 					System.out.print((mat[i][j]).getValeur()+" ");
@@ -203,77 +204,6 @@ public class Matrice {
 					System.out.println("null");
 			System.out.println("");
 		}	
-	}
-	
-	public static void main(String[] args) {
-		Matrice m = new Matrice(4);
-		//Matrice m1 = m.sousMatrice(1);
-		
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("1"));
-		m.ajoutSymbole(new Symbole("7"));
-		m.ajoutSymbole(new Symbole("8"));
-		m.ajoutSymbole(new Symbole("9"));
-		m.ajoutSymbole(new Symbole("10"));
-		m.ajoutSymbole(new Symbole("11"));
-		m.ajoutSymbole(new Symbole("12"));
-		m.ajoutSymbole(new Symbole("13"));
-		m.ajoutSymbole(new Symbole("14"));
-		m.ajoutSymbole(new Symbole("15"));
-		m.ajoutSymbole(new Symbole("16"));
-		
-		
-		HashMap mp = m.nbSymbDiff();
-		Set st = mp.keySet();
-		
-		for (Iterator it = st.iterator();it.hasNext();)
-		{	
-			Integer key = (Integer)it.next();
-			System.out.println("key "+key+ " value "+mp.get(key));
-		}
-		
-		Matrice m1 = m.sousMatrice(1);
-		m.afficher();
-		System.out.println("unie "+m.isUnie());
-		m1.afficher();
-
-//		
-//		
-//		
-//		Matrice m1 = new Matrice(4);
-//		m1.ajoutMatrice(m,NORD_OUEST);
-//		m.ajoutSymbole(new Symbole("03"));
-//		m.ajoutSymbole(new Symbole("04"));
-//		m.ajoutSymbole(new Symbole("07"));
-//		m.ajoutSymbole(new Symbole("08"));
-//		m1.ajoutMatrice(m,NORD_EST);
-//		m.ajoutSymbole(new Symbole("09"));
-//		m.ajoutSymbole(new Symbole("10"));
-//		m.ajoutSymbole(new Symbole("13"));
-//		m.ajoutSymbole(new Symbole("14"));
-//		m1.ajoutMatrice(m,SUD_OUEST);
-//		m.ajoutSymbole(new Symbole("11"));
-//		m.ajoutSymbole(new Symbole("12"));
-//		m.ajoutSymbole(new Symbole("15"));
-//		m.ajoutSymbole(new Symbole("16"));
-//		m1.ajoutMatrice(m,SUD_EST);
-//		//System.out.println(m.get(0,0).getValeur());
-//		System.out.println(m1.getTaille());
-//		m.afficher();
-//		m1.afficher();
-//		
-//		//ok avec les 4 identificateurs
-//		Matrice m2 = m.sousMatrice(1);
-//		System.out.println("taille m2 "+m2.getTaille());
-//		m2.afficher();
-//		
-//		System.out.println("m unie? "+m.isUnie());
-//		System.out.println("m2 unie? "+m2.isUnie());
-		
 	}
 	
 	/**

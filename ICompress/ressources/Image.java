@@ -10,16 +10,23 @@ import arbre.Couleur;
 import arbre.GrisCompose;
 import arbre.Noeud;
 
-
+/**
+ * Gestion d'une image en forme de matrice
+ * encapsulation de la matrice associee
+ * import/export fichiers
+ * import/export arbre
+ */
 public class Image {
 	
 	private Matrice mat;
 	//private int taille;
 	private int nvGrisMax = 255;
 	
-	//ok
-	//suppose un fichier non vide
-	//et la taille annoncée est concordante avec le fichier sinon-->NullPointerException
+	/**construteur
+	 * suppose un fichier non vide
+	 * et la taille annoncée est concordante avec le fichier sinon-->NullPointerException
+	 * @param filename, nom du fichier absolu contenant une image P2/P5
+	 */
 	public Image (String filename){
 		
 		String type;
@@ -29,12 +36,12 @@ public class Image {
 		//par defaut, c un type P2 quon construit afin de lire le type
 		FichierSource f = new FichierSource(filename);
 
-		if ((type=f.next()).equals("P5"))
+		if ((type=f.next()).equals(Fichier.P5))
 		{		f=null;
 				f=new FichierSourceBinaire(filename);
 				type = f.next();
 		}
-		//remplissage des attributs de l image
+		//remplissage des attribussts de l image
 		f.next();										//1ere taille
 		mat = new Matrice(Integer.parseInt(f.next()));	//2e taille, identiques
 		String tmp = f.next();
@@ -59,24 +66,32 @@ public class Image {
 				}
 	}
 	
+	/**
+	 * constructeur avec une matrices
+	 * @param m, Matrice a associer
+	 */
 	public Image(Matrice m){
-		  // TODO
 			setMat(m);
 		}
 	
 	//------------------------------------------
-	//relations avec arbre
-	//ok
+	//IMPORT/EXPORT ARBRE
+	//------------------------------------------
+
+	/**constructeur, rien si a null
+	 * @param a, Arbre
+	 */
 	public Image(Arbre a){
-	  // TODO
-		setMat(a.construireMatrice());
+		if (a!=null)
+			setMat(a.construireMatrice());
 	}
+	
 	/**
 	 * construit un arbre a partir de l image this
 	 * @return Arbre, l arbre construit
 	 */
 	public Arbre construireArbre(){
-		return new Arbre (construireNoeud(null));
+		return new Arbre (construireNoeud(null), getTaille());
 	}
 	
 	/**
@@ -84,9 +99,7 @@ public class Image {
 	 * @param p, noeud courant qui est le pere des prochains
 	 * @return Noeud
 	 */
-	//peut etre long
-	//a tester sur vrai fichier, ok avec enonce
-	public Noeud construireNoeud(Noeud p){
+	private Noeud construireNoeud(Noeud p){
 		  
 		if (getMat()!=null)
 		{
@@ -109,12 +122,15 @@ public class Image {
 				return new Couleur(p,Integer.parseInt(getMat().get(0,0).getValeur()));
 			}
 		}	
-		
 		return null;
 		}
 	
+	/**
+	 * construit un arbre sans perte a partir de l image this
+	 * @return Arbre, l arbre construit
+	 */
 	public Arbre construireArbreCompresseSansPerte(){
-		return new Arbre (construireNoeudSansPerte(null));
+		return new Arbre (construireNoeudSansPerte(null), getTaille());
 	}
 	
 	/**
@@ -122,7 +138,7 @@ public class Image {
 	 * @param p, noeud courant qui est le pere des prochains
 	 * @return Noeud
 	 */
-	public Noeud construireNoeudSansPerte(Noeud p){
+	private Noeud construireNoeudSansPerte(Noeud p){
 		if (getMat()!=null)
 		{
 			if (getMat().getTaille()>1)
@@ -137,8 +153,6 @@ public class Image {
 				int val2 = im2.getMat().isUnie();
 				int val3 = im3.getMat().isUnie();
 				int val4 = im4.getMat().isUnie();
-				
-				//System.out.println("val1 "+val1+ " val2 "+val2+" val3 "+val3+" val4 "+val4);
 				
 				if (val1!=-1 && val2!=-1 && val3!=-1 && val4 !=-1 && val1==val2 && val2==val3 && val3==val4)
 					return new Couleur(p, val1);
@@ -161,10 +175,10 @@ public class Image {
 	 * @return Arbre construit, null si taux>1 ou taux<0
 	 */
 	
-	public Arbre construireArbreCompresseAvecPerte(double taux){
+	public Arbre construireArbreCompresseAvecPerte(float taux){
 
 	if (taux>=0 && taux <= 1)
-	  return new Arbre (construireNoeudAvecPerte(null,taux));
+	  return new Arbre (construireNoeudAvecPerte(null,taux), getTaille());
 	return null;
 	}
 
@@ -172,9 +186,9 @@ public class Image {
 	 * fonction recursive de construction descendante des noeuds compresse avec perte de 1-taux
 	 * @param p, noeud courant qui est le pere des prochains 
 	 * @param tx, taux de sauvegarde des couleurs
-	 * @return
+	 * @return Noeud
 	 */
-	public Noeud construireNoeudAvecPerte(Noeud p, double tx)
+	private Noeud construireNoeudAvecPerte(Noeud p, float tx)
 	{
 		if (getMat()!=null)
 		{
@@ -184,7 +198,7 @@ public class Image {
 				
 				//deb perte
 				int occTX  = (int)(getTaille()*getTaille()*tx);
-				System.out.println("occ demandees "+occTX);
+				//System.out.println("occ demandees "+occTX);
 				HashMap cpt = getMat().nbSymbDiff();
 				
 				Integer key = (Integer)maxValue(cpt);
@@ -231,6 +245,9 @@ public class Image {
 			return key;
 		}
 	//------------------------------------------
+	// END IMPORT/EXPORT ARBRE
+	//------------------------------------------
+		
 	/**
 	 * Enregistre l'image dans un fichier dont le nom est filename et de type 2 ou 5 (P2/P5)
 	 * @param filename, nom du fichier
@@ -253,7 +270,7 @@ public class Image {
 		f.ecrireString("P"+String.valueOf(type));
 		f.ecrireEntree();
 		f.ecrireString(Integer.toString(getTaille()));
-		f.ecrireBlanc();
+		f.ecrireEspace();
 		f.ecrireString(Integer.toString(getTaille()));
 		f.ecrireEntree();
 		f.ecrireString(Integer.toString(nvGrisMax));
@@ -278,71 +295,10 @@ public class Image {
 				{
 					((FichierDestinationBinaire)f).ecrireSymboleBinaire(getMat().get(i,j));
 				}
-				//f.ecrireEntree();
 			}}
 		f.fermer();
 		
 	}
-	
-	public static void main(String[] args) {
-		
-		//FichierSource f = new FichierSource("T:/IUP Master 1/sem2/BOT/compress2/sources/lena.pgm");
-//		
-		Image im = new Image("T:/IUP Master 1/sem2/BOT/compress2/sources/Boat.pgm");
-		
-		im.sauvImage("T:/IUP Master 1/sem2/BOT/compress2/sources/babtest.pgm",2);
-		
-		
-		
-		
-//		
-//		System.out.println("taille "+ im.getTaille());
-//		
-//		im.sauvImage("T:/IUP Master 1/sem2/BOT/compress2/sources/babtest.pgm",5);
-//		try {
-//			new DisplayPixmapAWT("T:/IUP Master 1/sem2/BOT/compress2/sources/babtest.pgm");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		//Arbre a = new Arbre(new Noeud(null));
-//		Matrice m = new Matrice(2);
-//		m.ajoutSymbole(new Symbole("255"));
-//		m.ajoutSymbole(new Symbole("255"));
-//		m.ajoutSymbole(new Symbole("255"));
-//		m.ajoutSymbole(new Symbole("210"));
-//		m.ajoutSymbole(new Symbole("1"));
-//		m.ajoutSymbole(new Symbole("1"));
-//		m.ajoutSymbole(new Symbole("7"));
-//		m.ajoutSymbole(new Symbole("8"));
-//		m.ajoutSymbole(new Symbole("9"));
-//		m.ajoutSymbole(new Symbole("10"));
-//		m.ajoutSymbole(new Symbole("11"));
-//		m.ajoutSymbole(new Symbole("12"));
-//		m.ajoutSymbole(new Symbole("13"));
-//		m.ajoutSymbole(new Symbole("14"));
-//		m.ajoutSymbole(new Symbole("15"));
-//		m.ajoutSymbole(new Symbole("16"));
-		
-//		Image im = new Image(m);
-		
-//		Arbre a = im.construireArbre();
-//		Arbre a1 = im.construireArbreCompresseSansPerte();
-//		double t =  0.6;
-//		Arbre a2 = im.construireArbreCompresseAvecPerte(t);
-//		System.out.println("arbre"+a.construireLigne());
-//		System.out.println("arbre CompresseSPerte "+a1.construireLigne());
-//		System.out.println("arbre CompresseAPerte "+t+" "+a2.construireLigne());
-//		//System.out.println("arbre "+a.construireLigne());
-		
-//		Image im2 = new Image(a.construireImage());
-//		Image im1 = new Image (a1.construireImage());
-//		im1.getMat().afficher();
-//		im2.getMat().afficher();
-		
-		
-		
-		System.out.println("end");
-	}	
 	
 	/**
 	 * @return Returns the mat.

@@ -7,15 +7,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Gestin des fichiers Sortie de ICompress
+ * 
  */
 public class FichierDestination extends Fichier{
 
 	private FileWriter diskFile;
 	
+	/**
+	 * constructeur
+	 * @param nom, nom absolu du fichier
+	 */
 	public FichierDestination(String nom){
 		super(nom);	
 		try {
@@ -26,23 +28,10 @@ public class FichierDestination extends Fichier{
 			}	
 	}
 	
-//	//la valeur du symbole doit etre un chiffre compris entre 0 et 255
-//	public void ecrireSymboleBinaire(Symbole symb)
-//	{ 
-//		int tmp = Integer.parseInt(symb.getValeur());
-//		String octet= Integer.toBinaryString(tmp);
-//		
-//		if (octet.length() < 8) {
-//			int cond = 8 - octet.length();
-//			for (int i = 0; i < cond; i++) {
-//				octet = "0" + octet;
-//			}
-//		}else if (octet.length()>8){
-//			System.out.println("Erreur, symbole.valeur > 255");
-//		}
-//		ecrireString(octet);
-//	}
-	
+	/**
+	 * ecrit le Symbole symb dans le fichier, rien si null
+	 * @param symb
+	 */
 	public void ecrireSymbole (Symbole symb){
 		if (symb !=null)
 		ecrireString(symb.getValeur());
@@ -50,7 +39,13 @@ public class FichierDestination extends Fichier{
 			System.out.println("symbole null:ecriture impossible");
 	}
 	
+	/**
+	 * ecrit la chaine de caractere s dans le fichier, rien si null
+	 * @param s,la chaine
+	 */
 	public void ecrireString (String s){
+		
+		if (s!=null)
 		try {
 			diskFile.write(s);
 		} catch (IOException e) {
@@ -58,6 +53,10 @@ public class FichierDestination extends Fichier{
 		}
 	}
 	
+	/**
+	 * ecrit un caractere de Retour Chariot dans le fichier
+	 *
+	 */
 	public void ecrireEntree()
 	{
 		try {
@@ -68,7 +67,9 @@ public class FichierDestination extends Fichier{
 	}
 	
 	
-	//ecrit 4 espaces consecutifs
+	/**
+	 * ecrit 4 espaces consecutifs dans le fichier
+	 */
 	public void ecrireBlancs(){
 		try {
 			diskFile.write("    ");
@@ -77,15 +78,9 @@ public class FichierDestination extends Fichier{
 		}
 	}
 	
-//	ecrit 1 espaces
-	public void ecrireBlanc(){
-		try {
-			diskFile.write(" ");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	//ecrit 1 espace
+	/**
+	 * ecrit 1 espace dans le fichier
+	 */
 	public void ecrireEspace(){
 		try {
 			diskFile.write(" ");
@@ -94,28 +89,9 @@ public class FichierDestination extends Fichier{
 		}
 	}
 	
-	public static void main(String[] args) {
-		 Symbole symb = new Symbole("salut");
-		 Symbole symb1 = new Symbole("255");
-		 Symbole symb2 = new Symbole("1");
-		 
-		 FichierDestination f = new FichierDestination("T:/IUP Master 1/sem2/BOT/compress2/sources/test.pgm");
-		 
-		 f.ecrireSymbole(symb);
-		 f.ecrireEntree();
-		 f.ecrireSymbole(symb2);
-		 f.ecrireBlancs();
-		 f.ecrireSymbole(symb2);
-		 f.ecrireEspace();
-		 f.ecrireSymbole(symb);
-		 //f.ecrireSymboleBinaire(symb1);
-		
-		 System.out.println("ok test ecriture");
-		 f.fermer();
-		
-		
-	}
-
+	/**
+	 * @see Fichier#fermer()
+	 */
 	public void fermer() {
 		try {
 			diskFile.close();

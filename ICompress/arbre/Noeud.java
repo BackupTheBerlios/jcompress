@@ -13,7 +13,7 @@ public abstract class Noeud {
 
 	private Noeud pere = null;
 	
-	public Noeud (Noeud p){
+	protected Noeud (Noeud p){
 		pere = p;
 	}
 	

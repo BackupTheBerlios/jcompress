@@ -5,10 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * @author claire
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * Gestion des fichiers d Entrée en binaire
  */
 public class FichierSourceBinaire extends FichierSource {
 
@@ -18,8 +15,8 @@ public class FichierSourceBinaire extends FichierSource {
 
 	private int nb_next = 0;
 
-	/**
-	 * @param fileName
+	/**constructeur
+	 * @param fileName, nom absolu du fichier
 	 */
 	public FichierSourceBinaire(String fileName) {
 		super(fileName);
@@ -32,7 +29,7 @@ public class FichierSourceBinaire extends FichierSource {
 		}
 	}
 
-	/**ca a lair ok..
+	/**
 	 * @see ressources.FichierSource#next()
 	 */
 	public String next() {
@@ -54,7 +51,7 @@ public class FichierSourceBinaire extends FichierSource {
 							e2.printStackTrace();
 						}
 						//compte les retours chariots
-						if (intLu == 13)
+						if (intLu == 10 || intLu==13)
 							i++;
 					}
 				}
@@ -63,7 +60,9 @@ public class FichierSourceBinaire extends FichierSource {
 		return next;
 	}
 
-	//retourne l octet suivant, null si fin de fichier
+	/**retourne l octet suivant, null si fin de fichier
+	 * @return String, la chaine correspondante lue (ici entier)
+	 */
 	private String nextBinaire() {
 		int intLu = -1;
 		try {
@@ -78,6 +77,9 @@ public class FichierSourceBinaire extends FichierSource {
 		return null;
 	}
 
+	/**
+	 * @see FichierSource#nextSymbole()
+	 */
 	public Symbole nextSymbole() {
 		String valeur="";
 		
@@ -90,17 +92,9 @@ public class FichierSourceBinaire extends FichierSource {
 
 	}
 
-	public static void main(String[] args) {
-		FichierSourceBinaire f = new FichierSourceBinaire(
-				"T:/IUP Master 1/sem2/BOT/compress2/sources/baboon.pgm");
-
-		System.out.println(f.next());
-		System.out.println(f.next());
-		System.out.println(f.next());
-		System.out.println(f.next());
-		System.out.println(f.nextBinaire());
-	}
-
+	/**
+	 * @see Fichier#fermer()
+	 */
 	public void fermer() {
 		try {
 			lecteurBinaire.close();

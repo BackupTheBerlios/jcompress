@@ -52,8 +52,8 @@ public class FichierSource extends Fichier{
 
 	}
 
-	/** 
-	 * @return le prochain symbole, null si fin de fichier
+	/**
+	 * @return le prochain symbole lu, null si fin de fichier
 	 */
 	public Symbole nextSymbole() {
 		Symbole symb = null;
@@ -64,7 +64,6 @@ public class FichierSource extends Fichier{
 		if (courant != "") {
 			String symbStr = "";
 			
-			//TODO a revoir la condition, a generaliser pte..
 			if (courant.length() > 1
 					&& (courant.startsWith(")") || courant.startsWith("("))) {
 				//token compose ex: ()(())))
@@ -74,7 +73,6 @@ public class FichierSource extends Fichier{
 				symbStr = courant;
 				courant = "";
 			}
-
 			//construit le symbole
 			symb = new Symbole(symbStr);
 
@@ -114,28 +112,9 @@ public class FichierSource extends Fichier{
 
 	}
 	
-	public static void main(String[] args) {
-		//FichierSource f = new FichierSource("T:/IUP Master
-		// 1/sem2/BOT/compress2/sources/enonce2.txt");
-		FichierSource f = new FichierSource(
-				"T:/IUP Master 1/sem2/BOT/compress2/sources/baboon.pgm");
-
-		System.out.println(f.next());
-		System.out.println(f.next());
-		System.out.println(f.next());
-		System.out.println(f.next());
-		//System.out.println(f.nextBinaire());
-//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
-//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
-//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
-//		System.out.println("symbole binaire "+f.nextSymboleP5().getValeur());
-		
-//		for (Symbole token = f.nextSymbole(); token != null; token = f
-//				.nextSymbole())
-//			System.out.println("symbole " + token.getValeur());
-//		System.out.println("end");
-	}
-	
+	/**
+	 * @see Fichier#fermer()
+	 */
 	public void fermer() {
 		try {
 			buff.close();

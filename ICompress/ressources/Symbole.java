@@ -2,23 +2,21 @@
 package ressources;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Classe représentant un symbole
+ * */
 public class Symbole {
 
 	public static String P_OUVRANTE="P_OUVRANTE";
 	public static String P_FERMANTE="P_FERMANTE";
 	public static String NOMBRE="NOMBRE";
-	public static String OTHER="OTHER";
 	
 	private String type="";
 	private String valeur="";
 	
-	//construit soit ( soit ) soit nombre
-	//ajouter le type other
+	/**
+	 * constructeur
+	 * @param symb
+	 */
 	public Symbole (String symb)
 	{
 		valeur = symb;
@@ -30,16 +28,6 @@ public class Symbole {
 			else type=NOMBRE;
 	}	
 	
-	public static void main(String[] args) {
-		Symbole s = new Symbole("255");
-		Symbole ss = new Symbole(")");
-		Symbole sss = new Symbole("(");
-		
-		
-		System.out.println("symbole : "+ s.getValeur()+" de type "+s.getType());
-		System.out.println("symbole : "+ ss.getValeur()+" de type "+ss.getType());
-		System.out.println("symbole : "+ sss.getValeur()+" de type "+sss.getType());
-	}
 	/**
 	 * @return Returns the type.
 	 */

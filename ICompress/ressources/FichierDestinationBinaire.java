@@ -6,10 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Gestion des fichiers de S binaires
  */
 public class FichierDestinationBinaire extends FichierDestination {
 
@@ -20,13 +17,8 @@ public class FichierDestinationBinaire extends FichierDestination {
 	 */
 	public FichierDestinationBinaire(String nom) {
 		super(nom);
-//		try {
-//			//ouverture en mode append
-//			redacteurBinaire = new FileOutputStream(nom,true);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
 	}
+	
 	/**Ecrit le symbole en binaire dans le fichier
 	 * @param symb, le symbole non null de type NOMBRE a ecrire en binaire
 	 */
@@ -47,6 +39,11 @@ public class FichierDestinationBinaire extends FichierDestination {
 		}
 	}
 	
+	/**
+	 * passage en mode d ecriture binaire, fermeture des autres modes
+	 * obligatoire pour utiliser #ecrireSymboleBinaires
+	 * ne peut plus utiliser #ecrire et cie apres
+	 */
 	public void transitionBinaire(){
 		super.fermer();
 		try {
@@ -67,22 +64,5 @@ public class FichierDestinationBinaire extends FichierDestination {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	public static void main(String[] args) {
-		FichierDestinationBinaire f = new FichierDestinationBinaire("T:\\IUP Master 1\\sem2\\BOT\\compress2\\sources\\testP5.pgm");
-		
-		f.ecrireString("P5");
-		f.ecrireEntree();
-		f.transitionBinaire();
-		f.ecrireSymboleBinaire(new Symbole("32"));
-		f.ecrireSymboleBinaire(new Symbole("32"));
-		f.ecrireSymboleBinaire(new Symbole("32"));
-		f.ecrireSymboleBinaire(new Symbole("32"));
-		
-		
-		f.fermer();
-		System.out.println("ends");
-		
-		
 	}
 }
