@@ -36,4 +36,11 @@ public class Delete extends Commande{
 		super.afficher();
 		predicat.afficher();
 	}
+	
+	/**
+	 * @return Retourne la valeur de l'attribut predicat.
+	 */
+	public Predicat getPredicat(){
+		return predicat;
+	}
 }

@@ -12,6 +12,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javaCC.Analyzer;
 import javaCC.ParseException;
@@ -155,6 +156,10 @@ public class Appli {
 				} catch (AttributException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
+				}
+				catch(SQLException e){
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				
 				

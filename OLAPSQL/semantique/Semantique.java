@@ -1,5 +1,6 @@
 package semantique;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,34 +15,42 @@ import structure.AlterHierarchy;
 import structure.Commande;
 import structure.CreateDimension;
 import structure.CreateFact;
+import structure.Delete;
 import structure.Drop;
 import structure.Insert;
 import structure.InsertFact;
+import structure.Select;
 import structure.types.Attribut;
 import structure.types.Hierarchy;
 import structure.types.Level;
+import structure.types.predicat.Jointure;
+import structure.types.predicat.Predicat;
 
 public class Semantique {
 	private Commande commande;
 	private BaseDonnees bd;
 
+	/**
+	 * Création d'un objet Semantique permettant l'initialisation de la base de
+	 * données et de la commande à analiser.
+	 * @param com
+	 */
 	public Semantique(Commande com){
 		bd = new BaseDonnees();
 		bd.connecter();
 		commande = com;
 	}
 
+	/**
+	 * Ferme la connexion à la base de données.
+	 */
 	public void close(){
 		bd.deconnecter();
 	}
-	
+
 	public static void main(String[] argv){
-		InsertFact c = new InsertFact("test",Commande.FACT);
-		HashMap m = new HashMap();
-		m.put("test","f");
-		m.put("a","r");
-		m.put("w","p");
-		c.setConnects(m);
+		Drop c = new Drop("produit",Commande.DIMENSION);
+
 		Semantique s = new Semantique(c);
 		try{
 			s.analyze();
@@ -58,10 +67,27 @@ public class Semantique {
 		catch(AttributException e){
 			e.printStackTrace();
 		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+		finally{
+			s.close();
+		}
+		
+		System.out.println("Fin");
 	}
 
-	public void analyze() throws FactException, DimensionException,
-			HierarchyException, AttributException{
+	/**
+	 * Analiser la semantique d'une commande.
+	 * @throws FactException
+	 * @throws HierarchyException
+	 * @throws AttributException
+	 * @throws SQLException
+	 * @throws DimensionException
+	 */
+	public void analyze() throws FactException, HierarchyException,
+			AttributException, SQLException, DimensionException{
+		// TODO un attribut de meme nom peut etre pour plusieurs tables
 		if(commande instanceof CreateFact){
 			analyzeCreateFact();
 		}
@@ -80,61 +106,232 @@ public class Semantique {
 		if(commande instanceof InsertFact){
 			analyzeInsertFact();
 		}
+		if(commande instanceof Drop){
+			analyseDrop();
+		}
+		if(commande instanceof Delete){
+			analyseDelete();
+		}
+		if(commande instanceof Select){
+			analyseSelect();
+		}
 	}
 
 	/**
-	 * 
-	 * void
+	 * Analise la sémantique d'une selection.
+	 * @throws FactException
 	 * @throws DimensionException
+	 * @throws HierarchyException
+	 * @throws SQLException
+	 * @throws AttributException
 	 */
-	private void analyzeInsertFact() throws DimensionException{
-		InsertFact insert = (InsertFact) commande;
+	private void analyseSelect() throws FactException,
+			DimensionException, HierarchyException, SQLException, AttributException{
+		Select select = (Select) commande;
+
+		//fait existe
+		if(!bd.existFact(select.getNomFrom()))
+			throw new FactException("Le fait '" + select.getNomFrom()
+					+ "' n'existe pas.");
+
+		//dimension existe
+		if(!bd.existDimension(select.getNomRow()))
+			throw new DimensionException("La dimension '" + select.getNomRow()
+					+ "' n'exist pas.");
+		if(!bd.existDimension(select.getNomColumn()))
+			throw new DimensionException("La dimension '"
+					+ select.getNomColumn() + "' n'exist pas.");
+
+		//hierarchy existe
+		if(!bd.existHierarchy(select.getWithColumn()))
+			throw new HierarchyException("La hierarchy '"
+					+ select.getWithColumn() + "' n'existe pas.");
+		if(!bd.existHierarchy(select.getWithRow()))
+			throw new HierarchyException("La hierarchy '" + select.getWithRow()
+					+ "' n'existe pas.");
+
+		//hierarchy appartient dim
+		if(!bd.existHierarchyToDimension(select.getNomColumn(), select
+				.getWithColumn()))
+			throw new DimensionException("La hierarchy '"
+					+ select.getWithColumn()
+					+ "' n'existe pas pour la dimension '"
+					+ select.getNomColumn() + "'.");
+		if(!bd.existHierarchyToDimension(select.getNomRow(), select
+				.getWithRow()))
+			throw new DimensionException("La hierarchy '" + select.getWithRow()
+					+ "' n'existe pas pour la dimension '" + select.getNomRow()
+					+ "'.");
+
+		//parametre de la hierarchy existe
+		ArrayList liste = select.getColumns();
+		Iterator it = liste.iterator();
+		while(it.hasNext()){
+			String nomParam = (String) it.next();
+			if(!bd.existAttributToHierarchy(select.getWithColumn(), nomParam))
+				throw new HierarchyException("L'attribut '" + nomParam
+						+ "' n'existe pas pour la hierarchy '"
+						+ select.getWithColumn() + "'.");
+		}
+		liste = select.getRows();
+		it = liste.iterator();
+		while(it.hasNext()){
+			String nomParam = (String) it.next();
+			if(!bd.existAttributToHierarchy(select.getWithRow(), nomParam))
+				throw new HierarchyException("L'attribut '" + nomParam
+						+ "' n'existe pas pour la hierarchy '"
+						+ select.getWithRow() + "'.");
+		}
+
+		// verif predicat
+		Predicat pred = select.getWhere();
+		Iterator itJoin = pred.getJointures().iterator();
+		while(itJoin.hasNext()){
+			Jointure join = (Jointure) itJoin.next();
+			String exp = join.getExpr1();
+			if(exp.contains(".")){
+				String[] s = exp.split(".");
+				Jointure join2 = new Jointure(null, s[1], join.getExpr2(), join.getOperateur());
+				analyzePredicat(join2, s[0]);
+			}
+			else{
+				analyzePredicat(join, select.getNomFrom());
+			}
+		}
 		
+		// TODO verif select
+	}
+
+	/**
+	 * Analise la sémantique d'un delete.
+	 * @throws DimensionException
+	 * @throws FactException
+	 * @throws SQLException
+	 * @throws AttributException
+	 */
+	private void analyseDelete() throws DimensionException,
+			FactException, SQLException, AttributException{
+		Delete delete = (Delete) commande;
+
+		// relation exist ?
+		if(delete.getType() == Commande.DIMENSION){
+			if(!bd.existDimension(delete.getNom()))
+				throw new DimensionException(DimensionException.EXIST);
+		}
+		if(delete.getType() == Commande.FACT){
+			if(!bd.existFact(delete.getNom()))
+				throw new FactException(FactException.EXIST);
+		}
+
+		// verif predicat
+		Predicat pred = delete.getPredicat();
+		Iterator it = pred.getJointures().iterator();
+		while(it.hasNext()){
+			Jointure join = (Jointure) it.next();
+			analyzePredicat(join, delete.getNom());
+		}
+	}
+
+	/**
+	 * Analise la sémantique d'un drop.
+	 * @throws DimensionException
+	 * @throws SQLException
+	 * @throws FactException
+	 */
+	// OK
+	private void analyseDrop() throws SQLException, DimensionException,
+			FactException{
+		Drop drop = (Drop) commande;
+
+		if(drop.getType() == Commande.DIMENSION){
+			// relation exist ?
+			if(!bd.existDimension(drop.getNom()))
+				throw new DimensionException("La dimension '"+drop.getNom()+"' n'existe pas.");
+
+			// fait utilise la dim ?
+			if(bd.existFactConnectToDimension(drop.getNom())){
+				throw new DimensionException(
+						"Un ou des fait(s) utilise(nt) la dimension '"+drop.getNom()+"'.");
+			}
+		}
+
+		if(drop.getType() == Commande.FACT){
+			// relation exist ?
+			if(!bd.existFact(drop.getNom()))
+				throw new FactException("Le fait '"+drop.getNom()+"' n'existe pas.");
+		}
+	}
+
+	/**
+	 * Analise la sémantique d'une insertion dans un fait.
+	 * @throws DimensionException
+	 * @throws SQLException
+	 * @throws AttributException
+	 */
+	private void analyzeInsertFact() throws DimensionException, SQLException, AttributException{
+		InsertFact insert = (InsertFact) commande;
+
 		// nb dimension correspond
 		int nbDim = bd.getNumberDimension(insert.getNom());
 		if(nbDim != insert.getConnects().size())
-			throw new DimensionException("Le nombre de dimension de correspond pas au fait.");
-		
+			throw new DimensionException(
+					"Le nombre de dimension ne correspond pas au fait.");
+
 		// verif dim relié au fait
 		Iterator it = insert.getConnects().keySet().iterator();
 		while(it.hasNext()){
 			String nomDimension = (String) it.next();
 			if(bd.existDimension(nomDimension))
 				throw new DimensionException(DimensionException.EXIST);
-			if(!bd.factConnectDimension(insert.getNom(),nomDimension))
-				throw new DimensionException("La dimension n'est pas connecté au fait.");
+			if(!bd.factConnectDimension(insert.getNom(), nomDimension))
+				throw new DimensionException(
+						"La dimension n'est pas connecté au fait.");
+		}
+
+		// verif validité des predicats
+		it = insert.getConnects().keySet().iterator();
+		while(it.hasNext()){
+			String nomDim = (String) it.next();
+			Predicat pred = (Predicat) insert.getConnects().get(nomDim);
+			ArrayList listJoin = pred.getJointures();
+			Iterator itJoin = listJoin.iterator();
+			while(itJoin.hasNext()){
+				Jointure join = (Jointure) it.next();
+				analyzePredicat(join, nomDim);
+			}
 		}
 		
 		// TODO predicat retourne 1 seul enregistrement
-		// TODO verif validité des predicats ?
 	}
 
 	/**
-	 * 
-	 * void
-	 * @throws DimensionException
+	 * Analise la sémantique d'un insert.
 	 * @throws AttributException
+	 * @throws DimensionException
+	 * @throws SQLException
 	 */
-	private void analyzeInsert() throws DimensionException, AttributException{
+	private void analyzeInsert() throws AttributException, SQLException,
+			DimensionException{
 		Insert insert = (Insert) commande;
-		
+
 		// nomRelation existe
 		if(!bd.existDimension(insert.getNom()))
 			throw new DimensionException(DimensionException.EXIST);
-		
+
 		// nb valeur correspond
 		int nbAttribut = bd.getNumberAttribut(insert.getNom());
 		if(nbAttribut != insert.getValues().size())
-			throw new AttributException("Le nombre d'attribut ne correspond pas à la dimension.");
-		
-		// TODO type valeur correspond ?
+			throw new AttributException(
+					"Le nombre d'attribut ne correspond pas à la dimension.");
 	}
 
 	/**
-	 * void
+	 * Analise la sémantique d'un alter sur une hierarchy.
 	 * @throws HierarchyException
+	 * @throws SQLException
 	 */
-	private void analyzeAlterHierarchy() throws HierarchyException{
+	private void analyzeAlterHierarchy() throws SQLException,
+			HierarchyException{
 		AlterHierarchy alter = (AlterHierarchy) commande;
 
 		switch(alter.getAlteration()){
@@ -148,27 +345,32 @@ public class Semantique {
 				}
 				break;
 			case AlterHierarchy.DROP_HIERARCHY :
-				// hierarchy deja existante et appartient à la dimension qu'on veut modifier
+				// hierarchy deja existante et appartient à la dimension qu'on
+				// veut modifier
 				Iterator itH = alter.getAttributs().iterator();
 				while(itH.hasNext()){
 					String nom = (String) itH.next();
 					if(!bd.existHierarchy(nom))
-						throw new HierarchyException("La hierarchy n'existe pas.");
-					if(bd.existHierarchyToDimension(alter.getNom(),nom))
-						throw new HierarchyException("La hierarchy n'existe pas pour cette dimension.");
+						throw new HierarchyException(
+								"La hierarchy n'existe pas.");
+					if(bd.existHierarchyToDimension(alter.getNom(), nom))
+						throw new HierarchyException(
+								"La hierarchy n'existe pas pour cette dimension.");
 				}
 				break;
 		}
 	}
 
 	/**
-	 * void
+	 * Analise la sémantique d'un alter.
 	 * @throws AttributException
+	 * @throws FactException
+	 * @throws SQLException
 	 * @throws ExistenceFactException
 	 * @throws ExistenceDimensionException
 	 */
-	private void analyzeAlter() throws FactException, DimensionException,
-			AttributException{
+	private void analyzeAlter() throws DimensionException, AttributException,
+			SQLException, FactException{
 		Alter alter = (Alter) commande;
 
 		// vérif nom
@@ -205,12 +407,17 @@ public class Semantique {
 					if(!bd.existAttribut(alter.getNom(), att.getNom()))
 						throw new AttributException(AttributException.EXIST);
 					if(alter.getType() == Commande.DIMENSION){
-						if(!bd.existAttributToDimension(alter.getNom(),att.getNom()))
-							throw new AttributException("L'attribut n'existe pas pour cette dimension.");
+						if(!bd.existAttributToDimension(alter.getNom(), att
+								.getNom()))
+							throw new AttributException(
+									"L'attribut n'existe pas pour cette dimension.");
 					}
 					if(alter.getType() == Commande.FACT){
-						if(!bd.existAttributToFact(alter.getNom(),att.getNom()))
-							throw new AttributException("L'attribut n'existe pas pour ce fait.");
+						if(!bd
+								.existAttributToFact(alter.getNom(), att
+										.getNom()))
+							throw new AttributException(
+									"L'attribut n'existe pas pour ce fait.");
 					}
 				}
 				break;
@@ -226,39 +433,31 @@ public class Semantique {
 		}
 	}
 
-	private void analyzeDimensionExist(ArrayList listeDimension)
-			throws DimensionException{
-		Iterator itDimension = listeDimension.iterator();
-		while(itDimension.hasNext()){
-			String nomDimension = (String) itDimension.next();
-			if(!bd.existDimension(nomDimension)){
-				throw new DimensionException(DimensionException.EXIST);
-			}
-		}
-	}
-
 	/**
-	 * @return boolean
+	 * Analise la sémantique de la création d'une dimension.
+	 * @throws DimensionException
+	 * @throws SQLException
 	 * @throws UniciteDimensionException
 	 * @throws UniciteHierarchyException
 	 * @throws ExistenceAttributException
 	 */
-	private void analyzeCreateDimension() throws DimensionException,
-			HierarchyException, AttributException{
+	// OK
+	private void analyzeCreateDimension() throws HierarchyException,
+			AttributException, SQLException, DimensionException{
 		CreateDimension dim = (CreateDimension) commande;
 
 		// verifie l'unicite du nom de la dimension
 		if(bd.existDimension(dim.getNom())){
-			throw new DimensionException(DimensionException.UNIQUE);
+			throw new DimensionException("La dimension '"+dim.getNom()+"' existe déjà.");
 		}
 
-		// Verif unicite nom hierarchie
 		ArrayList hierarchi = dim.getHierarchys();
 		Iterator it = hierarchi.iterator();
 		while(it.hasNext()){
 			Hierarchy hierar = (Hierarchy) it.next();
+			// Verif unicite nom hierarchie
 			if(bd.existHierarchy(hierar.getNom())){
-				throw new HierarchyException(HierarchyException.UNIQUE);
+				throw new HierarchyException("La hierarchie '"+hierar.getNom()+"' existe déjà.");
 			}
 
 			// verif nom param et attr faible present dans les attributs de la
@@ -266,11 +465,11 @@ public class Semantique {
 			ArrayList listeLevel = hierar.getLevels();
 			Iterator itLevel = listeLevel.iterator();
 			while(itLevel.hasNext()){
-				Level level = (Level) it.next();
+				Level level = (Level) itLevel.next();
 
 				// nom param present dans la liste des attributs de la dimension
 				if(!dim.existAttributs(level.getNom())){
-					throw new AttributException(AttributException.EXIST);
+					throw new AttributException("L'attribut '"+level.getNom()+"' est inexistant dans la dimension '"+dim.getNom()+"'.");
 				}
 
 				// attributs faibles present ds liste attributs de la dimension
@@ -279,7 +478,7 @@ public class Semantique {
 				while(itAttributFaible.hasNext()){
 					String nomAttributFaible = (String) itAttributFaible.next();
 					if(!dim.existAttributs(nomAttributFaible)){
-						throw new AttributException(AttributException.EXIST);
+						throw new AttributException("L'attribut '"+nomAttributFaible+"' est inexistant dans la dimension '"+dim.getNom()+"'.");
 					}
 				}
 			}
@@ -288,66 +487,54 @@ public class Semantique {
 		// TODO param racine de hierarchi identique pour toutes les hierarchies
 	}
 
-	private void analyzeCreateFact() throws FactException, DimensionException{
+	/**
+	 * Analise la sémantique de la création d'un fait.
+	 * @throws DimensionException
+	 * @throws SQLException
+	 * @throws FactException void
+	 */
+	// OK
+	private void analyzeCreateFact() throws DimensionException, SQLException,
+			FactException{
 		CreateFact fait = (CreateFact) commande;
 
 		// verifie l'unicite du nom du fait
 		if(bd.existFact(fait.getNom())){
-			throw new FactException(FactException.UNIQUE);
+			throw new FactException("Le fait '"+fait.getNom()+"' existe déjà.");
 		}
 
 		// verifie que les dimensions existe
 		analyzeDimensionExist(fait.getConnects());
 	}
 
-	public boolean execute(){
-		if(commande instanceof CreateFact){
-			return executeCreateFact();
+	/**
+	 * Analise si la liste de dimension existe.
+	 * @param listeDimension
+	 * @throws SQLException
+	 * @throws DimensionException
+	 */
+	private void analyzeDimensionExist(ArrayList listeDimension)
+			throws SQLException, DimensionException{
+		Iterator itDimension = listeDimension.iterator();
+		while(itDimension.hasNext()){
+			String nomDimension = (String) itDimension.next();
+			if(!bd.existDimension(nomDimension)){
+				throw new DimensionException("La dimension '"+nomDimension+"' n'existe pas.");
+			}
 		}
-		if(commande instanceof CreateDimension){
-			return executeCreateDimension();
-		}
-		if(commande instanceof Drop){
-			return executeDrop();
-		}
-		return false;
 	}
 
 	/**
-	 * @return
+	 * Analise le predicat.
+	 * @param jointure
+	 * @param nomRelation
+	 * @throws AttributException
+	 * @throws SQLException
 	 */
-	private boolean executeDrop(){
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private boolean executeCreateFact(){
-		// TODO a revoir
-		CreateFact fait = (CreateFact) commande;
-		ArrayList mesures = new ArrayList();
-		ArrayList dimensions = new ArrayList();
-		ArrayList attributs = fait.getAttributs();
-		Iterator it = attributs.iterator();
-		while(it.hasNext()){
-			Attribut att = (Attribut) it.next();
-			if(att.getType() == Attribut.DATE
-					|| att.getType() == Attribut.NUMBER
-					|| att.getType() == Attribut.VARCHAR){
-				mesures.add(att);
-			}
-			else{
-				if(!att.getNom().equals("CONNECT TO")){
-					dimensions.add(att.getNom());
-				}
-			}
-		}
-		return bd.createFact(fait.getNom(), mesures, dimensions);
-	}
-
-	private boolean executeCreateDimension(){
-		CreateDimension dim = (CreateDimension) commande;
-		// TODO
-		bd.createDimension(dim);
-		return false;
+	private void analyzePredicat(Jointure jointure, String nomRelation) throws SQLException, AttributException{
+		String exp = jointure.getExpr1();
+		
+		if(!bd.existAttribut(nomRelation, exp))
+			throw new AttributException("L'attribut '"+exp+"' n'existe pour '"+nomRelation+"'.");
 	}
 }

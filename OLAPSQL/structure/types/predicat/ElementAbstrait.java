@@ -1,6 +1,8 @@
 
 package structure.types.predicat;
 
+import java.util.ArrayList;
+
 /**
  * @author claire
  *
@@ -31,4 +33,10 @@ public abstract class ElementAbstrait {
 	}
 	public abstract void afficher ();
 
+	/**
+	 * Retourne la liste des jointures.
+	 * @return
+	 * ArrayList
+	 */
+	public abstract ArrayList getJointures();
 }

@@ -43,4 +43,14 @@ public class Predicat {
 		
 		if (racine !=null) racine.afficher();
 	}
+	
+	/**
+	 * Retourne la liste des jointures de l'arbre predicat.
+	 * @return
+	 * ArrayList
+	 */
+	public ArrayList getJointures(){
+		ArrayList liste = new ArrayList();
+		return liste;
+	}
 }

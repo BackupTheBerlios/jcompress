@@ -2,6 +2,7 @@
 package structure.types.predicat;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author claire
@@ -51,6 +52,19 @@ public class Liaison extends ElementAbstrait {
 						System.out.println("\t"+liaison);
 			}
 		System.out.println(")");
+	}
+
+	/* (non-Javadoc)
+	 * @see structure.types.predicat.ElementAbstrait#getJointures()
+	 */
+	public ArrayList getJointures(){
+		ArrayList liste = new ArrayList();
+		Iterator it = preds.iterator();
+		while(it.hasNext()){
+			ElementAbstrait el = (ElementAbstrait) it.next();
+			liste.addAll(el.getJointures());
+		}
+		return liste;
 	}
 	
 	

@@ -1,6 +1,8 @@
 
 package structure.types.predicat;
 
+import java.util.ArrayList;
+
 /**
  * @author claire
  *
@@ -34,6 +36,41 @@ public class Jointure extends ElementAbstrait {
 	public void afficher() {
 		System.out.println ("\texpress : "+expr1+operateur+expr2);	
 	}
+
+	/* (non-Javadoc)
+	 * @see structure.types.predicat.ElementAbstrait#getJointures()
+	 */
+	public ArrayList getJointures(){
+		ArrayList liste = new ArrayList();
+		liste.add(this);
+		return liste;
+	}
 	
+	/**
+	 * @return Retourne la valeur de l'attribut expr1.
+	 */
+	public String getExpr1(){
+		return expr1;
+	}
 	
+	/**
+	 * @param initialse expr1 avec pExpr1.
+	 */
+	public void setExpr1(String pExpr1){
+		expr1 = pExpr1;
+	}
+	
+	/**
+	 * @return Retourne la valeur de l'attribut expr2.
+	 */
+	public String getExpr2(){
+		return expr2;
+	}
+	
+	/**
+	 * @return Retourne la valeur de l'attribut operateur.
+	 */
+	public String getOperateur(){
+		return operateur;
+	}
 }
