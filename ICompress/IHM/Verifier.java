@@ -1,9 +1,3 @@
-/*
- * Created on 16 févr. 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package IHM;
 
 import java.text.ParseException;
@@ -13,14 +7,12 @@ import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 
 /**
- * @author lalo
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Cette classe nous permet de vérifier si le taux de compression saisi est valide.
  */
 public class Verifier extends InputVerifier{
 
-	/* (non-Javadoc)
+	/**
+	 * Vérifie que le composant passer en parametre contient une donnée valide.
 	 * @see javax.swing.InputVerifier#verify(javax.swing.JComponent)
 	 */
 	public boolean verify(JComponent input){

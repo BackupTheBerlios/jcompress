@@ -7,10 +7,7 @@ import ressources.Symbole;
 import arbre.Noeud;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Cette classe permet de construire un arbre
  */
 public class Arbre {
 	

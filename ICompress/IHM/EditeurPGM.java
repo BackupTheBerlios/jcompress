@@ -15,8 +15,7 @@ import ressources.Symbole;
 
 
 /**
- * @author lalo TODO To change the template for this generated type comment go
- *         to Window - Preferences - Java - Code Style - Code Templates
+ * Cette classe nous permet d'afficher une image PGM dans une nouvelle fenetre.
  */
 public class EditeurPGM {
 	private String typeFichier;
@@ -25,10 +24,15 @@ public class EditeurPGM {
 	private int size;
 	private int niveau;
 
+	/**
+	 * Constructeur permettant d'afficher l'image du fichier passé en parametre.
+	 * @param Fichier contenant l'image à afficher.
+	 */
 	public EditeurPGM(String mFichier){
 		JFrame image = new JFrame(mFichier);
 		FichierSource fichier = new FichierSource(mFichier);
 
+		// Initialisation
 		typeFichier = fichier.next(); // type
 		width = Integer.parseInt(fichier.next()); // largeur
 		height = Integer.parseInt(fichier.next()); // longueur
@@ -43,9 +47,8 @@ public class EditeurPGM {
 			niveau = Integer.parseInt(fichier.next()); // niveau de gris
 			size = width * height;
 		}
-		else{
-		}
 
+		// Création du tableau d'entier a afficher
 		int[] pixels = new int[size];
 		for(int i = 0 ; i < size ; i++){
 			Symbole sym = fichier.nextSymbole();
@@ -58,25 +61,28 @@ public class EditeurPGM {
 				}
 			}
 			else{
-				System.out.println(i+"\n"+size);
 				i = size;
 			}
 		}
 
+		// Transformation du tableau en image et affichage dans la nouvelle fenetre.
 		MemoryImageSource source = new MemoryImageSource(width, height, pixels,
 				0, width);
 		Image img = Toolkit.getDefaultToolkit().createImage(source);
-		image.getContentPane().add(new DisplayImage2(img));
+		image.getContentPane().add(new ComposantImage(img));
 		image.pack();
 		image.setVisible(true);
 	}
 }
 
-class DisplayImage2 extends Canvas {
+/**
+ * Intégre une image dans un composant AWT pour l'affichage.
+ */
+class ComposantImage extends Canvas {
 
 	Image img;
 
-	public DisplayImage2(Image pImg){
+	public ComposantImage(Image pImg){
 		this.img = pImg;
 		setSize(img.getWidth(this), img.getHeight(this));
 	}
