@@ -4,7 +4,6 @@ package src;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +12,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-
+import java.util.ArrayList;
 import javaCC.Analyzer;
 import javaCC.ParseException;
 
@@ -26,6 +25,12 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 
+import exception.AttributException;
+import exception.DimensionException;
+import exception.FactException;
+import exception.HierarchyException;
+
+import semantique.Semantique;
 import structure.Commande;
 
 /**
@@ -34,6 +39,8 @@ import structure.Commande;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
+
+//TODO commentaires dans parser --
 public class Appli {
 
     private  String NEW_LINE = "\n";
@@ -125,8 +132,34 @@ public class Appli {
 				parser.ReInit(f);
 			}
 			try {
-				Commande c = parser.execute();
-				c.afficher();
+				ArrayList l = parser.execute();
+			//Commande c = parser.execute();
+				//c.afficher();
+				Semantique s = new Semantique((Commande)l.get(0));
+				
+				
+				try {
+					s.analyze();
+					//creation moteur sans pb semantique
+					
+					
+				} catch (FactException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (DimensionException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (HierarchyException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (AttributException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				
+				
+				
+				
 				System.out.println("ok");
 			} catch (ParseException e) {
 				System.out.println("Erreur de syntaxe OLAPSQL");

@@ -63,4 +63,18 @@ public class InsertFact extends Insert{
 		}
 	}
 
+	/**
+	 * @return Retourne la valeur de l'attribut connects.
+	 */
+	public HashMap getConnects(){
+		return connects;
+	}
+	
+	/**
+	 * @param initialse connects avec pConnects.
+	 */
+	public void setConnects(HashMap pConnects){
+		connects = pConnects;
+	}
+
 }
