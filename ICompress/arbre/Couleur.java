@@ -1,6 +1,10 @@
 
 package arbre;
 
+import ressources.Matrice;
+import ressources.Symbole;
+import arbre.Noeud;
+
 /**
  * @author claire
  *
@@ -9,9 +13,9 @@ package arbre;
  */
 public final class Couleur extends Noeud {
 
-	static String NOIR="NOIR";
-	static String BLANC="BLANC";
-	static String GRIS="GRIS";
+	public static String NOIR="NOIR";
+	public static String BLANC="BLANC";
+	public static String GRIS="GRIS";
 	
 	private String couleur;
 	
@@ -23,8 +27,39 @@ public final class Couleur extends Noeud {
 		couleur = c;
 	}
 	
+	public String getCouleur(){
+	  return couleur;
+	}
 	
-	
-	
+	public void setCouleur(String pCouleur){
+	  couleur = pCouleur;
+	}
+
+  /* (non-Javadoc)
+   * @see arbre.Noeud#construireLigne()
+   */
+  public String construireLigne ()
+  {
+    String ligne = couleur;
+    return ligne ;
+  }
+
+  /* (non-Javadoc)
+   * @see arbre.Noeud#getProfondeur()
+   */
+  public int getProfondeur ()
+  {
+    return 0 ;
+  }
+
+  /* (non-Javadoc)
+   * @see arbre.Noeud#construireMatrice(ressources.Matrice)
+   */
+  public Matrice construireMatrice ()
+  {
+    Matrice m = new Matrice(1);
+    m.ajoutSymbole(new Symbole(couleur));
+    return m ;
+  }
 	
 }

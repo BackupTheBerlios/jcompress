@@ -1,6 +1,9 @@
 
 package arbre;
 
+import ressources.Matrice;
+import arbre.Noeud;
+
 /**
  * @author claire
  *
@@ -9,10 +12,20 @@ package arbre;
  */
 public class Arbre {
 	
-	Noeud racine = null;
+	private Noeud racine = null;
 
+	public Arbre(Noeud n){
+	  racine = n;
+	}
 	
-
-	public static void main(String[] args) {
+	public Matrice construireImage()
+	{
+	  //Matrice mat = new Matrice(racine.getProfondeur());
+	  return racine.construireMatrice();
+	}
+	
+	public String construireLigne()
+	{
+	  return racine.construireLigne();
 	}
 }
