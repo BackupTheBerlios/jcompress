@@ -66,20 +66,20 @@ public class Application
   protected static void decompresser ()
   {
 	//String ficDest = ouvrirFichier(".icomp");
-	//String fic = ouvrirFichier(".pmg");
+	//String fic = ouvrirFichier(".pgm");
     textArea.append ("Decompression." + NEW_LINE) ;
     
     // test arbre
     GrisCompose r = new GrisCompose(null);
     GrisCompose r1 = new GrisCompose(r);
-    r1.setNE(new Couleur(r,Couleur.BLANC));
-    r1.setNO(new Couleur(r,Couleur.GRIS));
-    r1.setSE(new Couleur(r,Couleur.NOIR));
-    r1.setSO(new Couleur(r,Couleur.GRIS));
+    r1.setNE(new Couleur(r, 255));
+    r1.setNO(new Couleur(r,150));
+    r1.setSE(new Couleur(r,0));
+    r1.setSO(new Couleur(r,150));
     r.setNE(r1);
-    r.setNO(new Couleur(r,Couleur.GRIS));
-    r.setSE(new Couleur(r,Couleur.NOIR));
-    r.setSO(new Couleur(r,Couleur.GRIS));
+    r.setNO(new Couleur(r,150));
+    r.setSE(new Couleur(r,0));
+    r.setSO(new Couleur(r,161));
     Arbre ab = new Arbre(r);
     ab.construireImage().afficher();
     System.out.println(ab.construireLigne());
@@ -90,7 +90,7 @@ public class Application
    */
   protected static void compressionNormal ()
   {
-	String fic = ouvrirFichier(".pmg");
+	String fic = ouvrirFichier(".pgm");
 	String ficDest = ouvrirFichier(".icomp");
     textArea.append ("Compression normale." + NEW_LINE) ;
   }
@@ -100,7 +100,7 @@ public class Application
    */
   protected static void compressionSansPerte ()
   {
-	String fic = ouvrirFichier(".pmg");
+	String fic = ouvrirFichier(".pgm");
 	String ficDest = ouvrirFichier(".icomp");
     textArea.append ("Compression sans perte." + NEW_LINE) ;
   }
@@ -110,7 +110,7 @@ public class Application
    */
   protected static void compressionAvecPerte ()
   {
-	String fic = ouvrirFichier(".pmg");
+	String fic = ouvrirFichier(".pgm");
 	String ficDest = ouvrirFichier(".icomp");
     textArea.append ("Compression avec perte." + NEW_LINE) ;
   }

@@ -58,15 +58,20 @@ public class Image {
 	}
 	//------------------------------------------
 	//relations avec arbre
-	public Image(Arbre a){}
+	public Image(Arbre a){
+	  // TODO
+	}
 	
 	public Arbre construireArbre(){
+	  // TODO
 		return null;
 	}
 	public Arbre construireArbreCompresseSansPerte(){
+	  // TODO
 		return null;
 	}
 	public Arbre construireArbreCompresseAvecPerte(){
+	  // TODO
 		return null;
 	}
 	//------------------------------------------

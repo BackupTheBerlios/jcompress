@@ -18,19 +18,38 @@ public final class Couleur extends Noeud {
 	public static String GRIS="GRIS";
 	
 	private String couleur;
+	private int valeur;
 	
 	/**
 	 * @param p
 	 */
-	public Couleur(Noeud p, String c) {
+	public Couleur(Noeud p, int v) {
 		super(p);
-		couleur = c;
+		valeur = v;
 	}
 	
 	public String getCouleur(){
 	  return couleur;
 	}
 	
+	
+	
+  /**
+   * @return Retourne la valeur de l'attribut valeur.
+   */
+  public int getValeur ()
+  {
+    return valeur ;
+  }
+  
+  /**
+   * @param initialse valeur avec pValeur.
+   */
+  public void setValeur (int pValeur)
+  {
+    valeur = pValeur ;
+  }
+  
 	public void setCouleur(String pCouleur){
 	  couleur = pCouleur;
 	}
@@ -40,7 +59,7 @@ public final class Couleur extends Noeud {
    */
   public String construireLigne ()
   {
-    String ligne = couleur;
+    String ligne = String.valueOf(valeur);
     return ligne ;
   }
 
@@ -58,7 +77,7 @@ public final class Couleur extends Noeud {
   public Matrice construireMatrice ()
   {
     Matrice m = new Matrice(1);
-    m.ajoutSymbole(new Symbole(couleur));
+    m.ajoutSymbole(new Symbole(String.valueOf(valeur)));
     return m ;
   }
 	
