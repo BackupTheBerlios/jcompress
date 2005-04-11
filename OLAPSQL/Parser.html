@@ -10,142 +10,147 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">execute</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">create</A> | <A HREF="#prod3">drop</A> | <A HREF="#prod4">alter</A> | <A HREF="#prod5">insert</A> | <A HREF="#prod6">delete</A> )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">create</A> | <A HREF="#prod3">drop</A> | <A HREF="#prod4">alter</A> | <A HREF="#prod5">insert</A> | <A HREF="#prod6">delete</A> | <A HREF="#prod7">select</A> )*</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">executePredicat</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">executePredicat</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">executeAggr</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE></TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">create</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CREATE&gt; ( <A HREF="#prod8">create_fact</A> | <A HREF="#prod9">create_dim</A> )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CREATE&gt; ( <A HREF="#prod10">create_fact</A> | <A HREF="#prod11">create_dim</A> )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">create_fact</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">create_fact</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod10">def_attr</A> &lt;FERMANTE&gt; &lt;CONNECT&gt; &lt;TO&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod12">def_attr</A> &lt;FERMANTE&gt; &lt;CONNECT&gt; &lt;TO&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">create_dim</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">create_dim</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod10">def_attr</A> &lt;FERMANTE&gt; ( &lt;WITH&gt; &lt;HIERARCHY&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod11">def_lev</A> &lt;FERMANTE&gt; )* &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod12">def_attr</A> &lt;FERMANTE&gt; ( &lt;WITH&gt; &lt;HIERARCHY&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod13">def_lev</A> &lt;FERMANTE&gt; )* &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">drop</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DROP&gt; ( <A HREF="#prod12">drop_fact</A> | <A HREF="#prod13">drop_dim</A> )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DROP&gt; ( <A HREF="#prod14">drop_fact</A> | <A HREF="#prod15">drop_dim</A> )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">drop_fact</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">drop_fact</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">drop_dim</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">drop_dim</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">alter</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ALTER&gt; ( <A HREF="#prod14">alter_fact</A> | <A HREF="#prod15">alter_dim</A> )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ALTER&gt; ( <A HREF="#prod16">alter_fact</A> | <A HREF="#prod17">alter_dim</A> )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">alter_fact</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">alter_fact</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; ( &lt;ADD&gt; <A HREF="#prod10">def_attr</A> | &lt;DROP&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* | &lt;CONNECT&gt; &lt;TO&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* | &lt;DISCONNECT&gt; &lt;TO&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* )? &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; ( &lt;ADD&gt; <A HREF="#prod12">def_attr</A> | &lt;DROP&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* | &lt;CONNECT&gt; &lt;TO&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* | &lt;DISCONNECT&gt; &lt;TO&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* )? &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">alter_dim</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">alter_dim</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; ( &lt;ADD&gt; ( <A HREF="#prod10">def_attr</A> | ( &lt;HIERARCHY&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod11">def_lev</A> &lt;FERMANTE&gt; ) ) | &lt;DROP&gt; ( &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* | ( &lt;HIERARCHY&gt; &lt;NOM&gt; ) ) )? &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; ( &lt;ADD&gt; ( <A HREF="#prod12">def_attr</A> | ( &lt;HIERARCHY&gt; &lt;NOM&gt; &lt;OUVRANTE&gt; <A HREF="#prod13">def_lev</A> &lt;FERMANTE&gt; ) ) | &lt;DROP&gt; ( &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* | ( &lt;HIERARCHY&gt; &lt;NOM&gt; ) ) )? &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">insert</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INSERT&gt; ( <A HREF="#prod16">insert_fact</A> | <A HREF="#prod17">insert_dim</A> )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INSERT&gt; ( <A HREF="#prod18">insert_fact</A> | <A HREF="#prod19">insert_dim</A> )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">insert_fact</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">insert_fact</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; &lt;VALUES&gt; &lt;OUVRANTE&gt; <A HREF="#prod18">def_une_valeur</A> ( &lt;VIRG&gt; <A HREF="#prod18">def_une_valeur</A> )* &lt;FERMANTE&gt; &lt;CONNECT&gt; &lt;TO&gt; &lt;NOM&gt; &lt;WHERE&gt; <A HREF="#prod19">def_pred</A> ( &lt;VIRG&gt; &lt;NOM&gt; &lt;WHERE&gt; <A HREF="#prod19">def_pred</A> )* &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; &lt;VALUES&gt; &lt;OUVRANTE&gt; <A HREF="#prod20">def_une_valeur</A> ( &lt;VIRG&gt; <A HREF="#prod20">def_une_valeur</A> )* &lt;FERMANTE&gt; &lt;CONNECT&gt; &lt;TO&gt; &lt;NOM&gt; &lt;WHERE&gt; <A HREF="#prod21">def_pred</A> ( &lt;VIRG&gt; &lt;NOM&gt; &lt;WHERE&gt; <A HREF="#prod21">def_pred</A> )* &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">insert_dim</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">insert_dim</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; &lt;VALUES&gt; &lt;OUVRANTE&gt; <A HREF="#prod18">def_une_valeur</A> ( &lt;VIRG&gt; <A HREF="#prod18">def_une_valeur</A> )* &lt;FERMANTE&gt; &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; &lt;VALUES&gt; &lt;OUVRANTE&gt; <A HREF="#prod20">def_une_valeur</A> ( &lt;VIRG&gt; <A HREF="#prod20">def_une_valeur</A> )* &lt;FERMANTE&gt; &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">delete</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DELETE&gt; ( <A HREF="#prod20">del_fact</A> | <A HREF="#prod21">del_dim</A> )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DELETE&gt; ( <A HREF="#prod22">del_fact</A> | <A HREF="#prod23">del_dim</A> )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">del_fact</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod22">del_fact</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; ( &lt;WHERE&gt; <A HREF="#prod19">def_pred</A> )? &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FACT&gt; &lt;NOM&gt; ( &lt;WHERE&gt; <A HREF="#prod21">def_pred</A> )? &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">del_dim</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod23">del_dim</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; ( &lt;WHERE&gt; <A HREF="#prod19">def_pred</A> )? &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DIMENSION&gt; &lt;NOM&gt; ( &lt;WHERE&gt; <A HREF="#prod21">def_pred</A> )? &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod22">select</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">select</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;SELECT&gt; <A HREF="#prod23">def_aggr</A> &lt;ROW&gt; &lt;NOM&gt; ( &lt;WITH&gt; &lt;NOM&gt; ( &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? ( &lt;VIRG&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? )* &lt;FERMANTE&gt; )* )? &lt;COLUMN&gt; &lt;NOM&gt; ( &lt;WITH&gt; &lt;NOM&gt; ( &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? ( &lt;VIRG&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? )* &lt;FERMANTE&gt; )* )? &lt;FROM&gt; &lt;NOM&gt; ( &lt;WHERE&gt; <A HREF="#prod19">def_pred</A> )? &lt;PTVIRG&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;SELECT&gt; <A HREF="#prod24">def_aggr</A> &lt;ROW&gt; &lt;NOM&gt; ( &lt;WITH&gt; &lt;NOM&gt; ( &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? ( &lt;VIRG&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? )* &lt;FERMANTE&gt; )? )? &lt;COLUMN&gt; &lt;NOM&gt; ( &lt;WITH&gt; &lt;NOM&gt; ( &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? ( &lt;VIRG&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? )* &lt;FERMANTE&gt; )? )? &lt;FROM&gt; &lt;NOM&gt; ( &lt;WHERE&gt; <A HREF="#prod21">def_pred</A> )? &lt;PTVIRG&gt;</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">def_une_valeur</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">def_une_valeur</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;QUOT&gt; ( <A HREF="#prod24">tdate</A> | ( ( &lt;NOM&gt; ) ( &lt;NOM&gt; )* ) ) &lt;QUOT&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;QUOT&gt; ( <A HREF="#prod25">tdate</A> | ( ( &lt;NOM&gt; ) ( &lt;NOM&gt; )* ) ) &lt;QUOT&gt; )</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CHIFFRE&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;CHIFFRE&gt; )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">def_pred</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">def_pred</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod25">def_elmt</A></TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod26">def_elmt</A></TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">def_elmt</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">def_elmt</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;OUVRANTE&gt; <A HREF="#prod25">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod26">def_jointure</A> ( ( &lt;AND&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod25">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod26">def_jointure</A> ) ) ( &lt;AND&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod25">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod26">def_jointure</A> ) ) )* ) | ( &lt;OR&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod25">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod26">def_jointure</A> ) ) ( &lt;OR&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod25">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod26">def_jointure</A> ) ) )* ) )* ) )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;OUVRANTE&gt; <A HREF="#prod26">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod27">def_jointure</A> ( ( &lt;AND&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod26">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod27">def_jointure</A> ) ) ( &lt;AND&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod26">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod27">def_jointure</A> ) ) )* ) | ( &lt;OR&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod26">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod27">def_jointure</A> ) ) ( &lt;OR&gt; ( ( &lt;OUVRANTE&gt; <A HREF="#prod26">def_elmt</A> &lt;FERMANTE&gt; ) | ( <A HREF="#prod27">def_jointure</A> ) ) )* ) )? ) )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">def_jointure</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">def_jointure</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? &lt;OPERATOR&gt; ( ( &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? | ( <A HREF="#prod18">def_une_valeur</A> ) ) )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? &lt;OPERATOR&gt; ( ( &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? | ( <A HREF="#prod20">def_une_valeur</A> ) ) )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod23">def_aggr</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod24">def_aggr</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>&lt;FONCT&gt; &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? &lt;FERMANTE&gt; ( &lt;VIRG&gt; &lt;FONCT&gt; &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;PT&gt; &lt;NOM&gt; )? &lt;FERMANTE&gt; )*</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">def_attr</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">def_attr</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NOM&gt; <A HREF="#prod27">def_dom</A> ( &lt;VIRG&gt; &lt;NOM&gt; <A HREF="#prod27">def_dom</A> )*</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NOM&gt; <A HREF="#prod28">def_dom</A> ( &lt;VIRG&gt; &lt;NOM&gt; <A HREF="#prod28">def_dom</A> )*</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">def_dom</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod28">def_dom</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;DATE&gt; | &lt;NUMBER&gt; &lt;OUVRANTE&gt; &lt;CHIFFRE&gt; ( &lt;VIRG&gt; &lt;CHIFFRE&gt; )? &lt;FERMANTE&gt; | &lt;VARCHAR&gt; &lt;OUVRANTE&gt; &lt;CHIFFRE&gt; &lt;FERMANTE&gt; )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;DATE&gt; | &lt;NUMBER&gt; &lt;OUVRANTE&gt; ( &lt;CHIFFRE&gt; | &lt;ENTIER&gt; ) &lt;FERMANTE&gt; | &lt;VARCHAR&gt; &lt;OUVRANTE&gt; &lt;ENTIER&gt; &lt;FERMANTE&gt; )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">def_lev</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">def_lev</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>( &lt;LEVEL&gt; &lt;NOM&gt; ( &lt;OUVRANTE&gt; &lt;NOM&gt; ( &lt;VIRG&gt; &lt;NOM&gt; )* &lt;FERMANTE&gt; )? )+</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod24">tdate</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">tdate</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CHIFFRE&gt; &lt;SLASH&gt; &lt;CHIFFRE&gt; &lt;SLASH&gt; &lt;CHIFFRE&gt;</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ENTIER&gt; &lt;SLASH&gt; &lt;ENTIER&gt; &lt;SLASH&gt; &lt;ENTIER&gt;</TD>
 </TR>
 </TABLE>
 </BODY>
