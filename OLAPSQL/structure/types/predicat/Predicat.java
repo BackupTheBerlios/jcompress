@@ -44,6 +44,13 @@ public class Predicat {
 		if (racine !=null) racine.afficher();
 	}
 	
+	public String toString (){
+		
+		if (racine !=null) 
+		    return racine.toString();
+		return null;
+	}
+	
 	/**
 	 * Retourne la liste des jointures de l'arbre predicat.
 	 * @return

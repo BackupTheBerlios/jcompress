@@ -40,6 +40,12 @@ public class Semantique {
 		bd.connecter();
 		commande = com;
 	}
+	
+	public Semantique(Commande com, BaseDonnees b){
+		bd =b;
+		bd.connecter();
+		commande = com;
+	}
 
 	/**
 	 * Ferme la connexion à la base de données.

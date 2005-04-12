@@ -66,6 +66,23 @@ public class Liaison extends ElementAbstrait {
 		}
 		return liste;
 	}
+
+    /* (non-Javadoc)
+     * @see structure.types.predicat.ElementAbstrait#toString()
+     */
+    public String toString() {
+        String noeud=" ";
+        
+        if (preds !=null)
+			for (int i=0; i<preds.size();i++)
+			{
+					ElementAbstrait a = (ElementAbstrait)preds.get(i);
+					noeud  +=a.toString();
+					if (i<preds.size()-1)
+						noeud += " "+liaison;
+			}
+		return noeud;
+    }
 	
 	
 }

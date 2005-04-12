@@ -73,4 +73,17 @@ public class Jointure extends ElementAbstrait {
 	public String getOperateur(){
 		return operateur;
 	}
+
+    /* (non-Javadoc)
+     * @see structure.types.predicat.ElementAbstrait#toString()
+     */
+    public String toString() {
+        
+        //remplacement de la virgule sur premier appel des reels
+        if (expr2.contains(","))
+            expr2=expr2.replace(',','.'); 
+        
+        return  (" "+expr1+" "+operateur+" "+expr2);	
+    	
+    }
 }

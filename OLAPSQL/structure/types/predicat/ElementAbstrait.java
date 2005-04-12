@@ -32,6 +32,7 @@ public abstract class ElementAbstrait {
 		this.pere = pere;
 	}
 	public abstract void afficher ();
+	public abstract String toString ();
 
 	/**
 	 * Retourne la liste des jointures.

@@ -34,7 +34,8 @@ public class Delete extends Commande{
 	 */
 	public void afficher() {
 		super.afficher();
-		predicat.afficher();
+		if (predicat !=null)
+		    predicat.afficher();
 	}
 	
 	/**

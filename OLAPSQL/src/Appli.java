@@ -26,13 +26,14 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 
+import semantique.BaseDonnees;
+import semantique.Moteur;
+import semantique.Semantique;
+import structure.Commande;
 import exception.AttributException;
 import exception.DimensionException;
 import exception.FactException;
 import exception.HierarchyException;
-
-import semantique.Semantique;
-import structure.Commande;
 
 /**
  * @author claire
@@ -40,6 +41,8 @@ import structure.Commande;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
+
+//Base de donnees communes a semantique et moteur
 
 //TODO commentaires dans parser --
 public class Appli {
@@ -134,32 +137,39 @@ public class Appli {
 			}
 			try {
 				ArrayList l = parser.execute();
-			//Commande c = parser.execute();
-				//c.afficher();
-				Semantique s = new Semantique((Commande)l.get(0));
-				
-				
-				try {
-					s.analyze();
-					//creation moteur sans pb semantique
-					
-					
-				} catch (FactException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (DimensionException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (HierarchyException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (AttributException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
+				BaseDonnees bd = new BaseDonnees();
+				try {			    
+				    bd.connecter();
+				for (int i = 0; i<l.size();i++){
+				    Commande c  = (Commande)l.get(i);
+				    c.afficher();
+				    //Semantique s = new Semantique(c, bd);
+				    //s.analyze();
+				    System.out.println("analyze ok");
+				    Moteur m = new Moteur (c, bd);
+				    m.execute();
 				}
-				catch(SQLException e){
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				bd.deconnecter();
+					
+//				} catch (FactException e2) {
+//					// TODO Auto-generated catch block
+//					e2.printStackTrace();
+//				} catch (DimensionException e2) {
+//					// TODO Auto-generated catch block
+//					e2.printStackTrace();
+//				} catch (HierarchyException e2) {
+//					// TODO Auto-generated catch block
+//					e2.printStackTrace();
+//				} catch (AttributException e2) {
+//					// TODO Auto-generated catch block
+//					e2.printStackTrace();
+//				}
+//				catch(SQLException e){
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+				}
+				finally{
+				    bd.deconnecter();    
 				}
 				
 				
