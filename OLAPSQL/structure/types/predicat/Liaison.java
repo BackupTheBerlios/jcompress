@@ -67,6 +67,22 @@ public class Liaison extends ElementAbstrait {
 		return liste;
 	}
 
+	/* (non-Javadoc)
+	 * @see structure.types.predicat.ElementAbstrait#getSQL()
+	 */
+	public String getSQL(){
+		Iterator it = preds.iterator();
+		String sql = "(";
+		while(it.hasNext()){
+			ElementAbstrait el = (ElementAbstrait) it.next();
+			sql += el.getSQL();
+			if(it.hasNext())
+				sql += " "+liaison +" ";
+		}
+		sql += ")";
+		return sql;
+	}
+
     /* (non-Javadoc)
      * @see structure.types.predicat.ElementAbstrait#toString()
      */

@@ -61,4 +61,16 @@ public class AlterHierarchy extends Alter{
 			hierarchy.afficher();
 		
 	}
+	/**
+	 * @return Retourne la valeur de l'attribut hierarchy.
+	 */
+	public Hierarchy getHierarchy(){
+		return hierarchy;
+	}
+	/**
+	 * @param initialse hierarchy avec pHierarchy.
+	 */
+	public void setHierarchy(Hierarchy pHierarchy){
+		hierarchy = pHierarchy;
+	}
 }

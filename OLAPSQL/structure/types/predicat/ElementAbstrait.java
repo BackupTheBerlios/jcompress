@@ -40,4 +40,11 @@ public abstract class ElementAbstrait {
 	 * ArrayList
 	 */
 	public abstract ArrayList getJointures();
+	
+	/**
+	 * retourne l'expression SQL du predicat.
+	 * @return
+	 * String
+	 */
+	public abstract String getSQL();
 }

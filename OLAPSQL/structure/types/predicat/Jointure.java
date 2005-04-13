@@ -74,6 +74,15 @@ public class Jointure extends ElementAbstrait {
 		return operateur;
 	}
 
+	/**
+	 * (non-Javadoc)
+	 * @see structure.types.predicat.ElementAbstrait#getSQL()
+	 */
+	public String getSQL(){
+		String sql = expr1+operateur+expr2;
+		return sql;
+	}
+
     /* (non-Javadoc)
      * @see structure.types.predicat.ElementAbstrait#toString()
      */

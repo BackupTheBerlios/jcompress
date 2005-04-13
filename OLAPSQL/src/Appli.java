@@ -34,6 +34,7 @@ import exception.AttributException;
 import exception.DimensionException;
 import exception.FactException;
 import exception.HierarchyException;
+import exception.PredicatException;
 
 /**
  * @author claire
@@ -139,34 +140,38 @@ public class Appli {
 				ArrayList l = parser.execute();
 				BaseDonnees bd = new BaseDonnees();
 				try {			    
-				    bd.connecter();
-				for (int i = 0; i<l.size();i++){
-				    Commande c  = (Commande)l.get(i);
-				    c.afficher();
-				    //Semantique s = new Semantique(c, bd);
-				    //s.analyze();
-				    System.out.println("analyze ok");
-				    Moteur m = new Moteur (c, bd);
-				    m.execute();
-				}
-				bd.deconnecter();
+					for (int i = 0; i<l.size();i++){
+					    bd.connecter();
+					    Commande c  = (Commande)l.get(i);
+					    c.afficher();
+					    Semantique s = new Semantique(c, bd);
+					    s.analyze();
+					    System.out.println("analyze ok");
+					    Moteur m = new Moteur (c, bd);
+					    m.execute();
+						bd.deconnecter();
+					}
 					
-//				} catch (FactException e2) {
-//					// TODO Auto-generated catch block
-//					e2.printStackTrace();
-//				} catch (DimensionException e2) {
-//					// TODO Auto-generated catch block
-//					e2.printStackTrace();
-//				} catch (HierarchyException e2) {
-//					// TODO Auto-generated catch block
-//					e2.printStackTrace();
-//				} catch (AttributException e2) {
-//					// TODO Auto-generated catch block
-//					e2.printStackTrace();
-//				}
-//				catch(SQLException e){
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
+				} catch (FactException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (DimensionException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (HierarchyException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (AttributException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				catch(SQLException e){
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch(PredicatException e){
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				finally{
 				    bd.deconnecter();    

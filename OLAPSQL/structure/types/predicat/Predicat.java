@@ -1,10 +1,11 @@
+package structure.types.predicat;
+
 /*
  * Created on Feb 28, 2005
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package structure.types.predicat;
 
 import java.util.ArrayList;
 
@@ -58,6 +59,11 @@ public class Predicat {
 	 */
 	public ArrayList getJointures(){
 		ArrayList liste = new ArrayList();
+		liste.addAll(racine.getJointures());
 		return liste;
+	}
+	
+	public String getSQL(){
+		return racine.getSQL();
 	}
 }
