@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import javaCC.Analyzer;
 import javaCC.ParseException;
 
+import semantique.BaseDonnees;
+import semantique.Moteur;
 import structure.Commande;
 
 /**
@@ -22,7 +24,7 @@ public class Test {
 		Analyzer parser=null;
 		//String cde= "drop fact test;";
 		try {
-			FileReader f = new FileReader("T:\\IUP Master 1\\sem2\\BOT\\projet3 BOT\\exemple.olapsql");
+			FileReader f = new FileReader("T:\\IUP Master 1\\sem2\\BOT\\projet3 BOT\\exemple_test.olapsql");
 			if (parser == null)
 			{
 				parser = new Analyzer (f);
@@ -43,9 +45,11 @@ public class Test {
 				
 				Commande c = null;
 				for (int i = 0; i<l.size(); i++)
-				    c= (Commande)l.get(i);
-				    c.afficher();
-				
+				{   c= (Commande)l.get(i);
+				    //c.afficher();
+				    Moteur m = new Moteur(c, new BaseDonnees());
+				    m.execute();
+				}
 				
 				System.out.println("ok");
 			} catch (ParseException e) {

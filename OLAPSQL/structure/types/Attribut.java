@@ -105,4 +105,19 @@ public class Attribut{
 					break;
 		}
 	}
+	
+	public String toString(){
+	    String st= getNom()+" ";
+		switch (type)
+		{
+			case 0: st+=O_DATE;
+					break;
+			case 1: st+=O_VARCHAR +"("+getTaille()+")";
+					break;
+			case 2: st+=O_NUMBER +"("+getTaille()+","+getPrecision()+")";
+					break;
+		}
+	    return st;
+	    
+	}
 }
