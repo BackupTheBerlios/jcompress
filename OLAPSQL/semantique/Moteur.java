@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import structure.Alter;
+import structure.AlterHierarchy;
 import structure.Commande;
 import structure.Create;
 import structure.CreateDimension;
@@ -66,12 +67,11 @@ public class Moteur {
 	        			    executeDrop();
 	        			    else
 	        			        System.out.println("error : command unknown");
-	       try {
-            con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-	        //bd.deconnecter();
+//	       try {
+//            // TODO con.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 	    }
 	   
 	}
@@ -143,12 +143,219 @@ a tester
     }
 
     /**
-     * 
+     * execute une commande de type Alter/AlterHierarchy
      */
     private void executeAlter() {
+        if (com instanceof AlterHierarchy)
+        {
+            AlterHierarchy ca = (AlterHierarchy)com;
+        }
+        else
+        {
+            Alter ca = (Alter)com;
+            switch (ca.getAlteration()){        
+	            case Alter.ADD: addColumn(ca);break;
+	            case Alter.CONNECT: connect(ca);break;
+	            case Alter.DISCONNECT: disconnect(ca);break;
+	            case Alter.DROP: delColumn(ca);break;
+	            default : 	return;
+            }  
+        }
+        
+    }
+    
+    /**
+     * @param ca
+     */
+    private void disconnect(Alter ca) {
         // TODO Auto-generated method stub
         
     }
+
+
+    /**
+     * @param ca
+     */
+    private void connect(Alter ca) {
+ 
+        //-- BASE
+        //-- ajout column fk_magasins dans table ventes qvec contraintes de cles
+        //-- METABASE
+        //-- insertion liaison dans meta_star
+        //--END
+        String req, tname = ca.getNom();
+//      -- ajout column fk_ dans table
+        req = "ALTER TABLE "+tname+" ADD COLUMN (";
+        ArrayList l = ca.getAttributs();
+        for (int j = 0; j< l.size();j++){
+            String cleF=(String)l.get(j);
+            req += "fk_"+cleF+" number(5), constraint fk_"+tname+"_" +
+            		""+ cleF+" FOREIGN KEY(fk_"+cleF+") REFERENCES "+cleF+" (pk_"+cleF+"),"; 
+        }
+        req = req.substring (0,req.length()-1);
+        req+=")";
+        System.out.println(req);
+        //statement = con.createStatement();
+        //boolean result = statement.execute(req);
+        try{
+//      METABASE TODO
+        //liaisons ds meta_star
+        CallableStatement call = con.prepareCall("{" +
+        		"call GEST_BASE_3D.CONNECT_DIM (?,?)}");
+        //call.setInt(1,idElmt);
+        
+        //connect
+        CallableStatement callC = con.prepareCall("{" +
+		"?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
+        callC.registerOutParameter(1, java.sql.Types.INTEGER);
+        callC.setString(3, "D");
+        for (int i = 0; i< l.size();i++){
+            String connect  = (String)l.get(i);
+            callC.setString(2,connect);
+            System.out.println(" GEST_BASE_3D.GET_ID_ELMT(" +
+            		"" + connect+", D)");
+            callC.execute();
+            //recup id dimension
+            //ici ca retourne -1...pkoi? TODO GET_ID_ELMT marche en test unitaire...
+            int idD = callC.getInt(1);
+            
+            if (idD!=-1)
+                {//connecte dim et fait
+                call.setInt(2, idD);
+                //System.out.println(" GEST_BASE_3D.CONNECT_DIM(" +
+                //		"" + idElmt+", "+idD+")");
+                call.execute();
+                //System.out.println("liaison star ok:"+idElmt+","+idD);
+                }
+            else
+                System.out.println("liaison star pas ok: "+idD);
+            
+        }} 
+     catch (SQLException e) {
+        e.printStackTrace();
+    }
+        
+        
+        
+//        PROCEDURE CONNECT_DIM (idf  meta_element.id%type,
+//                                idde meta_element.id%type);
+//        
+    }
+
+
+    private void addColumn(Alter com)
+    {
+        String req, tname = com.getNom();
+        
+        //BASE
+        //-- ajout column dans table
+        req = "ALTER TABLE "+tname+" ADD COLUMN (";
+        ArrayList l = com.getAttributs();
+        for (int j = 0; j< l.size();j++){
+            Attribut att  = (Attribut)l.get(j);
+            req += att.toString()+",";
+        }
+        req = req.substring (0,req.length()-1);
+        req+=")";
+        System.out.println(req);
+        //statement = con.createStatement();
+        //boolean result = statement.execute(req);
+        
+        //
+        //METABASE
+        // insertion quantite dans meta_attribute
+        //liaison ds meta measure
+        
+        //recup id de table mere
+        CallableStatement call;
+        try {
+            call = con.prepareCall("{ " +
+            "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
+            call.registerOutParameter(1, java.sql.Types.INTEGER);
+            call.setString(2,com.getNom());
+            if (com.getType() == Commande.DIMENSION)
+                call.setString(3,"D");
+            else
+                call.setString(3,"F");
+            
+            // call.execute();
+            int idElmt =call.getInt(1);
+        
+            
+            //insertion des attributs ds metabase
+            call = con.prepareCall("{ " +
+            "?=call GEST_BASE_3D.CREATE_ATT(?,?,?,?,?)}");
+            call.registerOutParameter(1, java.sql.Types.INTEGER);
+            for (int i = 0; i< l.size();i++){
+                Attribut att=  (Attribut)l.get(i);
+                call.setInt(2,idElmt);
+                call.setString(3,att.getNom());
+                call.setInt(4, att.getType());
+                call.setInt(5,att.getTaille());
+                call.setInt(6,att.getPrecision());
+                //call.execute();  
+            }     
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //
+    }
+    private void delColumn(Alter com)
+    {
+        String req, tname = com.getNom();
+        
+        //BASE
+        //-- ajout column dans table
+        req = "ALTER TABLE "+tname+" DROP COLUMN (";
+        ArrayList l = com.getAttributs();
+        for (int j = 0; j< l.size();j++){
+            Attribut att  = (Attribut)l.get(j);
+            req += att.getNom()+",";
+        }
+        req = req.substring (0,req.length()-1);
+        req+=")";
+        System.out.println(req);
+        //statement = con.createStatement();
+        //boolean result = statement.execute(req);
+        
+        //
+        //METABASE
+        // insertion quantite dans meta_attribute
+        //liaison ds meta measure
+        
+        //recup id de table mere
+        CallableStatement call;
+        try {
+            call = con.prepareCall("{ " +
+            "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
+            call.registerOutParameter(1, java.sql.Types.INTEGER);
+            call.setString(2,com.getNom());
+            if (com.getType() == Commande.DIMENSION)
+                call.setString(3,"D");
+            else
+                call.setString(3,"F");
+            
+            // call.execute();
+            int idElmt=0 ;
+            //idElmt= call.getInt(1);
+        
+            
+            //insertion des attributs ds metabase
+            call = con.prepareCall("{ " +
+            "call GEST_BASE_3D.DELETE_ATT(?,?)}");
+            for (int i = 0; i< l.size();i++){
+                Attribut att=  (Attribut)l.get(i);
+                call.setInt(2,idElmt);
+                call.setString(3,att.getNom());
+                //call.execute();  
+            }     
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //         
+    }
+
 
     /**
      * ok pour dim sauf level

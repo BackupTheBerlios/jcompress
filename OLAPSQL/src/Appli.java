@@ -128,6 +128,7 @@ public class Appli {
 
         try {
 			FileReader f = new FileReader(fichierSource);
+			BaseDonnees bd=null;
 			if (parser == null)
 			{
 				parser = new Analyzer (f);
@@ -138,54 +139,31 @@ public class Appli {
 			}
 			try {
 				ArrayList l = parser.execute();
-				BaseDonnees bd = new BaseDonnees();
-				try {			    
+				bd = new BaseDonnees();
+							    
 					for (int i = 0; i<l.size();i++){
 					    bd.connecter();
 					    Commande c  = (Commande)l.get(i);
 					    c.afficher();
-					    Semantique s = new Semantique(c, bd);
-					    s.analyze();
+					    //Semantique s = new Semantique(c, bd);
+					    //s.analyze();
 					    System.out.println("analyze ok");
 					    Moteur m = new Moteur (c, bd);
 					    m.execute();
-						bd.deconnecter();
+						//TODO bd.deconnecter();
 					}
 					
-				} catch (FactException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (DimensionException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (HierarchyException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (AttributException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				catch(SQLException e){
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch(PredicatException e){
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
 				finally{
 				    bd.deconnecter();    
 				}
-				
-				
-				
-				
+
 				System.out.println("ok");
 			} catch (ParseException e) {
 				System.out.println("Erreur de syntaxe OLAPSQL");
 				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
+			
+     }	catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
     }
