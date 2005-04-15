@@ -51,7 +51,7 @@ public class Moteur {
 	}
 
 	/**
-	 * ok pour drop dim
+	 * ok
 	 */
 	private void executeDrop(){
 
@@ -123,7 +123,7 @@ public class Moteur {
 	}
 
 	/**
-	 * ok pour dim sauf level
+	 * ok
 	 */
 	private void executeCreate(){
 		String tname = com.getNom();
@@ -146,13 +146,11 @@ public class Moteur {
 				req += ", " + att.toString();
 			}
 			req += ")";
-
+			System.out.println(req);
 			//METABASE
 			try{
 				statement = con.createStatement();
-				boolean result = statement.execute(req);
-				System.out.println(req);
-
+				boolean resultt = statement.execute(req);
 				statement.close();
 				idElmt = insereFD(tname, Commande.DIMENSION, cd.getAttributs());
 
@@ -177,12 +175,12 @@ public class Moteur {
 
 						ArrayList slevs = lev.getAttributs();
 						for(int t = 0 ; t < slevs.size() ; t++){
-							insereLevel(idElmt, ((String) slevs.get(t)), t + 1,
+							insereLevel(idElmt,idH, ((String) slevs.get(t)), t + 1,
 									"W");
 							System.out.println("level W ajoute : "
 									+ (String) slevs.get(t));
 						}
-						insereLevel(idElmt, lev.getNom(), j + 1, "P");
+						insereLevel(idElmt,idH, lev.getNom(), j + 1, "P");
 						System.out.println("level P ajoute : " + lev.getNom());
 					}
 				}
@@ -240,8 +238,6 @@ public class Moteur {
 								+ connect + ", D)");
 						callC.execute();
 						//recup id dimension
-						//ici ca retourne -1...pkoi? TODO GET_ID_ELMT marche en
-						// test unitaire...
 						int idD = callC.getInt(1);
 
 						if(idD != -1){//connecte dim et fait
@@ -272,19 +268,19 @@ public class Moteur {
 	 * @param pos, position du level ds hierarchy idH PreCondition : connection
 	 *            ouverte
 	 */
-	//insertion du level ne marche pas...procedure pslqs mqrche...pige pas
-	private void insereLevel(int idH, String nomAtt, int pos, String typ){
+	//ok
+	private void insereLevel(int idD,int idH, String nomAtt, int pos, String typ){
 		try{
 			//recup l id de l attribut correspondant au level
 			CallableStatement call;
 			call = con.prepareCall("{ "
 					+ "?=call GEST_BASE_3D.GET_ID_ATT (?,?)}");
 			call.registerOutParameter(1, java.sql.Types.INTEGER);
-			call.setInt(2, idH);
+			call.setInt(2, idD);
 			call.setString(3, nomAtt);
 			call.execute();
 			int idAtt = call.getInt(1);
-			//
+			//			
 
 			System.out.println(" GEST_BASE_3D.ADD_LEVEL(" + "" + idH + ", "
 					+ idAtt + ", " + pos + ", " + typ + ")");
@@ -312,8 +308,8 @@ public class Moteur {
 	 * @param typ, typ = FAIT ou DIMENSION
 	 * @param atts, liste d Attributs
 	 * @return l id de l elmt insere
+	 * ok
 	 */
-	//insere un fait ou dimension avec ses attributs
 	private int insereFD(String nom, int typ, ArrayList atts){
 		CallableStatement call;
 		int idElmt = 0;
@@ -344,7 +340,6 @@ public class Moteur {
 			}
 		}
 		catch(SQLException e){
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -354,6 +349,7 @@ public class Moteur {
 	/**
 	 * Execute la commande com sur la Base bd Les conditions sont dans l ordre
 	 * de probabilite de frequence
+	 * ok
 	 */
 	public void execute (){
 	    if (com != null){
@@ -387,7 +383,6 @@ public class Moteur {
 	 * 
 	 */
 	private void executeSelect(){
-		// TODO Auto-generated method stub
 		Select sel = (Select) com;
 		String req, tmp, tmp2, group = "";
 		int i, idFai, nbEnregistrement = 0;
@@ -444,7 +439,6 @@ public class Moteur {
 			}
 		}
 		catch(SQLException e){
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -614,8 +608,9 @@ public class Moteur {
         //-- insertion liaison dans meta_star
         //--END
         String req, tname = ca.getNom();
+        Statement statement;
 //      -- ajout column fk_ dans table
-        req = "ALTER TABLE "+tname+" ADD COLUMN (";
+        req = "ALTER TABLE "+tname+" ADD COLUMN ";
         ArrayList l = ca.getAttributs();
         for (int j = 0; j< l.size();j++){
             String cleF=(String)l.get(j);
@@ -623,16 +618,18 @@ public class Moteur {
             		""+ cleF+" FOREIGN KEY(fk_"+cleF+") REFERENCES "+cleF+" (pk_"+cleF+"),"; 
         }
         req = req.substring (0,req.length()-1);
-        req+=")";
         System.out.println(req);
         //statement = con.createStatement();
         //boolean result = statement.execute(req);
         try{
-//      METABASE TODO
-        //liaisons ds meta_star
-        CallableStatement call = con.prepareCall("{" +
+            
+            statement = con.createStatement();
+            boolean result = statement.execute(req);
+            //      METABASE TODO
+            	//liaisons ds meta_star
+            	CallableStatement call = con.prepareCall("{" +
         		"call GEST_BASE_3D.CONNECT_DIM (?,?)}");
-        //call.setInt(1,idElmt);
+            	//call.setInt(1,idElmt);
         
         //connect
         CallableStatement callC = con.prepareCall("{" +
@@ -646,7 +643,6 @@ public class Moteur {
             		"" + connect+", D)");
             callC.execute();
             //recup id dimension
-            //ici ca retourne -1...pkoi? TODO GET_ID_ELMT marche en test unitaire...
             int idD = callC.getInt(1);
             
             if (idD!=-1)
@@ -679,14 +675,13 @@ public class Moteur {
         
         //BASE
         //-- ajout column dans table
-        req = "ALTER TABLE "+tname+" ADD COLUMN (";
+        req = "ALTER TABLE "+tname+" ADD ";
         ArrayList l = com.getAttributs();
         for (int j = 0; j< l.size();j++){
             Attribut att  = (Attribut)l.get(j);
             req += att.toString()+",";
         }
         req = req.substring (0,req.length()-1);
-        req+=")";
         System.out.println(req);
         //statement = con.createStatement();
         //boolean result = statement.execute(req);
@@ -708,7 +703,7 @@ public class Moteur {
             else
                 call.setString(3,"F");
             
-            // call.execute();
+            call.execute();
             int idElmt =call.getInt(1);
         
             
@@ -737,14 +732,12 @@ public class Moteur {
         
         //BASE
         //-- ajout column dans table
-        req = "ALTER TABLE "+tname+" DROP COLUMN (";
+        req = "ALTER TABLE "+tname+" DROP COLUMN ";
         ArrayList l = com.getAttributs();
         for (int j = 0; j< l.size();j++){
-            Attribut att  = (Attribut)l.get(j);
-            req += att.getNom()+",";
+            req += (String)l.get(j)+",";
         }
         req = req.substring (0,req.length()-1);
-        req+=")";
         System.out.println(req);
         //statement = con.createStatement();
         //boolean result = statement.execute(req);
@@ -775,10 +768,9 @@ public class Moteur {
             call = con.prepareCall("{ " +
             "call GEST_BASE_3D.DELETE_ATT(?,?)}");
             for (int i = 0; i< l.size();i++){
-                Attribut att=  (Attribut)l.get(i);
                 call.setInt(2,idElmt);
-                call.setString(3,att.getNom());
-                //call.execute();  
+                call.setString(3,(String)l.get(i));
+                call.execute();  
             }     
         } catch (SQLException e) {
             e.printStackTrace();

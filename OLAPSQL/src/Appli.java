@@ -136,9 +136,9 @@ public class Appli {
 			try{
 				ArrayList l = parser.execute();
 				bd = new BaseDonnees();
+				bd.connecter();
 							    
 					for (int i = 0; i<l.size();i++){
-					    bd.connecter();
 					    Commande c  = (Commande)l.get(i);
 					    c.afficher();
 					    //Semantique s = new Semantique(c, bd);
@@ -148,6 +148,7 @@ public class Appli {
 					    m.execute();
 						//TODO bd.deconnecter();
 					}
+					System.out.println("end Moteur");
 				}
 //				catch(FactException e2){
 //					textArea.append(e2.getMessage()+"\n");
@@ -174,6 +175,7 @@ public class Appli {
 //					e.printStackTrace();
 //				}
 				finally{
+				    if (bd!=null)
 					bd.deconnecter();
 				}
 

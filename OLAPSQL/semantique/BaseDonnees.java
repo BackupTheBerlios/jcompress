@@ -11,7 +11,7 @@ import structure.CreateDimension;
 
 public class BaseDonnees {
 	private static String url = "jdbc:oracle:thin:@telline.cict.fr:1526:etu923";
-	private static String user = "m1isi17";
+	private static String user = "m1isi13";
 	private static String passwd = "cict";
 	private static Connection conn = null;
 
