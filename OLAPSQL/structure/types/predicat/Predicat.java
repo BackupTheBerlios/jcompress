@@ -66,4 +66,8 @@ public class Predicat {
 	public String getSQL(){
 		return racine.getSQL();
 	}
+	
+	public String getSQLMoteur(String table){
+		return racine.getSQLMoteur(table);
+	}
 }

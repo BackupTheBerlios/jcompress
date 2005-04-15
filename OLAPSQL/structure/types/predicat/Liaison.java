@@ -99,6 +99,26 @@ public class Liaison extends ElementAbstrait {
 			}
 		return noeud;
     }
+
+	/**
+	 * (non-Javadoc)
+	 * @see structure.types.predicat.ElementAbstrait#getSQLMoteur()
+	 */
+	public String getSQLMoteur(String table){
+		ElementAbstrait el;
+		String tmp = "(";
+		Iterator it = preds.iterator();
+		
+		while(it.hasNext()){
+			el = (ElementAbstrait) it.next();
+			tmp += el.getSQLMoteur(table);
+			if(it.hasNext()){
+				tmp += " "+liaison+" ";
+			}
+		}
+		tmp += ")";
+		return tmp;
+	}
 	
 	
 }

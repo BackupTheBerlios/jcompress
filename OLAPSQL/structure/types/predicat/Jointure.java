@@ -95,4 +95,23 @@ public class Jointure extends ElementAbstrait {
         return  (" "+expr1+" "+operateur+" "+expr2);	
     	
     }
+
+	/**
+	 * (non-Javadoc)
+	 * @see structure.types.predicat.ElementAbstrait#getSQLMoteur(java.lang.String)
+	 */
+	public String getSQLMoteur(String pTable){
+		String tmp = "";
+		int i;
+		
+		tmp += expr1;
+		
+		tmp += operateur;
+		
+	        if (expr2.contains(","))
+	            expr2=expr2.replace(',','.'); 
+			tmp += expr2;
+		
+		return tmp;
+	}
 }

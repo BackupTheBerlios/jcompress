@@ -1,4 +1,3 @@
-
 package src;
 
 import java.awt.BorderLayout;
@@ -37,42 +36,37 @@ import exception.HierarchyException;
 import exception.PredicatException;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author claire TODO To change the template for this generated type comment go
+ *         to Window - Preferences - Java - Code Style - Code Templates
  */
 
 //Base de donnees communes a semantique et moteur
-
 //TODO commentaires dans parser --
 public class Appli {
 
-    private  String NEW_LINE = "\n";
+	private String NEW_LINE = "\n";
 
-    private  JFrame jFrame =new JFrame("OLAPSQL");
-	private  JTextArea textArea=null;
-	private  JButton boutonOuvrir=null;
-	private  String chemin ="T:\\IUP Master 1\\sem2\\BOT\\projet3 BOT";
-	private JTable table = null;
-	static Analyzer parser=null;
-    
-	
-	
-    /**
-     */
-    public Appli(){
-    }
-    
-    public static void main(String[] args) {
-        Appli test = new Appli();
-        test.init();
-    }
+	private static JFrame jFrame = new JFrame("OLAPSQL");
+	private JTextArea textArea = null;
+	private JButton boutonOuvrir = null;
+	private String chemin = "T:\\IUP Master 1\\sem2\\BOT\\projet3 BOT";
+	private static JTable table = null;
+	static Analyzer parser = null;
 
-    /**
-     * 
-     */
-    void init() {
+	/**
+	 */
+	public Appli(){
+	}
+
+	public static void main(String[] args){
+		Appli test = new Appli();
+		test.init();
+	}
+
+	/**
+	 * 
+	 */
+	void init(){
 		// Initialisation de la fenetre
 		//jFrame = new JFrame("OLAPSQL");
 		jFrame.setSize(500, 310);
@@ -88,56 +82,58 @@ public class Appli {
 				System.exit(0);
 			}
 		});
-		
+
 		//Bouton OuvrirFichier
 		boutonOuvrir = new JButton("requete OLAPSQL");
 		boutonOuvrir.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				String fichierSource = ouvrirFichier(".olapsql");
 				if(fichierSource != null){
-				    System.out.println(fichierSource);
-				    //TODO effacer le textArea
-				    analyser(fichierSource);
+					System.out.println(fichierSource);
+					//TODO effacer le textArea
+					analyser(fichierSource);
 				}
 				else
-				    textArea.append("Fichier inconnu." + NEW_LINE);
-			}});
+					textArea.append("Fichier inconnu." + NEW_LINE);
+			}
+		});
 		// Champ texte pour prevenir l'utilisateur
 		textArea = new JTextArea(5, 20);
 		textArea.setEditable(false);
 		JScrollPane jFiel = new JScrollPane(textArea);
 		jFiel.setPreferredSize(new Dimension(250, 100));
-		
+
 		//Ajout des elements a la fenetre
 		FlowLayout layout = new FlowLayout(FlowLayout.CENTER);
 		jFrame.getContentPane().setLayout(layout);
 		jFrame.getContentPane().add(new JLabel("LOG:"));
-		jFrame.getContentPane().add(textArea,BorderLayout.NORTH);
-		jFrame.getContentPane().add(boutonOuvrir,BorderLayout.CENTER);
-		
-		if(table!=null)
+		jFrame.getContentPane().add(jFiel, BorderLayout.NORTH);
+		jFrame.getContentPane().add(boutonOuvrir, BorderLayout.CENTER);
+
+		if(table != null)
 			jFrame.getContentPane().add(table);
-		
+
 		//Rend visible la fenetre
 		jFrame.setVisible(true);
-    }
-    
-    /**
-     * @param fichierSource, nom du fichier contenant requetes
-     */void analyser(String fichierSource) {
+	}
 
-        try {
+	/**
+	 * @param fichierSource, nom du fichier contenant requetes
+	 * @throws 
+	 */
+	void analyser(String fichierSource){
+
+		try{
 			FileReader f = new FileReader(fichierSource);
 			BaseDonnees bd=null;
 			if (parser == null)
 			{
 				parser = new Analyzer (f);
 			}
-			else
-			{
+			else{
 				parser.ReInit(f);
 			}
-			try {
+			try{
 				ArrayList l = parser.execute();
 				bd = new BaseDonnees();
 							    
@@ -152,23 +148,55 @@ public class Appli {
 					    m.execute();
 						//TODO bd.deconnecter();
 					}
-					
-			}
+				}
+//				catch(FactException e2){
+//					textArea.append(e2.getMessage()+"\n");
+//					e2.printStackTrace();
+//				}
+//				catch(DimensionException e2){
+//					textArea.append(e2.getMessage()+"\n");
+//					e2.printStackTrace();
+//				}
+//				catch(HierarchyException e2){
+//					textArea.append(e2.getMessage()+"\n");
+//					e2.printStackTrace();
+//				}
+//				catch(AttributException e2){
+//					textArea.append(e2.getMessage()+"\n");
+//					e2.printStackTrace();
+//				}
+//				catch(SQLException e){
+//					textArea.append(e.getMessage()+"\n");
+//					e.printStackTrace();
+//				}
+//				catch(PredicatException e){
+//					textArea.append(e.getMessage()+"\n");
+//					e.printStackTrace();
+//				}
 				finally{
-				    bd.deconnecter();    
+					bd.deconnecter();
 				}
 
 				System.out.println("ok");
-			} catch (ParseException e) {
+				textArea.append("Execution Ok.\n");
+			}
+			catch(ParseException e){
+				textArea.append(e.getMessage()+"\n");
 				System.out.println("Erreur de syntaxe OLAPSQL");
 				e.printStackTrace();
-			
-     }	catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-    }
+			}
+//		}
+//		catch(FileNotFoundException e1){
+//			e1.printStackTrace();
+//		}
+		catch(FileNotFoundException e){
+				// TODO Auto-generated catch block
+			textArea.append(e.getMessage()+"\n");
+				e.printStackTrace();
+			}
+	}
 
-    /**
+	/**
 	 * Ouvre une fenetre permettant de choisir un fichier ayant pour extension
 	 * le parametre.
 	 * @param extension Type d'extension (exemple : ".txt").
@@ -207,24 +235,25 @@ public class Appli {
 		}
 		return null;
 	}
-	
-	
-    /**
-     * @return Returns the table.
-     */
-    public JTable getTable() {
-        return table;
-    }
-    /**
-     * @param table The table to set.
-     */
-    public void setTable(JTable table) {
-       if (table !=null){
-    	this.table = table;
-        table.setVisible(true);
-        jFrame.getContentPane().add(table);
-       }
-    }
-    
-    
+
+	/**
+	 * @return Returns the table.
+	 */
+	public JTable getTable(){
+		return table;
+	}
+
+	/**
+	 * @param table The table to set.
+	 */
+	public static void setTable(JTable pTable){
+		if(pTable != null){
+			table = pTable;
+			table.setVisible(true);
+			jFrame.getContentPane().add(table.getTableHeader(), BorderLayout.NORTH);
+			jFrame.getContentPane().add(table, BorderLayout.NORTH);
+			jFrame.setVisible(true);
+		}
+	}
+
 }

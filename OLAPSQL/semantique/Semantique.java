@@ -82,6 +82,10 @@ public class Semantique {
 		l.add("souscateg");
 		c.setRows(l);
 
+		l = new ArrayList();
+		l.add("AVG(montant)");
+		c.setAgregs(l);
+		
 		c.setWhere(p);
 
 		Semantique s = new Semantique(c);
@@ -333,9 +337,11 @@ public class Semantique {
 
 		// verification des attributs utlisé dans le select
 		Iterator itAgreg = select.getAgregs().iterator();
+		if(select.getAgregs().size() == 0)
+			throw new AttributException("Le select doit être suivi par une fonction d'agrégation.");
 		while(itAgreg.hasNext()){
 			String agreg = (String) itAgreg.next();
-			String mesure = agreg.substring(agreg.indexOf("("), agreg
+			String mesure = agreg.substring(agreg.indexOf("(")+1, agreg
 					.indexOf(")"));
 			if(!bd.existAttribut(select.getNomFrom(), mesure))
 				throw new AttributException("L'attribut '" + mesure

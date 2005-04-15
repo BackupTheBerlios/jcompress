@@ -47,4 +47,13 @@ public abstract class ElementAbstrait {
 	 * String
 	 */
 	public abstract String getSQL();
+
+
+
+	/**
+	 * retourne le requete SQL pour le select du moteur
+	 * @return
+	 * String
+	 */
+	public abstract String getSQLMoteur(String table);
 }
