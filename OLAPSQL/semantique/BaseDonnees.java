@@ -1,22 +1,53 @@
 package semantique;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-
-import structure.CreateDimension;
 
 public class BaseDonnees {
-	private static String url = "jdbc:oracle:thin:@telline.cict.fr:1526:etu923";
-	private static String user = "m1isi13";
-	private static String passwd = "cict";
+	private static String url = null;
+	private static String user = null;
+	private static String passwd = null;
 	private static Connection conn = null;
 
 	public BaseDonnees(){
-		// TODO initialisation de url, user et pwd depuis un fichier conf
+		// initialisation de url, user et pwd depuis un fichier conf
+		FileReader f;
+		try{
+			f = new FileReader("BaseDonnees.conf");
+			char[] lu = new char[1];
+			String ligne = "";
+			int i;
+
+			while(url == null || user == null || passwd == null){
+				f.read(lu);
+				while(!Character.valueOf(lu[0]).toString().equals("\n")
+						&& !Character.valueOf(lu[0]).toString().equals("\r")){
+					ligne += lu[0];
+					f.read(lu);
+				}
+
+				i = ligne.indexOf("=");
+				if(i >= 0){
+					if(ligne.substring(0, i).equals("url"))
+						url = ligne.substring(i + 1, ligne.length());
+					if(ligne.substring(0, i).equals("login"))
+						user = ligne.substring(i + 1, ligne.length());
+					if(ligne.substring(0, i).equals("password"))
+						passwd = ligne.substring(i + 1, ligne.length());
+				}
+
+				ligne = "";
+			}
+		}
+		catch(IOException e1){
+			// Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	/**
@@ -61,10 +92,10 @@ public class BaseDonnees {
 		rs.next();
 		int i = rs.findColumn("count(*)");
 		boolean b = (rs.getInt(i) == 1);
-		
+
 		rs.close();
 		st.close();
-		
+
 		return b;
 	}
 
@@ -293,24 +324,26 @@ public class BaseDonnees {
 
 		return (nb == 1);
 	}
-	
-	public boolean existDimensionToFact(String nomDim, String nomFai) throws SQLException{
+
+	public boolean existDimensionToFact(String nomDim, String nomFai)
+			throws SQLException{
 		int i, idDim, idFai, nb;
 		ResultSet rs;
 		Statement st = conn.createStatement();
-		
+
 		idDim = getIdDimension(nomDim);
-		
+
 		idFai = getIdFait(nomFai);
-		
-		rs = st.executeQuery("select count(*) from meta_star where idf="+idFai+" and idd="+idDim);
+
+		rs = st.executeQuery("select count(*) from meta_star where idf="
+				+ idFai + " and idd=" + idDim);
 		rs.next();
 		i = rs.findColumn("count(*)");
 		nb = rs.getInt(i);
-		
+
 		rs.close();
 		st.close();
-		
+
 		return (nb == 1);
 	}
 
@@ -334,7 +367,7 @@ public class BaseDonnees {
 		rs.next();
 		i = rs.findColumn("count(*)");
 		nb = rs.getInt(i);
-		
+
 		rs.close();
 		st.close();
 
@@ -449,7 +482,7 @@ public class BaseDonnees {
 		rs.next();
 		i = rs.findColumn("id");
 		idDim = rs.getInt(i);
-		
+
 		rs.close();
 		st.close();
 
@@ -472,25 +505,11 @@ public class BaseDonnees {
 		rs.next();
 		i = rs.findColumn("id");
 		idHie = rs.getInt(i);
-		
+
 		rs.close();
 		st.close();
 
 		return idHie;
-	}
-
-	public boolean createFact(String nom, ArrayList listeMesure,
-			ArrayList listeDimension){
-		// TODO
-		return false;
-	}
-
-	/**
-	 * @param dim
-	 */
-	public void createDimension(CreateDimension dim){
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -616,42 +635,43 @@ public class BaseDonnees {
 		st.close();
 		return nom;
 	}
-	
-	
-    /**
-     * @return Returns the conn.
-     */
-    public static Connection getConn() {
-        return conn;
-    }
+
+	/**
+	 * @return Returns the conn.
+	 */
+	public static Connection getConn(){
+		return conn;
+	}
 
 	/**
 	 * @param pNomHierarchy
 	 * @param pString
 	 * @param pString2
-	 * @return
-	 * boolean
+	 * @return boolean
 	 * @throws SQLException
 	 */
-	public boolean isAttributFaible(String pNomHierarchy, String pAttributFort, String pAttributFaible) throws SQLException{
+	public boolean isAttributFaible(String pNomHierarchy, String pAttributFort,
+			String pAttributFaible) throws SQLException{
 		int idAttFor, idAttFai, idHie, i, posFor, posFai;
 		ResultSet rs;
 		Statement st = conn.createStatement();
-		
+
 		idHie = getIdHierarchy(pNomHierarchy);
 		idAttFor = getIdAttribut(pAttributFort);
 		idAttFai = getIdAttribut(pAttributFaible);
-		
-		rs = st.executeQuery("select pos from meta_level where idh="+idHie+" and idp="+idAttFor);
+
+		rs = st.executeQuery("select pos from meta_level where idh=" + idHie
+				+ " and idp=" + idAttFor);
 		rs.next();
 		i = rs.findColumn("pos");
 		posFor = rs.getInt(i);
-		
-		rs = st.executeQuery("select pos from meta_level where idh="+idHie+" and idp="+idAttFai);
+
+		rs = st.executeQuery("select pos from meta_level where idh=" + idHie
+				+ " and idp=" + idAttFai);
 		rs.next();
 		i = rs.findColumn("pos");
 		posFai = rs.getInt(i);
-		
+
 		return (posFor == posFai);
 	}
 }

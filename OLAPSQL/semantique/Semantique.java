@@ -1,5 +1,6 @@
 package semantique;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,7 +37,7 @@ public class Semantique {
 	 * @param com
 	 */
 	public Semantique(Commande com){
-		bd = new BaseDonnees();
+			bd = new BaseDonnees();
 		bd.connecter();
 		commande = com;
 	}
@@ -548,6 +549,8 @@ public class Semantique {
 				// la
 				// dimension
 				ArrayList listeLevel = hierarchy.getLevels();
+				if(listeLevel.size() == 0)
+					throw new HierarchyException("La hierarchy '"+nomHierarchy+"doit comporter des Level.");
 				Iterator itLevel = listeLevel.iterator();
 				while(itLevel.hasNext()){
 					Level level = (Level) itLevel.next();
@@ -596,7 +599,10 @@ public class Semantique {
 			case AlterHierarchy.DROP_HIERARCHY :
 				// hierarchy deja existante et appartient à la dimension qu'on
 				// veut modifier
+				// hierar non null
 				Hierarchy hierar = alter.getHierarchy();
+				if(hierar == null)
+					throw new HierarchyException("La hierarchy doit être non null.");
 				String nom = hierar.getNom();
 				if(!bd.existHierarchy(nom))
 					throw new HierarchyException("La hierarchy '" + nom
@@ -634,8 +640,11 @@ public class Semantique {
 
 		switch(alter.getAlteration()){
 			case Alter.DISCONNECT :
+				// au moins une dim
 				// dim existe et dim relié au fait
 				ArrayList listeDimension = alter.getAttributs();
+				if(listeDimension.size() == 0)
+					throw new FactException("La commande ALTER DISCONNECT doit comporter au moins un nom de dimension.");
 				analyzeDimensionExist(listeDimension);
 				Iterator itDim = listeDimension.iterator();
 				while(itDim.hasNext()){
@@ -648,11 +657,17 @@ public class Semantique {
 				}
 				break;
 			case Alter.CONNECT :
+				// au moins une dim
 				// dim existe
+				if(alter.getAttributs().size() == 0)
+					throw new FactException("La commande ALTER CONNECT nécessite au moins une dimension.");
 				analyzeDimensionExist(alter.getAttributs());
 				break;
 			case Alter.DROP :
+				// au moins un attribut
 				// attr exist pour le fait
+				if(alter.getAttributs().size() == 0)
+					throw new AttributException("La commande ALTER DROP nécessite au moins un attributs.");
 				Iterator it = alter.getAttributs().iterator();
 				while(it.hasNext()){
 					String att = (String) it.next();
@@ -675,7 +690,10 @@ public class Semantique {
 				}
 				break;
 			case Alter.ADD :
+				// au moins un attribut
 				// attr n'existe pas déjà pour la relation
+				if(alter.getAttributs().size() == 0)
+					throw new AttributException("La commande ALTER ADD nécessite au moins un attribut.");
 				Iterator itA = alter.getAttributs().iterator();
 				while(itA.hasNext()){
 					Attribut att = (Attribut) itA.next();
@@ -707,6 +725,10 @@ public class Semantique {
 					+ "' existe déjà.");
 		}
 
+		// verif au moins un attribut
+		if(dim.getAttributs().size() == 0)
+			throw new AttributException("La création de la dimension '"+dim.getNom()+"' nécessite au moins un attribut.");
+		
 		ArrayList hierarchi = dim.getHierarchys();
 		Iterator it = hierarchi.iterator();
 		String paramRacine = null;
@@ -762,10 +784,11 @@ public class Semantique {
 	 * Analise la sémantique de la création d'un fait.
 	 * @throws DimensionException
 	 * @throws SQLException
+	 * @throws AttributException
 	 * @throws FactException void
 	 */
 	private void analyzeCreateFact() throws DimensionException, SQLException,
-			FactException{
+			FactException, AttributException{
 		CreateFact fait = (CreateFact) commande;
 
 		// verifie l'unicite du nom du fait
@@ -773,6 +796,10 @@ public class Semantique {
 			throw new FactException("Le fait '" + fait.getNom()
 					+ "' existe déjà.");
 		}
+		
+		// verif au moins un attribut
+		if(fait.getAttributs().size() == 0)
+			throw new AttributException("La création du fait '"+fait.getNom()+"' nécessite au moins un attribut.");
 
 		// verifie que les dimensions existe
 		analyzeDimensionExist(fait.getConnects());
@@ -786,6 +813,7 @@ public class Semantique {
 	 */
 	private void analyzeDimensionExist(ArrayList listeDimension)
 			throws SQLException, DimensionException{
+		
 		Iterator itDimension = listeDimension.iterator();
 		while(itDimension.hasNext()){
 			String nomDimension = (String) itDimension.next();
