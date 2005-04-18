@@ -52,6 +52,20 @@ public class Insert extends Commande {
 		}
 	}
 	
+	public String toSQL ()
+	{
+	    String req = "INSERT INTO "+getNom()+" VALUES (";
+	    
+	    for (int i = 0; i<values.size();i++)
+	    {
+            req+= ((String) values.get(i))+",";
+	    }
+	    req = (req.substring (0,req.length()-1))+")";
+	    return req;
+	
+	}
+
+	
 	/**
 	 * @return Retourne la valeur de l'attribut values.
 	 */

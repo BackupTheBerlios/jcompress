@@ -90,10 +90,15 @@ public class Jointure extends ElementAbstrait {
         
         //remplacement de la virgule sur premier appel des reels
         if (expr2.contains(","))
-            expr2=expr2.replace(',','.'); 
+            expr2=expr2.replace(',','.');
         
-        return  (" "+expr1+" "+operateur+" "+expr2);	
-    	
+        try{
+	        Integer t = new Integer(expr2);
+	        return  (" "+expr1+" "+operateur+" "+expr2);	
+        }
+        catch (NumberFormatException e){
+            return (" "+expr1+" "+operateur+" '"+expr2+"' ");
+        }
     }
 
 	/**

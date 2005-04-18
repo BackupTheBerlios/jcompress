@@ -42,6 +42,12 @@ import exception.PredicatException;
 
 //Base de donnees communes a semantique et moteur
 //TODO commentaires dans parser --
+//TODO tester les predicats et les ' pour expr2
+//TODO ask laure
+	//DELETE FROM DIMENSION produits WHERE idp = 1;
+	//--delete dans les faits??
+//TODO ask laure 2 diemensions ne peuvent avoir le m nom...sinon moi ca plante cf CREATE_DIM
+//TODO ask Laur qd on drop une colonne de dimension, on les droppe ds levels
 public class Appli {
 
 	private String NEW_LINE = "\n";
@@ -192,7 +198,6 @@ public class Appli {
 //			e1.printStackTrace();
 //		}
 		catch(FileNotFoundException e){
-				// TODO Auto-generated catch block
 			textArea.append(e.getMessage()+"\n");
 				e.printStackTrace();
 			}
