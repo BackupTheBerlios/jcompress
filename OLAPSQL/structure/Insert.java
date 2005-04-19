@@ -54,7 +54,7 @@ public class Insert extends Commande {
 	
 	public String toSQL ()
 	{
-	    String req = "INSERT INTO "+getNom()+" VALUES (";
+	    String req = "INSERT INTO "+getNom()+" VALUES (null,";
 	    
 	    for (int i = 0; i<values.size();i++)
 	    {

@@ -54,6 +54,8 @@ public abstract class Commande{
 	public int getType() {
 		return type;
 	}
+	
+   
 	/**
 	 * @param type The type to set.
 	 */

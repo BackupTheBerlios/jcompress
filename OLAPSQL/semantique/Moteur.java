@@ -57,8 +57,9 @@ public class Moteur {
     	 */
     	public void execute (){
     	    if (com != null){
-    	        
+    	        try {
     	        bd.connecter();
+    	        con.setAutoCommit(false);
     	        if (com instanceof Select)
     	            executeSelect();
     	        else if (com instanceof Insert)
@@ -73,14 +74,17 @@ public class Moteur {
     	        			    executeDrop();
     	        			    else
     	        			        System.out.println("error : command unknown");
-    //	       try {
-    //            // TODO con.close();
-    //        } catch (SQLException e) {
-    //            e.printStackTrace();
-    //        }
+
+    	       con.commit();
+    	        } catch (SQLException e) {
+                    e.printStackTrace();
+                    try {con.rollback();} catch (SQLException e1) {e1.printStackTrace();}
+                }
+    	        finally{
+    	            try {con.setAutoCommit(false);} catch (SQLException e1) {e1.printStackTrace();}
+    	            bd.deconnecter();
+    	        }
     	    }
-    	   
-    
     	}
 
 	/**
@@ -118,9 +122,7 @@ public class Moteur {
 	}
 
     /**
-	 * DELETE FROM FACT ventes WHERE montant = 100,00; a tester 
-	 * DELETE FROM
-	 * DIMENSION produits WHERE idp = 1;
+	 * marche pas je sai pas pkoi...et penser a supprimer la sequence et le trigger pour fait/dim
 	 */
 	private void executeDelete(){
 		String tname = com.getNom();
@@ -139,21 +141,27 @@ public class Moteur {
 				break;
 		}
 
-		String req = "DELETE FROM " + t;
+		String req = "DELETE FROM " + tname;
 		if(p != null)
 			req += " WHERE" + p;
 		System.out.println(" req SQL de delete: " + req);
-
+		Statement s=null;
 		try{
 			//execution
-			Statement s = con.createStatement();
-			s.executeUpdate(req);
-
+			s = con.createStatement();
+			int result = s.executeUpdate(req);
+			if (result!=0)
+			    System.out.println("DELETE TROUVE");
+			else
+			    System.out.println("DELETE PAS OK");
 		}
 		catch(SQLException e){
 			e.printStackTrace();
+			rollback();
 		}
-
+		finally{
+		if(s!=null){try{s.close();}catch(Exception e){e.printStackTrace();}}
+		}
 	}
 
 	/**
@@ -186,6 +194,9 @@ public class Moteur {
 				statement = con.createStatement();
 				boolean resultt = statement.execute(req);
 				statement.close();
+				trigger(tname, getType(cd.getType()));
+				
+				
 				idElmt = insereFD(tname, Commande.DIMENSION, cd.getAttributs());
 
 				
@@ -740,15 +751,33 @@ public class Moteur {
     }
     
     private void rollback(){
+        Statement stm=null;
         try {
-            Statement stm = con.createStatement();
-            stm.execute("rollback");
+//            stm = con.createStatement();
+//            stm.execute("rollback");
+            con.rollback();
             
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+        finally {
+            if(stm!=null){try{stm.close();}catch(Exception e){e.printStackTrace();}}	    
+        }
+    }
     
+    private void commit(){
+        Statement stm=null;
+        try {
+//            stm = con.createStatement();
+//            stm.execute("commit");
+            con.commit();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(stm!=null){try{stm.close();}catch(Exception e){e.printStackTrace();}}	    
+        }
     }
     
 
@@ -941,6 +970,43 @@ public class Moteur {
         
     } 
     
+
+    
+    //cree une sequence et un trigger associe sur les pk des faits/dimensions
+    private void trigger (String name, String type){
+        Statement s=null;
+		try{
+			s = con.createStatement();
+			String nomS = "seq_" +type+"_"+ name;
+			String req = "CREATE SEQUENCE "+nomS;
+			System.out.println(req);
+			s.execute(req);
+			req = "select "+nomS+".nextval from dual";
+			System.out.println(req);
+			s.execute(req);
+			System.out.println("sequence initialisee");
+			
+			req = "create or replace trigger t_" +nomS 
+			    	+" before insert on "+ name+ " for each row "
+			    	+"begin "
+			    	+"select "+nomS+" into :new.pk_"+name+".nextval from dual "
+					+"end t_"+nomS;
+					//+" /";
+			System.out.println(req);
+			s.execute(req);
+			System.out.println("trigger initialise");
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			rollback();
+		}
+		finally{
+		if(s!=null){try{s.close();}catch(Exception e){e.printStackTrace();}}
+		} 
+    }
+    
+
+    
     //return F ou D ou H
     public String getType(int t){
         switch (t)
@@ -950,7 +1016,6 @@ public class Moteur {
         default: 					return "H";
         }
     }
-
 }
 
 
