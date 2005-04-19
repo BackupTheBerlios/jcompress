@@ -408,7 +408,7 @@ public class Moteur {
 	private void executeSelect(){
 		Select sel = (Select) com;
 		String req, tmp, tmp2, group = "";
-		int i, idFai, nbEnregistrement = 0;
+		int i, idFai = 0;
 		ResultSet rs;
 		Statement st;
 		ArrayList listSelect = new ArrayList();
@@ -416,20 +416,6 @@ public class Moteur {
 		ArrayList listIdDim = new ArrayList();
 		ArrayList listArray = new ArrayList();
 		Iterator it;
-
-		//    	SELECT AVG(montant)
-		//    	ROW produits WITH h_prod(categorie, sous-categ)
-		//    	COLUMN clients WITH h_geo(pays)
-		//    	FROM ventes
-		//    	WHERE temps.annee=2004;
-
-		//    	SELECT AVG(montant), categorie, sous-categ, pays
-		//		FROM ventes, produits, clients, temps
-		//		WHERE ventes*produits
-		//		AND ventes*clients
-		//		AND ventes*temps
-		//		AND annee=2004
-		//		GROUP BY categorie, sous-categ, pays;
 
 		// selection des dim pas mentionné ds select
 		try{
@@ -553,7 +539,6 @@ public class Moteur {
 
 		req += " GROUP BY " + group.substring(2, group.length());
 
-		// TODO execute de la requete
 		try{
 			String[] nomCol = new String[listSelect.size()];
 			for(int j=0 ; j<listSelect.size() ; j++){
@@ -578,8 +563,6 @@ public class Moteur {
 			}
 			TableModel tableModel = new DefaultTableModel(table, nomCol);
 			JTable jTable = new JTable();
-			// affichage nom colonne
-			//this.getContentPane().add(table.getTableHeader(), BorderLayout.NORTH);
 			jTable.setModel(tableModel);
 			Appli.setTable(jTable);
 			
