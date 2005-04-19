@@ -900,9 +900,8 @@ public class Moteur {
             InsertFact ci = (InsertFact) com;
 
             req = "SELECT * from "+tname;
-            //ResultSet rs = statement.executeQuery( sql );
-            //ResultSetMetaData mdt = rs.getMetaData();
-            ResultSetMetaData mdt=null;
+            ResultSet rs = statement.executeQuery( req );
+            ResultSetMetaData mdt = rs.getMetaData();
             
             req = "INSERT INTO "+tname+" (";
             String reqS = " VALUES (";
@@ -914,12 +913,15 @@ public class Moteur {
                     {
                         Predicat p = (Predicat)ci.getConnects().get(colon);
                         //on peut mettre le select dans le values??
+//                        INSERT INTO "table1" ("column1", "column2", ...)
+//                        SELECT "column3", "column4", ...
+//                        FROM "table2" 
                     }
                     else
                     {
                         String valeur = (String)ci.getValues().get(v);
                         try{
-                            Integer t = new Integer (valeur);
+                            Float t = new Float (valeur);
                             reqS = valeur+", ";
                         }
                         catch (NumberFormatException e){
@@ -935,16 +937,17 @@ public class Moteur {
                 req = req +reqS;
                 System.out.println(req);
                 
-                //statement = con.createStatement();
-                //boolean result = statement.execute(req); 
+                statement = con.createStatement();
+                boolean result = statement.execute(req); 
         }
         else
         {
+            //rajouter le premier id
             Insert ci = (Insert)com;
             req = ci.toSQL();
             System.out.println(req);
-            //statement = con.createStatement();
-            //boolean result = statement.execute(req);
+            statement = con.createStatement();
+            boolean result = statement.execute(req);
         }
         } catch (SQLException e) {
             e.printStackTrace();

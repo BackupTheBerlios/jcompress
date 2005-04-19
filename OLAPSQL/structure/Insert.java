@@ -58,11 +58,21 @@ public class Insert extends Commande {
 	    
 	    for (int i = 0; i<values.size();i++)
 	    {
-            req+= ((String) values.get(i))+",";
+	        String val = ((String) values.get(i));
+	        try{
+		        Float t = new Float(val);	
+	        }
+	        catch (NumberFormatException e){
+	            val = "'"+val+"'";
+	        }
+	        
+            req+= val+",";
 	    }
 	    req = (req.substring (0,req.length()-1))+")";
 	    return req;
 	
+	    
+	    
 	}
 
 	

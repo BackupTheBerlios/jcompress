@@ -337,7 +337,8 @@ String def_une_valeur():{}
 				)								
 		<QUOT>	{return s;})
 		
-	|	(t=<CHIFFRE>{return t.toString();}		)
+	|	(t=<CHIFFRE>{return t.toString();})		
+	|	(t=<ENTIER>{return t.toString();})
 }
 
 	/*-------------
