@@ -11,6 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.JTable;
@@ -82,18 +83,20 @@ public class Moteur {
                 }
     	        finally{
     	            try {con.setAutoCommit(false);} catch (SQLException e1) {e1.printStackTrace();}
-    	            bd.deconnecter();
+    	            //bd.deconnecter();
     	        }
     	    }
     	}
 
 	/**
-	 * ok
+	 * drop dimension ajouter les suppressions des faits qui la refernce
+	 * drop fait ajouter ladeletion de ses dimensions/levels
 	 */
 	private void executeDrop(){
 
 		//delete la table
 		Statement s;
+		CallableStatement call=null;
 		try{
 			s = bd.getConn().createStatement();
 			String tname = com.getNom();
@@ -101,8 +104,8 @@ public class Moteur {
 			//delete la table
 			s.executeUpdate("DROP TABLE  " + tname);
 			System.out.println("table droppee : " + tname);
+			drop_sequence(tname, getType(com.getType()));
 
-			CallableStatement call = null;
 			if(com.getType() == Commande.DIMENSION){
 				call = con.prepareCall("{ call GEST_BASE_3D.DROP_DIM(?)}");
 				System.out.println("appel de DROP_DIM");
@@ -114,15 +117,17 @@ public class Moteur {
 			}
 
 			call.executeUpdate();
-
 		}
 		catch(SQLException e){
 			e.printStackTrace();
 		}
+		finally {
+            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        }
 	}
 
     /**
-	 * marche pas je sai pas pkoi...et penser a supprimer la sequence et le trigger pour fait/dim
+	 * ok fait et dim sans referencement
 	 */
 	private void executeDelete(){
 		String tname = com.getNom();
@@ -165,7 +170,7 @@ public class Moteur {
 	}
 
 	/**
-	 * ok
+	 * ok avec sequence
 	 */
 	private void executeCreate(){
 		String tname = com.getNom();
@@ -179,7 +184,9 @@ public class Moteur {
 			//la pk devrait etre en auto increment
 			CreateDimension cd = (CreateDimension) com;
 			String cleP = "pk_" + tname;
-			String req = "CREATE TABLE " + tname + " (" + "" + cleP
+			
+					
+			String req = "CREATE TABLE " + tname + " (" + cleP
 					+ " number(5), " + "constraint pk_" + tname
 					+ " PRIMARY KEY (" + cleP + ")";
 			ArrayList l = cd.getAttributs();
@@ -194,7 +201,7 @@ public class Moteur {
 				statement = con.createStatement();
 				boolean resultt = statement.execute(req);
 				statement.close();
-				trigger(tname, getType(cd.getType()));
+				sequence(tname, getType(cd.getType()));
 				
 				
 				idElmt = insereFD(tname, Commande.DIMENSION, cd.getAttributs());
@@ -235,6 +242,11 @@ public class Moteur {
 				}
 				req += ")";
 				System.out.println(req);
+				
+//				//generate sequence
+				String seq = sequence(tname, "F");
+				int id=-1;
+				if (seq == null ) return;
 				//
 				try{
 					statement = con.createStatement();
@@ -615,18 +627,29 @@ public class Moteur {
     
     /**
      * @param ca
-     * 
+     * a tester
      */
     private void dropHierarchy(AlterHierarchy ca) {
         
-        
-        
-        
-    }
+        CallableStatement call=null;
+        try {
+            call = con.prepareCall("{ "
+            		+ "call GEST_BASE_3D.DELETE_HIERARCHY (?)}");
+            call.setString(1, ca.getNom());
+		    call.execute();
+		    System.out.println("Hierarchy deletee : " + ca.getNom());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            rollback();
+        }
+        finally {
+            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        }
+	}
 
     //a tester si ok, a mettre un peu partout
     private int getIdMere (Commande c){
-        CallableStatement call;
+        CallableStatement call=null;
         try {
             call = con.prepareCall("{ " +
             "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
@@ -644,10 +667,14 @@ public class Moteur {
             e.printStackTrace();
             return -1;
         }
+        finally {
+            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        }
+        
     }
     /**
      * @param ca
-     * GET ID retourne -1....je sai pas TODO
+     * 
      */
     private void addHierarchy(AlterHierarchy ca) {
         //recup id de dimension mere
@@ -662,6 +689,7 @@ public class Moteur {
     private void disconnect(Alter ca) {
         String req, tname = ca.getNom();
         Statement statement;
+        CallableStatement call=null;
 //      -- ajout column fk_ dans table
         ArrayList l = ca.getAttributs();
         
@@ -676,7 +704,7 @@ public class Moteur {
         
           //      METABASE TODO
             	//liaisons ds meta_star
-        	CallableStatement call = con.prepareCall("{" +
+        	call = con.prepareCall("{" +
     		"call GEST_BASE_3D.ALT_FACT_DISCONNECT (?,?)}");
         	call.setString(1,tname);
             	
@@ -690,6 +718,9 @@ public class Moteur {
            rollback();
        }
         
+        finally {
+            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        }
         
     }
 
@@ -708,6 +739,7 @@ public class Moteur {
         String req, tname = ca.getNom();
         Statement statement;
 //      -- ajout column fk_ dans table
+        CallableStatement call=null;
         
         try {
         ArrayList l = ca.getAttributs();
@@ -730,7 +762,7 @@ public class Moteur {
 
             //      METABASE
             	//liaisons ds meta_star
-            	CallableStatement call = con.prepareCall("{" +
+            	call = con.prepareCall("{" +
         		"call GEST_BASE_3D.ALT_FACT_CONNECT (?,?)}");
             	//call.setInt(1,idElmt);
             	call.setString(1,tname);
@@ -745,16 +777,14 @@ public class Moteur {
         e.printStackTrace();
         rollback();  
     }
-//        PROCEDURE CONNECT_DIM (idf  meta_element.id%type,
-//                                idde meta_element.id%type);
-//        
+     finally {
+         try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+     }      
     }
     
     private void rollback(){
         Statement stm=null;
         try {
-//            stm = con.createStatement();
-//            stm.execute("rollback");
             con.rollback();
             
         } catch (SQLException e) {
@@ -768,8 +798,6 @@ public class Moteur {
     private void commit(){
         Statement stm=null;
         try {
-//            stm = con.createStatement();
-//            stm.execute("commit");
             con.commit();
             
         } catch (SQLException e) {
@@ -786,7 +814,7 @@ public class Moteur {
     {
         String req, tname = com.getNom();
         Statement statement;
-        
+        CallableStatement call=null;
         
         try {
         //BASE
@@ -809,7 +837,6 @@ public class Moteur {
         //liaison ds meta measure
         
         //recup id de table mere
-        CallableStatement call;
         
             call = con.prepareCall("{ " +
             "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
@@ -839,7 +866,9 @@ public class Moteur {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        //
+        finally {
+            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        }
     }
     
     
@@ -849,7 +878,7 @@ public class Moteur {
     {
         String req, tname = com.getNom();
         Statement statement;
-        
+        CallableStatement call=null;
         //BASE
         //-- ajout column dans table
         try {
@@ -870,7 +899,6 @@ public class Moteur {
         //liaison ds meta measure
         
         //recup id de table mere
-        CallableStatement call;
             call = con.prepareCall("{ " +
             "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
             call.registerOutParameter(1, java.sql.Types.INTEGER);
@@ -896,17 +924,21 @@ public class Moteur {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        //         
+        finally {
+            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        }         
     }
 
     /**
-     * a tester
+     * ok
      */
     private void executeInsert() {
         String req="";
         Statement statement=null;
         String tname = com.getNom();
+        int id;
         try {
+          statement = con.createStatement();
         if (com instanceof InsertFact)
         {
             InsertFact ci = (InsertFact) com;
@@ -914,36 +946,51 @@ public class Moteur {
             req = "SELECT * from "+tname;
             ResultSet rs = statement.executeQuery( req );
             ResultSetMetaData mdt = rs.getMetaData();
-            
-            req = "INSERT INTO "+tname+" (";
-            String reqS = " VALUES (";
            
-                for (int i= 0, v=0; i<mdt.getColumnCount();i++){
-                    String colon =mdt.getColumnName(i);
-                    req  = colon+", ";
-                    if (colon.startsWith("fk_"))
+            if ((id = nvID(tname, "F"))==-1)
+		    	return;
+            
+            req = "INSERT INTO "+tname+" (pk_"+tname+",";
+            String reqS = " VALUES ("+id+",";
+           
+                for (int i= 0, v=0; i<mdt.getColumnCount()-1;i++){
+                    String colon =mdt.getColumnName(i+2);
+                    req  += colon+", ";
+                    System.out.println(colon);
+                    if (colon.startsWith("FK_"))
                     {
-                        Predicat p = (Predicat)ci.getConnects().get(colon);
-                        //on peut mettre le select dans le values??
-//                        INSERT INTO "table1" ("column1", "column2", ...)
-//                        SELECT "column3", "column4", ...
-//                        FROM "table2" 
+                        String tn = colon.substring(3);
+                        Predicat p = (Predicat)(ci.getConnects().get( tn.toLowerCase()));
+                        if (p==null) return;
+                        String reqq = "SELECT pk_"+tn+" FROM "+tn+" WHERE "+p.toString();
+                       System.out.println("executeInsert fact_ fk: "+reqq);
+                        
+                       int fk=0;
+                        ResultSet rss = statement.executeQuery(reqq);
+                        if (rss.next())
+                            fk= rss.getInt(1);
+                        
+                        reqS += Integer.toString(fk)+",";
                     }
                     else
                     {
                         String valeur = (String)ci.getValues().get(v);
+                        
+                        if (valeur.contains(","))
+                            valeur=valeur.replace(',','.');
+                        
                         try{
                             Float t = new Float (valeur);
-                            reqS = valeur+", ";
+                            reqS += valeur+", ";
                         }
                         catch (NumberFormatException e){
-                            reqS = "'"+valeur+"', ";
+                            reqS += "'"+valeur+"', ";
                         }
                         v++;
                     }
                 }
                 
-                req = req.substring (0,req.length()-1)+") ";
+                req = req.substring (0,req.length()-2)+") ";
                 reqS = reqS.substring (0,reqS.length()-1)+") ";
                 
                 req = req +reqS;
@@ -954,12 +1001,41 @@ public class Moteur {
         }
         else
         {
-            //rajouter le premier id
+            //dmension
             Insert ci = (Insert)com;
-            req = ci.toSQL();
-            System.out.println(req);
-            statement = con.createStatement();
-            boolean result = statement.execute(req);
+            
+            req = "SELECT * from "+tname;
+            ResultSet rs = statement.executeQuery( req );
+            ResultSetMetaData mdt = rs.getMetaData();
+           
+            if ((id = nvID(tname, "D"))==-1)
+		    	return;
+            
+            req = "INSERT INTO "+tname+" (pk_"+tname+",";
+            String reqS = " VALUES ("+id+",";
+           
+                for (int i= 0, v=0; i<mdt.getColumnCount()-1;i++){
+                    String colon =mdt.getColumnName(i+2);
+                    req  += colon+", ";
+                    System.out.println(colon);
+                    String valeur = (String)(ci.getValues().get(i));
+                    try{
+                        Float t = new Float (valeur);
+                        reqS += valeur+", ";
+                    }
+                    catch (NumberFormatException e){
+                        reqS += "'"+valeur+"', ";
+                    }
+                    //System.out.println();
+                }
+
+                req = req.substring (0,req.length()-2)+") ";
+                reqS = reqS.substring (0,reqS.length()-2)+") ";
+                
+                req = req +reqS;
+                System.out.println(req);
+                statement = con.createStatement();
+                boolean result = statement.execute(req);
         }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -973,7 +1049,7 @@ public class Moteur {
 
     
     //cree une sequence et un trigger associe sur les pk des faits/dimensions
-    private void trigger (String name, String type){
+    private String sequence (String name, String type){
         Statement s=null;
 		try{
 			s = con.createStatement();
@@ -985,16 +1061,27 @@ public class Moteur {
 			System.out.println(req);
 			s.execute(req);
 			System.out.println("sequence initialisee");
-			
-			req = "create or replace trigger t_" +nomS 
-			    	+" before insert on "+ name+ " for each row "
-			    	+"begin "
-			    	+"select "+nomS+" into :new.pk_"+name+".nextval from dual "
-					+"end t_"+nomS;
-					//+" /";
+			return nomS;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			rollback();
+			return "";
+		}
+		finally{
+		if(s!=null){try{s.close();}catch(Exception e){e.printStackTrace();}}
+		} 
+    }
+    
+    private void drop_sequence(String name, String type){
+        Statement s=null;
+		try{
+			s = con.createStatement();
+			String nomS = "seq_" +type+"_"+ name;
+			String req = "DROP SEQUENCE "+nomS;
 			System.out.println(req);
 			s.execute(req);
-			System.out.println("trigger initialise");
+			System.out.println("sequence dropee");
 		}
 		catch(SQLException e){
 			e.printStackTrace();
@@ -1003,6 +1090,7 @@ public class Moteur {
 		finally{
 		if(s!=null){try{s.close();}catch(Exception e){e.printStackTrace();}}
 		} 
+        
     }
     
 
@@ -1016,10 +1104,31 @@ public class Moteur {
         default: 					return "H";
         }
     }
+
+
+	private int nvID (String tname, String type){
+	    int id = -1;
+	    
+	    try {
+            Statement st = con.createStatement();
+            
+            String req = "SELECT seq_"+type+"_"+ tname+".nextval from dual";
+            System.out.println(req);
+            ResultSet rs =st.executeQuery(req);
+            if (rs.next())
+            	id = rs.getInt(1);
+            System.out.println("nvID :" + id);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            rollback();
+        }
+        finally{
+            return id;
+        }
+	}
+
 }
-
-
-
 
 //
 ////connect
