@@ -93,7 +93,7 @@ public class Jointure extends ElementAbstrait {
             expr2=expr2.replace(',','.');
         
         try{
-	        Integer t = new Integer(expr2);
+	        Float t = new Float(expr2);
 	        return  (" "+expr1+" "+operateur+" "+expr2);	
         }
         catch (NumberFormatException e){
