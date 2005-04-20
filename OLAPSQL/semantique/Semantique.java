@@ -36,7 +36,7 @@ public class Semantique {
 	 * @param com
 	 */
 	public Semantique(Commande com){
-			bd = new BaseDonnees();
+		bd = new BaseDonnees();
 		bd.connecter();
 		commande = com;
 	}

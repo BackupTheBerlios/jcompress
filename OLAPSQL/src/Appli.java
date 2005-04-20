@@ -142,65 +142,62 @@ public class Appli {
 			try{
 				ArrayList l = parser.execute();
 				bd = new BaseDonnees();
-				bd.connecter();
 							    
 					for (int i = 0; i<l.size();i++){
 					    Commande c  = (Commande)l.get(i);
 					    c.afficher();
-					    //Semantique s = new Semantique(c, bd);
-					    //s.analyze();
+					    Semantique s = new Semantique(c);//, bd
+					    s.analyze();
+					    s.close();
 					    System.out.println("analyze ok");
+						bd.connecter();
 					    Moteur m = new Moteur (c, bd);
 					    m.execute();
-						//TODO bd.deconnecter();
+						bd.deconnecter(); // TODO
 					}
 					System.out.println("end Moteur");
 				}
-//				catch(FactException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(DimensionException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(HierarchyException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(AttributException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(SQLException e){
-//					textArea.append(e.getMessage()+"\n");
-//					e.printStackTrace();
-//				}
-//				catch(PredicatException e){
-//					textArea.append(e.getMessage()+"\n");
-//					e.printStackTrace();
-//				}
+				catch(FactException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(DimensionException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(HierarchyException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(AttributException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(SQLException e){
+					textArea.append(e.getMessage()+"\n");
+					e.printStackTrace();
+				}
+				catch(PredicatException e){
+					textArea.append(e.getMessage()+"\n");
+					e.printStackTrace();
+				}
 				finally{
 				    if (bd!=null)
 					bd.deconnecter();
 				}
 
 				System.out.println("ok");
-				textArea.append("Execution Ok.\n");
+				//textArea.append("Execution Ok.\n");
 			}
 			catch(ParseException e){
 				textArea.append(e.getMessage()+"\n");
 				System.out.println("Erreur de syntaxe OLAPSQL");
 				e.printStackTrace();
 			}
-//		}
-//		catch(FileNotFoundException e1){
-//			e1.printStackTrace();
-//		}
 		catch(FileNotFoundException e){
 			textArea.append(e.getMessage()+"\n");
-				e.printStackTrace();
-			}
+			e.printStackTrace();
+		}
 	}
 
 	/**

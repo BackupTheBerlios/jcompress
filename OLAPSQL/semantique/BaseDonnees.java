@@ -588,6 +588,8 @@ public class BaseDonnees {
 		ResultSet rs;
 		Statement st = conn.createStatement();
 
+		System.out.println("------------------------------------");
+		System.out.println("predicat : "+predicat);
 		rs = st.executeQuery("select count(*) from " + nomRelation + " where "
 				+ predicat);
 		rs.next();
