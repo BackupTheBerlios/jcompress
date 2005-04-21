@@ -58,7 +58,6 @@ public class Moteur {
     	public void execute (){
     	    if (com != null){
     	        try {
-    	        //bd.connecter();
     	        con.setAutoCommit(false);
     	        if (com instanceof Select)
     	            executeSelect();
@@ -82,7 +81,6 @@ public class Moteur {
                 }
     	        finally{
     	            try {con.setAutoCommit(false);} catch (SQLException e1) {e1.printStackTrace();}
-    	            //bd.deconnecter();
     	        }
     	    }
     	}
@@ -95,14 +93,20 @@ public class Moteur {
 		CallableStatement call=null;
 		try{
 			s = bd.getConn().createStatement();
-			//String tname = com.getNom();
 
-			//delete la table
-			s.executeUpdate("DROP TABLE  " + tname);
-			System.out.println("table droppee : " + tname);
-			drop_sequence(tname, getType(/*com.getType()*/type));
-
-			if(/*com.getType()*/type == Commande.DIMENSION){
+			if(type == Commande.DIMENSION){
+			    //delete colonnes dans les tables faits
+			    String req = "SELECT me2.name from meta_star ms, meta_element me1, meta_element me2 " +
+	    		" WHERE me1.name= '"+tname+"' and me1.typ='D' and me1.id=ms.idd and" +
+	    				" me2.id=ms.idf";
+			    System.out.println(req);
+			    ResultSet rs = s.executeQuery(req);
+			    while(rs.next()){
+			        String fait = rs.getString(1);
+			        req= "ALTER TABLE "+fait+" DROP COLUMN fk_"+tname;
+			        System.out.println(req);
+			        s.execute(req);
+			    }
 				call = con.prepareCall("{ call GEST_BASE_3D.DROP_DIM(?)}");
 				System.out.println("appel de DROP_DIM");
 				call.setString(1, tname);
@@ -117,10 +121,13 @@ public class Moteur {
 			    while(rs.next()){
 			        drop(rs.getString(1), Commande.DIMENSION);
 			    }
-	
 			    call = con.prepareCall("{ call GEST_BASE_3D.DROP_FACT(?)}");
 				call.setString(1, tname);
 			}
+			//delete la table
+			s.executeUpdate("DROP TABLE  " + tname);
+			System.out.println("table droppee : " + tname);
+			drop_sequence(tname, getType(/*com.getType()*/type));
 
 			call.executeUpdate();
 		}
@@ -134,12 +141,11 @@ public class Moteur {
     	
     	
 	/**
-	 * drop dimension ajouter les suppressions des faits qui la reference
+	 * drop dimension ok
 	 * drop fait ok
 	 */
 	private void executeDrop(){
 	    drop (com.getNom(), com.getType());
-
 	}
 
     /**
@@ -643,15 +649,24 @@ public class Moteur {
     
     /**
      * @param ca
-     * a tester
+     * ok
      */
     private void dropHierarchy(AlterHierarchy ca) {
         
         CallableStatement call=null;
         try {
+            call = con.prepareCall("{ " +
+            "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
+        
+            call.registerOutParameter(1, java.sql.Types.INTEGER);
+            call.setString(2,ca.getHierarchy().getNom());
+            call.setString(3, "H");
+            call.execute();
+            int idh = call.getInt(1);
+            
             call = con.prepareCall("{ "
             		+ "call GEST_BASE_3D.DELETE_HIERARCHY (?)}");
-            call.setInt(1, getIdMere(ca));
+            call.setInt(1, idh);
 		    call.execute();
 		    System.out.println("Hierarchy deletee : " + ca.getNom());
         } catch (SQLException e) {
@@ -913,19 +928,19 @@ public class Moteur {
         // insertion quantite dans meta_attribute
         //liaison ds meta measure
         
-        //recup id de table mere
-            call = con.prepareCall("{ " +
-            "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
-            call.registerOutParameter(1, java.sql.Types.INTEGER);
-            call.setString(2,com.getNom());
-            if (com.getType() == Commande.DIMENSION)
-                call.setString(3,"D");
-            else
-                call.setString(3,"F");
-            
-            call.execute();
-            int idElmt=0 ;
-            idElmt= call.getInt(1);
+//        //recup id de table mere
+//            call = con.prepareCall("{ " +
+//            "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
+//            call.registerOutParameter(1, java.sql.Types.INTEGER);
+//            call.setString(2,com.getNom());
+//            if (com.getType() == Commande.DIMENSION)
+//                call.setString(3,"D");
+//            else
+//                call.setString(3,"F");
+//            
+//            call.execute();
+//            int idElmt=0 ;
+        	int idElmt= getIdMere(com);
         
             
             //deletion des attributs ds metabase
