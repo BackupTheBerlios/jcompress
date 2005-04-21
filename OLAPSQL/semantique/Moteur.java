@@ -154,12 +154,24 @@ public class Moteur {
 	private void executeDelete(){
 		String tname = com.getNom();
 		String p = null;
+		String req;
 		if(((Delete) com).getPredicat() != null)
 			p = ((Delete) com).getPredicat().toString();
 		String t = "";
 		switch(com.getType()){
 			case Commande.DIMENSION :
 				t = "DIMENSION";
+			
+				//TODO deletion des tuples concernes dans les faits
+					//recup les cles des att a disparaitre select
+					//recup fait concernes select 
+					//pour chq fait, delete lestuples avec clef = cles boucle+del
+			
+			
+			
+			
+			
+			
 				break;
 			case Commande.FACT :
 				t = "FACT";
@@ -167,6 +179,11 @@ public class Moteur {
 			default :
 				break;
 		}
+		
+		
+		
+		
+		
 
 		String req = "DELETE FROM " + tname;
 		if(p != null)
@@ -903,7 +920,7 @@ public class Moteur {
     
     
     //ok fait
-    //pour dim il faut enlever les levels associes
+    //ok dim
     private void delColumn(Alter com)
     {
         String req, tname = com.getNom();
@@ -945,14 +962,21 @@ public class Moteur {
             
             //deletion des attributs ds metabase
             call = con.prepareCall("{ " +
-            "call GEST_BASE_3D.DELETE_ATT(?,?)}");
+            "? = call GEST_BASE_3D.DELETE_ATT(?,?)}");
+            call.registerOutParameter(1, java.sql.Types.INTEGER);
             for (int i = 0; i< l.size();i++){
-                call.setInt(1,idElmt);
-                call.setString(2,(String)l.get(i));
-                call.execute();  
+                call.setInt(2,idElmt);
+                call.setString(3,(String)l.get(i));
+                call.execute();
+                int idatt = call.getInt(1);
+                
+                req = "delete from meta_level where meta_level.idp = "+idatt;
+                System.out.println(req);
+                statement.execute(req);    
             }     
         } catch (SQLException e) {
             e.printStackTrace();
+            rollback();
         }
         finally {
             try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
