@@ -11,7 +11,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.JTable;
@@ -59,7 +58,7 @@ public class Moteur {
     	public void execute (){
     	    if (com != null){
     	        try {
-    	        bd.connecter();
+    	        //bd.connecter();
     	        con.setAutoCommit(false);
     	        if (com instanceof Select)
     	            executeSelect();
@@ -88,31 +87,38 @@ public class Moteur {
     	    }
     	}
 
-	/**
-	 * drop dimension ajouter les suppressions des faits qui la refernce
-	 * drop fait ajouter ladeletion de ses dimensions/levels
-	 */
-	private void executeDrop(){
+    	//ok
+ private void drop (String tname, int type){
 
 		//delete la table
 		Statement s;
 		CallableStatement call=null;
 		try{
 			s = bd.getConn().createStatement();
-			String tname = com.getNom();
+			//String tname = com.getNom();
 
 			//delete la table
 			s.executeUpdate("DROP TABLE  " + tname);
 			System.out.println("table droppee : " + tname);
-			drop_sequence(tname, getType(com.getType()));
+			drop_sequence(tname, getType(/*com.getType()*/type));
 
-			if(com.getType() == Commande.DIMENSION){
+			if(/*com.getType()*/type == Commande.DIMENSION){
 				call = con.prepareCall("{ call GEST_BASE_3D.DROP_DIM(?)}");
 				System.out.println("appel de DROP_DIM");
 				call.setString(1, tname);
 			}
 			else{
-				call = con.prepareCall("{ call GEST_BASE_3D.DROP_FACT(?)}");
+			    //delete ses dimensions...magouille
+			    String req = "SELECT me2.name from meta_star ms, meta_element me1, meta_element me2 " +
+			    		" WHERE me1.name= '"+tname+"' and me1.typ='F' and me1.id=ms.idf and" +
+			    				" me2.id=ms.idd";
+			    System.out.println(req);
+			    ResultSet rs = s.executeQuery(req);
+			    while(rs.next()){
+			        drop(rs.getString(1), Commande.DIMENSION);
+			    }
+	
+			    call = con.prepareCall("{ call GEST_BASE_3D.DROP_FACT(?)}");
 				call.setString(1, tname);
 			}
 
@@ -122,8 +128,18 @@ public class Moteur {
 			e.printStackTrace();
 		}
 		finally {
-            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
-        }
+         try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+     }
+ }   	
+    	
+    	
+	/**
+	 * drop dimension ajouter les suppressions des faits qui la reference
+	 * drop fait ok
+	 */
+	private void executeDrop(){
+	    drop (com.getNom(), com.getType());
+
 	}
 
     /**
@@ -635,7 +651,7 @@ public class Moteur {
         try {
             call = con.prepareCall("{ "
             		+ "call GEST_BASE_3D.DELETE_HIERARCHY (?)}");
-            call.setString(1, ca.getNom());
+            call.setInt(1, getIdMere(ca));
 		    call.execute();
 		    System.out.println("Hierarchy deletee : " + ca.getNom());
         } catch (SQLException e) {
@@ -745,7 +761,7 @@ public class Moteur {
         ArrayList l = ca.getAttributs();
         statement = con.createStatement();
         
-        //baisse de performances sur mais surete des contraintes
+        //baisse de performances sur mais modularite des contraintes
         for (int j = 0; j< l.size();j++){
             String cleF=(String)l.get(j);
             req = "ALTER TABLE "+tname+" ADD "+ "fk_"+cleF+" number(5)";
@@ -753,12 +769,10 @@ public class Moteur {
             boolean result = statement.execute(req);
             System.out.println(req);
             
-            req= "ALTER TABLE "+tname+" ADD constraint fk_"+tname+"_" +
-            		""+ cleF+" FOREIGN KEY(fk_"+cleF+") REFERENCES "+cleF+" (pk_"+cleF+"))"; 
+            req= "ALTER TABLE "+tname+" ADD CONSTRAINT fk_"+tname+"_" +
+            		""+ cleF+" FOREIGN KEY(fk_"+cleF+") REFERENCES "+cleF+" (pk_"+cleF+")"; 
             System.out.println(req);
-            //contrainte marche pas...TODO
-            //result = statement.execute(req);
-            //System.out.println(req);
+            result = statement.execute(req);
 
             //      METABASE
             	//liaisons ds meta_star
@@ -770,6 +784,7 @@ public class Moteur {
             for (int i = 0; i< l.size();i++){
             	call.setString(2,(String)l.get(i));
             	call.execute();
+            	
             }	
         } 	
         }
@@ -1118,13 +1133,15 @@ public class Moteur {
             if (rs.next())
             	id = rs.getInt(1);
             System.out.println("nvID :" + id);
+            return id;
             
         } catch (SQLException e) {
             e.printStackTrace();
             rollback();
+            return id;
         }
         finally{
-            return id;
+            //return id;
         }
 	}
 
