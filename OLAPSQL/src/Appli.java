@@ -11,7 +11,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import javaCC.Analyzer;
 import javaCC.ParseException;
@@ -27,13 +26,7 @@ import javax.swing.filechooser.FileFilter;
 
 import semantique.BaseDonnees;
 import semantique.Moteur;
-import semantique.Semantique;
 import structure.Commande;
-import exception.AttributException;
-import exception.DimensionException;
-import exception.FactException;
-import exception.HierarchyException;
-import exception.PredicatException;
 
 /**
  * @author claire TODO To change the template for this generated type comment go
@@ -144,7 +137,7 @@ public class Appli {
 				ArrayList l = parser.execute();
 				bd = new BaseDonnees();
 				bd.connecter();
-							    
+						
 					for (int i = 0; i<l.size();i++){
 					    Commande c  = (Commande)l.get(i);
 					    c.afficher();
