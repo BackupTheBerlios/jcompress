@@ -8,7 +8,6 @@ package structure;
 
 import java.util.ArrayList;
 
-import structure.types.Attribut;
 import structure.types.predicat.Predicat;
 
 /**
