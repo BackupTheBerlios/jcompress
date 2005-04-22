@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javaCC.Analyzer;
 import javaCC.ParseException;
@@ -24,8 +25,15 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 
+import exception.AttributException;
+import exception.DimensionException;
+import exception.FactException;
+import exception.HierarchyException;
+import exception.PredicatException;
+
 import semantique.BaseDonnees;
 import semantique.Moteur;
+import semantique.Semantique;
 import structure.Commande;
 
 /**
@@ -141,38 +149,40 @@ public class Appli {
 					for (int i = 0; i<l.size();i++){
 					    Commande c  = (Commande)l.get(i);
 					    c.afficher();
-					    //Semantique s = new Semantique(c, bd);
-					    //s.analyze();
+					    Semantique s = new Semantique(c, bd);
+					    s.analyze();
+					    s.close();
+					    bd.connecter();
 					    System.out.println("analyze ok");
 					    Moteur m = new Moteur (c, bd);
 					    m.execute();
 					}
 					System.out.println("end Moteur");
 				}
-//				catch(FactException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(DimensionException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(HierarchyException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(AttributException e2){
-//					textArea.append(e2.getMessage()+"\n");
-//					e2.printStackTrace();
-//				}
-//				catch(SQLException e){
-//					textArea.append(e.getMessage()+"\n");
-//					e.printStackTrace();
-//				}
-//				catch(PredicatException e){
-//					textArea.append(e.getMessage()+"\n");
-//					e.printStackTrace();
-//				}
+				catch(FactException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(DimensionException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(HierarchyException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(AttributException e2){
+					textArea.append(e2.getMessage()+"\n");
+					e2.printStackTrace();
+				}
+				catch(SQLException e){
+					textArea.append(e.getMessage()+"\n");
+					e.printStackTrace();
+				}
+				catch(PredicatException e){
+					textArea.append(e.getMessage()+"\n");
+					e.printStackTrace();
+				}
 				finally{
 				    if (bd!=null)
 					bd.deconnecter();

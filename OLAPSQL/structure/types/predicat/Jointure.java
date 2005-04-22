@@ -79,7 +79,14 @@ public class Jointure extends ElementAbstrait {
 	 * @see structure.types.predicat.ElementAbstrait#getSQL()
 	 */
 	public String getSQL(){
-		String sql = expr1+operateur+expr2;
+		String sql = expr1+operateur;
+        try{
+	        Float t = new Float(expr2);	
+	        sql += expr2;
+        }
+        catch (NumberFormatException e){
+            sql += "'"+expr2+"'";
+        }
 		return sql;
 	}
 
