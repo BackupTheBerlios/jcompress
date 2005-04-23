@@ -525,7 +525,7 @@ public class Moteur {
 			req += ", " + sel.getNomRow() + ".";
 			group += ", " + sel.getNomRow() + ".";
 			//tmp2 = sel.getNomRow()+".";
-			if(tmp.indexOf(".") == 0){
+			if(tmp.indexOf(".") >= 0){
 				i = tmp.indexOf(".");
 				String[] s = new String[2];
 				s[0] = tmp.substring(0, i);
@@ -548,7 +548,7 @@ public class Moteur {
 			req += ", " + sel.getNomColumn() + ".";
 			group += ", " + sel.getNomColumn() + ".";
 			//tmp2 = sel.getNomColumn() + ".";
-			if(tmp.indexOf(".") == 0){
+			if(tmp.indexOf(".") >= 0){
 				i = tmp.indexOf(".");
 				String[] s = new String[2];
 				s[0] = tmp.substring(0, i);
@@ -576,21 +576,36 @@ public class Moteur {
 		}
 
 		// where
-		req += " where " + sel.getWhere().getSQLMoteur(sel.getNomFrom());
+		if(sel.getWhere() != null && sel.getRows().size()>0 && sel.getColumns().size()>0){
+			req += " where ";
+		
+			if(sel.getWhere() != null){
+				req += sel.getWhere().getSQLMoteur(sel.getNomFrom());
 
-		// jointure
-		req += " AND ";
-		req += "fk_" + sel.getNomRow() + "=" + sel.getNomRow() + ".pk_"
-				+ sel.getNomRow();
-		req += " AND ";
-		req += "fk_" + sel.getNomColumn() + "=" + sel.getNomColumn() + ".pk_"
-				+ sel.getNomColumn();
+				// jointure
+				req += " AND ";
+				
+				if(sel.getRows().size()>0){
+					req += "fk_" + sel.getNomRow() + "=" + sel.getNomRow() + ".pk_"
+					+ sel.getNomRow();
+					if(sel.getColumns().size()>0)
+						req += " AND ";
+				}
+				
+				if(sel.getColumns().size()>0){
+					req += "fk_" + sel.getNomColumn() + "=" + sel.getNomColumn() + ".pk_"
+					+ sel.getNomColumn();
+				}
 
-		// jointure avec les dim qui sont pas dans row ou column
-		it = listDim.iterator();
-		while(it.hasNext()){
-			tmp = (String) it.next();
-			req += " AND fk_" + tmp +"="+tmp+".pk_"+tmp;
+				if(sel.getRows().size()>0 && sel.getColumns().size()>0){
+					// jointure avec les dim qui sont pas dans row ou column
+					it = listDim.iterator();
+					while(it.hasNext()){
+						tmp = (String) it.next();
+						req += " AND fk_" + tmp +"="+tmp+".pk_"+tmp;
+					}
+				}
+			}
 		}
 
 		req += " GROUP BY " + group.substring(2, group.length());
@@ -601,6 +616,7 @@ public class Moteur {
 				nomCol[j] = (String) listSelect.get(j);
 			}
 			
+			System.out.println(req);
 			st = con.createStatement();
 			rs = st.executeQuery(req);
 			while(rs.next()){
@@ -997,14 +1013,17 @@ public class Moteur {
             if ((id = nvID(tname, "F"))==-1)
 		    	return;
             
-            req = "INSERT INTO "+tname+" (pk_"+tname+",";
+            req = "INSERT INTO "+tname+" (";//pk_"+tname+",";
             String reqS = " VALUES ("+id+",";
            
             System.out.println("nb colonne : "+mdt.getColumnCount());
-           for (int i= 0, v=0, nbColo = mdt.getColumnCount()-1; i<nbColo;i++){
+            int v=0;
+            int nbColo = mdt.getColumnCount();
+            for (int i= 1; i<=nbColo;i++){
+    			System.out.println("-----------------------------------------------");
                     System.out.println("i just avant getCol: " +i);
                     //TODO ca commence a 1, mais je n accede apres la e colonne erreur SQL..pige pas
-                    String colon =mdt.getColumnName(i+2);
+                    String colon =mdt.getColumnName(i);
                     System.out.println("i : " + i);
                     System.out.println("la");
                     req  += colon+", ";
@@ -1018,15 +1037,19 @@ public class Moteur {
                        System.out.println("executeInsert fact_ fk: "+reqq);
                         
                        int fk=0;
-                        ResultSet rss = statement.executeQuery(reqq);
+                       Statement statement1 = con.createStatement();
+                        ResultSet rss = statement1.executeQuery(reqq);
                         //un seul retour cf sujet
                         if  (rss.next())
-                        {    fk= rss.getInt(1);                             
+                        {    fk= rss.getInt(1);
                         }
-                        reqS += Integer.toString(fk)+",";                       
+                        reqS += Integer.toString(fk)+",";
+                        statement1.close();
                     }
                     else
                     {
+                    	if(!colon.startsWith("PK_")){
+                    	System.out.println(v);
                         String valeur = (String)ci.getValues().get(v);
                         
                         if (valeur.contains(","))
@@ -1040,6 +1063,7 @@ public class Moteur {
                             reqS += "'"+valeur+"', ";
                         }
                         v++;
+                    	}
                     }
                     System.out.println("i  : "+i);
                     System.out.println("nbColo : "+nbColo);
