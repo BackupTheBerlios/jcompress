@@ -1,0 +1,45 @@
+Test unitaires ok
+
+TESTS GENERAUX:
+
+creation 2 dimensions  produits, villes
+creation d1 fait qvec 0 dimension
+
+
+connect le fait aux 2 dimensions
+deconnect le fait aux 2 dims
+re connect au 2  produits
+
+ajout 2 colonnes a un fait
+retire les 2 colonnes
+
+
+ajoute 2 colonnes a une dimesion
+retire ces 2 colonnes
+
+ajoute 2 hierarchy
+retire ces 2 hierarchys
+
+
+ajoute 3 items a produits
+ajoute 3 items a villes
+ajoute 1-2 items a faits avec les connects
+
+delete un tuple un fait
+delete un tuple ds une dimension reference/ non referencee
+
+
+ajoute une colonne a fait
+ajoute une colonne a villes
+
+ajoute 1 item a fait
+ajoute 1 item a villes
+
+
+faire des selects
+
+drop produits
+drop ventes
+
+
+
