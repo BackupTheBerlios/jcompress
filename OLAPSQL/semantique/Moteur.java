@@ -1020,7 +1020,6 @@ public class Moteur {
             int v=0;
             int nbColo = mdt.getColumnCount();
             for (int i= 1; i<=nbColo;i++){
-    			System.out.println("-----------------------------------------------");
                     System.out.println("i just avant getCol: " +i);
                     //TODO ca commence a 1, mais je n accede apres la e colonne erreur SQL..pige pas
                     String colon =mdt.getColumnName(i);
