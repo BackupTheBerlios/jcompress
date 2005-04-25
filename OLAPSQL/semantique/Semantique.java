@@ -1,5 +1,12 @@
 package semantique;
 
+/**
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,6 +33,9 @@ import structure.types.Level;
 import structure.types.predicat.Jointure;
 import structure.types.predicat.Predicat;
 
+/**
+ * Classe permettant la vérifiaction de la sémantique.
+ */
 public class Semantique {
 	private Commande commande;
 	private BaseDonnees bd;

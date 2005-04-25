@@ -1,5 +1,12 @@
 package src;
 
+/**
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -37,19 +44,8 @@ import semantique.Semantique;
 import structure.Commande;
 
 /**
- * @author claire TODO To change the template for this generated type comment go
- *         to Window - Preferences - Java - Code Style - Code Templates
+ * Classe définissant l'IHM de l'application et contenant la fonction main. 
  */
-
-//Base de donnees communes a semantique et moteur
-//TODO tester les predicats et les ' pour expr2
-//TODO ask laure
-	//DELETE FROM DIMENSION produits WHERE idp = 1;
-	//--delete dans les faits??
-//TODO ask laure 2 diemensions ne peuvent avoir le m nom...sinon moi ca plante cf CREATE_DIM
-//TODO ask Laur qd on drop une colonne de dimension, on les droppe ds levels
-//TODO rajouter les roolbacks TOUS
-//pas de virgule dans les valeurs des inserts
 public class Appli {
 
 	private String NEW_LINE = "\n";
@@ -144,7 +140,7 @@ public class Appli {
 			try{
 				ArrayList l = parser.execute();
 				bd = new BaseDonnees();
-				bd.connecter();
+				//bd.connecter();
 						
 					for (int i = 0; i<l.size();i++){
 					    Commande c  = (Commande)l.get(i);
@@ -156,6 +152,7 @@ public class Appli {
 					    System.out.println("analyze ok");
 					    Moteur m = new Moteur (c, bd);
 					    m.execute();
+					    bd.deconnecter();
 					}
 					System.out.println("end Moteur");
 				}

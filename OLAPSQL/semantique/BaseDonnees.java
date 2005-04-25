@@ -1,5 +1,12 @@
 package semantique;
 
+/**
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -8,6 +15,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Classe utilisé pour la vérification de la Sémantique.
+ * Cette classe se charge de tos les appels à la base de données.
+ */
 public class BaseDonnees {
 	private static String url = null;
 	private static String user = null;
