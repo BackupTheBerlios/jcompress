@@ -1,16 +1,14 @@
-/*
- * Created on Feb 28, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package structure.types;
 
 /**
- * @author m1isi17
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
+
+/**
+ * Type attribut utilisé pour coder les attributs lors de la création ou de la modification de fait ou dimension.
  */
 public class Attribut{
 

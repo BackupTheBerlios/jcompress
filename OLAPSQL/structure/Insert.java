@@ -1,19 +1,18 @@
-/*
- * Created on Feb 28, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package structure;
+
+/**
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
 
 import java.util.ArrayList;
 
 /**
- * @author m1isi17
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * Classe représentant la commande INSERT.
  */
+
 public class Insert extends Commande {
 
 	//liste de String
@@ -25,7 +24,6 @@ public class Insert extends Commande {
 	 */
 	public Insert(String nom, int type) {
 		super(nom, type);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void ajoutValeur(String val){

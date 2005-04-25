@@ -1,11 +1,11 @@
-/*
- * Created on Feb 28, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package structure;
 
+/**
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -13,10 +13,7 @@ import java.util.Set;
 import structure.types.predicat.Predicat;
 
 /**
- * @author m1isi17
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Classe représentant la commande INSERT d'un fait.
  */
 public class InsertFact extends Insert{
 

@@ -1,13 +1,17 @@
 
 package structure.types.predicat;
 
+/**
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
+ */
+
 import java.util.ArrayList;
 
 /**
- * @author claire
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Classe mère des feuilles et des noeuds de l'arbre représentant un prédicat.
  */
 public abstract class ElementAbstrait {
 	

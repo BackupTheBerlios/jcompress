@@ -1,21 +1,15 @@
-/*
- * Created on Feb 28, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package structure;
 
 /**
- * @author m1isi17
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Projet : OLAPSQL*PLUS
+ * Auteur : 
+ * 		Laure Bosse
+ * 		Claire Fauroux
  */
 
-// TODO protected/private
-// TODO ArrayList /autres
-//ca gere pas les doubles quot dans une valeur
+/**
+ * Classe représetant une commande.
+ */
 
 public abstract class Commande{
 	
