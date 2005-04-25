@@ -35,8 +35,7 @@ import structure.types.Level;
 import structure.types.predicat.Predicat;
 
 /**
- * @author cfauroux To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Generation - Code and Comments
+ * classe d'éxucution d'une commande
  */
 public class Moteur {
 
@@ -85,11 +84,16 @@ public class Moteur {
     	    }
     	}
 
-    	//ok
+    /**
+     * drop la table de nom tname et de type type
+     * 
+     * @param tname
+     * @param type
+     */
  private void drop (String tname, int type){
 
 		//delete la table
-		Statement s;
+		Statement s = null;
 		CallableStatement call=null;
 		try{
 			s = bd.getConn().createStatement();
@@ -112,7 +116,7 @@ public class Moteur {
 				call.setString(1, tname);
 			}
 			else{
-			    //delete ses dimensions...magouille
+			    //delete ses dimensions
 			    String req = "SELECT me2.name from meta_star ms, meta_element me1, meta_element me2 " +
 			    		" WHERE me1.name= '"+tname+"' and me1.typ='F' and me1.id=ms.idf and" +
 			    				" me2.id=ms.idd";
@@ -135,22 +139,33 @@ public class Moteur {
 			e.printStackTrace();
 		}
 		finally {
-         try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+            try {
+                if (call != null)
+                    call.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
      }
  }   	
     	
     	
-	/**
-	 * drop dimension ok
-	 * drop fait ok
-	 */
+    /**
+     * drop un fait ou une dimension
+     */
 	private void executeDrop(){
 	    drop (com.getNom(), com.getType());
 	}
 
     /**
-	 * ok fait et dim sans referencement
-	 */
+     * delete un tuple de fait ou de dim sans referencement
+     */
 	private void executeDelete(){
 		String tname = com.getNom();
 		String p = null;
@@ -161,16 +176,6 @@ public class Moteur {
 		switch(com.getType()){
 			case Commande.DIMENSION :
 				t = "DIMENSION";
-			
-				//TODO deletion des tuples concernes dans les faits
-					//recup les cles des att a disparaitre select
-					//recup fait concernes select 
-					//pour chq fait, delete lestuples avec clef = cles boucle+del
-
-				//recup les cles des att a disparaitre select
-				//recup fait concernes select
-				//pour chq fait, delete lestuples avec clef = cles boucle+del
-
 				break;
 			case Commande.FACT :
 				t = "FACT";
@@ -209,12 +214,10 @@ public class Moteur {
 		String tname = com.getNom();
 		int idElmt;
 		CallableStatement call = null;
-		Statement statement;
+		Statement statement=null;
 
 		//insere une dimension
 		if(com instanceof CreateDimension){
-			//BASE
-			//la pk devrait etre en auto increment
 			CreateDimension cd = (CreateDimension) com;
 			String cleP = "pk_" + tname;
 			
@@ -324,15 +327,36 @@ public class Moteur {
 					e.printStackTrace();
 					rollback();
 				}
+            finally{
+                if (statement != null) {
+                    try {
+                        statement.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (call!= null) {
+                    try {
+                        call.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            
+            }
 			}
 
 	}
 
 	
-	//ok
+    /**
+     * Ajout d une Hierachy h associee a la dimension d id idDim
+     * @param idDim
+     * @param h
+     */
 	private void newHierarchy(int idDim, Hierarchy h){
 	    {   
-		CallableStatement call;
+		CallableStatement call=null;
         try {
             call = con.prepareCall("{ "
             		+ "?=call GEST_BASE_3D.CREATE_HIERARCHY (?,?)}");
@@ -365,6 +389,14 @@ public class Moteur {
             e.printStackTrace();
             rollback();
         }
+            finally {
+                if (call != null) {
+                    try {
+                        call.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }}
 	    }
 	}
 	
@@ -378,11 +410,10 @@ public class Moteur {
 	 * @param pos, position du level ds hierarchy idH PreCondition : connection
 	 *            ouverte
 	 */
-	//ok
 	private void insereLevel(int idD,int idH, String nomAtt, int pos, String typ){
+			CallableStatement call = null;
 		try{
 			//recup l id de l attribut correspondant au level
-			CallableStatement call;
 			call = con.prepareCall("{ "
 					+ "?=call GEST_BASE_3D.GET_ID_ATT (?,?)}");
 			call.registerOutParameter(1, java.sql.Types.INTEGER);
@@ -411,6 +442,15 @@ public class Moteur {
 		catch(SQLException e){
 			e.printStackTrace();
 		}
+        finally{
+            if (call != null) {
+                try {
+                    call.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }    
+        }
 
 	}
 
@@ -420,10 +460,9 @@ public class Moteur {
 	 * @param typ, typ = FAIT ou DIMENSION
 	 * @param atts, liste d Attributs
 	 * @return l id de l elmt insere
-	 * ok
 	 */
 	private int insereFD(String nom, int typ, ArrayList atts){
-		CallableStatement call;
+		CallableStatement call=null;
 		int idElmt = 0;
 		try{
 			call = con.prepareCall("{ "
@@ -453,20 +492,28 @@ public class Moteur {
 		}
 		catch(SQLException e){
 			e.printStackTrace();
+        }finally{
+            if (call != null) {
+                try {
+                    call.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }     
 		}
 
 		return idElmt;
 	}
 
-	/**
-	 * 
-	 */
+    /**
+     *  exexution de la commande select
+     */
 	private void executeSelect(){
 		Select sel = (Select) com;
 		String req, tmp, tmp2, group = "";
 		int i, idFai = 0;
-		ResultSet rs;
-		Statement st;
+		ResultSet rs=null;
+		Statement st=null;
 		ArrayList listSelect = new ArrayList();
 		ArrayList listDim = new ArrayList();
 		ArrayList listIdDim = new ArrayList();
@@ -616,7 +663,6 @@ public class Moteur {
 				nomCol[j] = (String) listSelect.get(j);
 			}
 			
-			System.out.println(req);
 			st = con.createStatement();
 			rs = st.executeQuery(req);
 			while(rs.next()){
@@ -641,6 +687,21 @@ public class Moteur {
 		}
 		catch(SQLException e1){
 			e1.printStackTrace();
+       }finally {
+           if (st!= null) {
+               try {
+                   st.close();
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+           }  
+           if (rs != null) {
+               try {
+                   rs.close();
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+           } 
 		}
 	}
 
@@ -674,9 +735,9 @@ public class Moteur {
         
     }
     
-    /**
+    /** 
+     * drop une Hierarchy definie dans ca
      * @param ca
-     * ok
      */
     private void dropHierarchy(AlterHierarchy ca) {
         
@@ -699,13 +760,21 @@ public class Moteur {
         } catch (SQLException e) {
             e.printStackTrace();
             rollback();
-        }
-        finally {
-            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        } finally {
+            try {
+                if (call != null)
+                    call.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }
 	}
 
-    //a tester si ok, a mettre un peu partout
+    /**
+     * retourne  lid dans la base du fait/dim/hierarchy associe a la commande
+     * @param c
+     * @return
+     */
     private int getIdMere (Commande c){
         CallableStatement call=null;
         try {
@@ -724,15 +793,20 @@ public class Moteur {
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
-        }
-        finally {
-            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        } finally {
+            try {
+                if (call != null)
+                    call.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }
         
     }
     /**
+     * ajoute une hierarchy definie dans ca
      * @param ca
-     * 
+     *  
      */
     private void addHierarchy(AlterHierarchy ca) {
         //recup id de dimension mere
@@ -741,8 +815,9 @@ public class Moteur {
     }
 
     /**
+     * execution d un disconnect sur un fait
      * @param ca
-     * ok..pte a ameliorer sur acces BD
+     * 
      */
     private void disconnect(Alter ca) {
         String req, tname = ca.getNom();
@@ -760,7 +835,7 @@ public class Moteur {
             System.out.println(req);
         }
         
-          //      METABASE TODO
+          //      METABASE
             	//liaisons ds meta_star
         	call = con.prepareCall("{" +
     		"call GEST_BASE_3D.ALT_FACT_DISCONNECT (?,?)}");
@@ -790,10 +865,6 @@ public class Moteur {
     private void connect(Alter ca) {
  
         //-- BASE
-        //-- ajout column fk_magasins dans table ventes qvec contraintes de cles
-        //-- METABASE
-        //-- insertion liaison dans meta_star
-        //--END
         String req, tname = ca.getNom();
         Statement statement;
 //      -- ajout column fk_ dans table
@@ -820,14 +891,9 @@ public class Moteur {
             	//liaisons ds meta_star
             	call = con.prepareCall("{" +
         		"call GEST_BASE_3D.ALT_FACT_CONNECT (?,?)}");
-            	//call.setInt(1,idElmt);
             	call.setString(1,tname);
-            	
-            //for (int i = 0; i< l.size();i++){
             	call.setString(2,cleF);
             	call.execute();
-            	
-            //}	
         } 	
         }
      catch (SQLException e) {
@@ -839,6 +905,9 @@ public class Moteur {
      }      
     }
     
+    /**
+     * exectution d'un rollback
+     */
     private void rollback(){
         Statement stm=null;
         try {
@@ -852,6 +921,9 @@ public class Moteur {
         }
     }
     
+    /**
+     * exectution d'un commit
+     */
     private void commit(){
         Statement stm=null;
         try {
@@ -866,11 +938,13 @@ public class Moteur {
     }
     
 
-    //ok
+    /**
+     * Ajoute une colonne definie dans com
+     */
     private void addColumn(Alter com)
     {
         String req, tname = com.getNom();
-        Statement statement;
+        Statement statement=null;
         CallableStatement call=null;
         
         try {
@@ -890,11 +964,6 @@ public class Moteur {
         
         //
         //METABASE
-        // insertion quantite dans meta_attribute
-        //liaison ds meta measure
-        
-        //recup id de table mere
-        
             call = con.prepareCall("{ " +
             "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
             call.registerOutParameter(1, java.sql.Types.INTEGER);
@@ -922,18 +991,30 @@ public class Moteur {
             }     
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        finally {
-            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
+        } finally {
+            try {
+                if (call != null)
+                    call.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+                if (statement != null) {
+                    try {
+                        statement.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
         }
     }    
     
-    //ok fait
-    //ok dim
+    /**
+     * delete une colonne definie dans com
+     */
     private void delColumn(Alter com)
     {
         String req, tname = com.getNom();
-        Statement statement;
+        Statement statement=null;
         CallableStatement call=null;
         //BASE
         //-- ajout column dans table
@@ -949,25 +1030,8 @@ public class Moteur {
         statement = con.createStatement();
         boolean result = statement.execute(req);
         
-        //
         //METABASE
-        // insertion quantite dans meta_attribute
-        //liaison ds meta measure
-        
-//        //recup id de table mere
-//            call = con.prepareCall("{ " +
-//            "?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
-//            call.registerOutParameter(1, java.sql.Types.INTEGER);
-//            call.setString(2,com.getNom());
-//            if (com.getType() == Commande.DIMENSION)
-//                call.setString(3,"D");
-//            else
-//                call.setString(3,"F");
-//            
-//            call.execute();
-//            int idElmt=0 ;
         	int idElmt= getIdMere(com);
-        
             
             //deletion des attributs ds metabase
             call = con.prepareCall("{ " +
@@ -986,14 +1050,25 @@ public class Moteur {
         } catch (SQLException e) {
             e.printStackTrace();
             rollback();
+        } finally {
+            try {
+                if (call != null)
+                    call.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        finally {
-            try {if (call!=null)call.close();} catch (SQLException e1) {e1.printStackTrace();}
-        }         
     }
 
     /**
-     * ok
+     * insertion de tuples
      */
     private void executeInsert() {
         String req="";
@@ -1021,7 +1096,6 @@ public class Moteur {
             int nbColo = mdt.getColumnCount();
             for (int i= 1; i<=nbColo;i++){
                     System.out.println("i just avant getCol: " +i);
-                    //TODO ca commence a 1, mais je n accede apres la e colonne erreur SQL..pige pas
                     String colon =mdt.getColumnName(i);
                     System.out.println("i : " + i);
                     System.out.println("la");
@@ -1104,7 +1178,6 @@ public class Moteur {
                     catch (NumberFormatException e){
                         reqS += "'"+valeur+"', ";
                     }
-                    //System.out.println();
                 }
 
                 req = req.substring (0,req.length()-2)+") ";
@@ -1118,15 +1191,23 @@ public class Moteur {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally{
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }   
+        }
     }
 
-    public static void main(String[] args) {
-        
-    } 
-    
-
-    
-    //cree une sequence et un trigger associe sur les pk des faits/dimensions
+    /**
+     * cree une sequence associee sur le pk de la table namede type type
+     * @param name
+     * @param type  = "F" ou "D"
+     * 
+     */
     private String sequence (String name, String type){
         Statement s=null;
 		try{
@@ -1151,6 +1232,11 @@ public class Moteur {
 		} 
     }
     
+     /**
+      * supprime la sequence associee a la table name
+      * @param name
+      * @param type, "F" ou "D"
+      */
     private void drop_sequence(String name, String type){
         Statement s=null;
 		try{
@@ -1173,7 +1259,11 @@ public class Moteur {
     
 
     
-    //return F ou D ou H
+    /**
+     * mapping de int vers String pour les types
+     * @param t, Commande.DIMENSION ou  Commande.FACT
+     * @return "D" ou "F
+     */
     public String getType(int t){
         switch (t)
         {
@@ -1184,11 +1274,18 @@ public class Moteur {
     }
 
 
+    /**
+     * recuperation d'un nouvel ID de cle primaire pour table tname
+     * @param tname
+     * @param type
+     * @return int, nouvel id
+     */
 	private int nvID (String tname, String type){
 	    int id = -1;
+	    Statement st = null;
 	    
 	    try {
-            Statement st = con.createStatement();
+            st = con.createStatement();
             
             String req = "SELECT seq_"+type+"_"+ tname+".nextval from dual";
             System.out.println(req);
@@ -1202,62 +1299,16 @@ public class Moteur {
             e.printStackTrace();
             rollback();
             return id;
-        }
-        finally{
-            //return id;
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 	}
 
 }
 
-//
-////connect
-//CallableStatement callC = con.prepareCall("{" +
-//"?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
-//callC.registerOutParameter(1, java.sql.Types.INTEGER);
-//callC.setString(3, "D");
-//for (int i = 0; i< l.size();i++){
-//  String connect  = (String)l.get(i);
-//  callC.setString(2,connect);
-//  System.out.println(" GEST_BASE_3D.GET_ID_ELMT(" +
-//  		"" + connect+", D)");
-//  callC.execute();
-//  //recup id dimension
-//  int idD = callC.getInt(1);
-//  
-//  if (idD!=-1)
-//      {//connecte dim et fait
-//      call.setInt(2, idD);
-//      //System.out.println(" GEST_BASE_3D.CONNECT_DIM(" +
-//      //		"" + idElmt+", "+idD+")");
-//      call.execute();
-//      //System.out.println("liaison star ok:"+idElmt+","+idD);
-//      }
-//  else
-//      System.out.println("liaison star pas ok: "+idD);
-// } //        
-////connect
-//CallableStatement callC = con.prepareCall("{" +
-//"?=call GEST_BASE_3D.GET_ID_ELMT(?,?)}");
-//callC.registerOutParameter(1, java.sql.Types.INTEGER);
-//callC.setString(3, "D");
-//for (int i = 0; i< l.size();i++){
-//  String connect  = (String)l.get(i);
-//  callC.setString(2,connect);
-//  System.out.println(" GEST_BASE_3D.GET_ID_ELMT(" +
-//  		"" + connect+", D)");
-//  callC.execute();
-//  //recup id dimension
-//  int idD = callC.getInt(1);
-//  
-//  if (idD!=-1)
-//      {//connecte dim et fait
-//      call.setInt(2, idD);
-//      //System.out.println(" GEST_BASE_3D.CONNECT_DIM(" +
-//      //		"" + idElmt+", "+idD+")");
-//      call.execute();
-//      //System.out.println("liaison star ok:"+idElmt+","+idD);
-//      }
-//  else
-//      System.out.println("liaison star pas ok: "+idD);
-// } 
